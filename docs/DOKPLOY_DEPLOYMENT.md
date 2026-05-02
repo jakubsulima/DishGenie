@@ -75,7 +75,9 @@ Notes:
 
 Frontend build-time variables are configured in GitHub Actions repository variables (not Dokploy runtime env):
 - `VITE_API_URL` (default `/api/`)
-- `VITE_GOOGLE_CLIENT_ID`
+
+Frontend Google login is runtime-configured from compose/Dokploy env:
+- `GOOGLE_OAUTH_CLIENT_ID`
 
 For immutable deploys, point image variables to SHA tags, for example:
 - `BACKEND_IMAGE=ghcr.io/<namespace>/<repo>-backend:sha-abc1234`

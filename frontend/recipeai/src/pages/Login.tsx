@@ -6,6 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useUser } from "../context/context";
 import { useNavigate } from "react-router-dom";
 import ErrorAlert from "../components/ErrorAlert";
+import { getGoogleClientId } from "../lib/runtimeConfig";
 
 interface LoginProps {
   email: string;
@@ -97,7 +98,7 @@ const Login = () => {
   useEffect(() => {
     const initGoogle = () => {
       if (window.google?.accounts?.id && googleBtnRef.current) {
-        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
+        const clientId = getGoogleClientId();
         if (!clientId) {
           return;
         }

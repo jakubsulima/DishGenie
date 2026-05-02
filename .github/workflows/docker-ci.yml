@@ -13,6 +13,7 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   frontend-lint:
@@ -242,7 +243,6 @@ jobs:
             frontend)
               docker build --pull -f frontend/recipeai/Dockerfile frontend/recipeai \
                 --build-arg VITE_API_URL="${{ vars.VITE_API_URL || '/api/' }}" \
-                --build-arg VITE_GOOGLE_CLIENT_ID="${{ vars.VITE_GOOGLE_CLIENT_ID }}" \
                 -t recipeai-scan:frontend
               ;;
             db)
@@ -308,7 +308,6 @@ jobs:
             dockerfile: ./frontend/recipeai/Dockerfile
             build_args: |
               VITE_API_URL=${{ vars.VITE_API_URL || '/api/' }}
-              VITE_GOOGLE_CLIENT_ID=${{ vars.VITE_GOOGLE_CLIENT_ID }}
           - image_name: db
             context: ./postgres
             dockerfile: ./postgres/Dockerfile
@@ -401,7 +400,33 @@ jobs:
     if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch
 
     steps:
+      - name: Check commit is from merged PR
+        id: merge-check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const response = await github.request(
+              'GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls',
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: context.sha,
+              }
+            );
+
+            const defaultBranch = context.payload.repository.default_branch;
+            const mergedIntoDefault = response.data.some(
+              (pr) => pr.merged_at && pr.base && pr.base.ref === defaultBranch
+            );
+
+            core.setOutput('merged_pr', mergedIntoDefault ? 'true' : 'false');
+
+            if (!mergedIntoDefault) {
+              core.notice('Skipping Dokploy deployment: push is not associated with a merged PR into the default branch.');
+            }
+
       - name: Trigger Dokploy deployment webhook
+        if: steps.merge-check.outputs.merged_pr == 'true'
         env:
           DOKPLOY_WEBHOOK: ${{ secrets.DOKPLOY_WEBHOOK }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}

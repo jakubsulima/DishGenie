@@ -53,17 +53,22 @@ services:
     # No public ports: expose through Dokploy or an edge proxy.
     environment:
       PORT: "${FRONTEND_PORT:-8080}"
+      GOOGLE_OAUTH_CLIENT_ID: "${GOOGLE_OAUTH_CLIENT_ID:-}"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.recipeai-front.rule=Host(`${APP_DOMAIN}`)"
       - "traefik.http.routers.recipeai-front.entrypoints=websecure"
       - "traefik.http.routers.recipeai-front.tls=true"
       - "traefik.http.routers.recipeai-front.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.recipeai-front.middlewares=recipeai-rate-limit"
       - "traefik.http.routers.recipeai-front-http.rule=Host(`${APP_DOMAIN}`)"
       - "traefik.http.routers.recipeai-front-http.entrypoints=web"
-      - "traefik.http.routers.recipeai-front-http.middlewares=recipeai-redirect-to-https"
+      - "traefik.http.routers.recipeai-front-http.middlewares=recipeai-redirect-to-https,recipeai-rate-limit"
       - "traefik.http.middlewares.recipeai-redirect-to-https.redirectscheme.scheme=https"
       - "traefik.http.middlewares.recipeai-redirect-to-https.redirectscheme.permanent=true"
+      - "traefik.http.middlewares.recipeai-rate-limit.ratelimit.average=${TRAEFIK_RATE_LIMIT_AVERAGE:-15}"
+      - "traefik.http.middlewares.recipeai-rate-limit.ratelimit.burst=${TRAEFIK_RATE_LIMIT_BURST:-30}"
+      - "traefik.http.middlewares.recipeai-rate-limit.ratelimit.period=${TRAEFIK_RATE_LIMIT_PERIOD:-1m}"
       - "traefik.http.services.recipeai-front.loadbalancer.server.port=${FRONTEND_PORT:-8080}"
       - "traefik.docker.network=dokploy-network"
     depends_on:
