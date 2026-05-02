@@ -6,6 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/context";
 import ErrorAlert from "../components/ErrorAlert";
+import { getGoogleClientId } from "../lib/runtimeConfig";
 
 const schema = yup.object({
   email: yup
@@ -115,7 +116,7 @@ const Register = () => {
   useEffect(() => {
     const initGoogle = () => {
       if (window.google?.accounts?.id && googleBtnRef.current) {
-        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
+        const clientId = getGoogleClientId();
         if (!clientId) {
           return;
         }

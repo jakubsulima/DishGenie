@@ -2,7 +2,7 @@
 
 interface ImportMetaEnv {
   readonly VITE_AI_API_KEY: string;
-  readonly VITE_GOOGLE_CLIENT_ID: string;
+  readonly VITE_GOOGLE_CLIENT_ID?: string;
   // more env variables...
 }
 
@@ -37,5 +37,8 @@ interface Window {
     accounts: {
       id: GoogleAccountsId;
     };
+  };
+  __RECIPE_AI_RUNTIME_CONFIG__?: {
+    googleClientId?: string;
   };
 }

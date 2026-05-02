@@ -148,9 +148,9 @@ PAID_PLAN_RECIPE_LIMIT=-1
 # Frontend runtime configuration
 FRONTEND_PORT=80
 
-# Frontend build-time variables are configured in GitHub Actions Variables:
-# VITE_API_URL (default /api/)
-# VITE_GOOGLE_CLIENT_ID
+# Frontend configuration:
+# - VITE_API_URL is build-time and comes from GitHub Actions Variables (default /api/)
+# - GOOGLE_OAUTH_CLIENT_ID is runtime and comes from compose/Dokploy
 ```
 
 ### Quick Start (Dokploy)
