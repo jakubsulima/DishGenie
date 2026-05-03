@@ -7,8 +7,8 @@ services:
       - seccomp:unconfined
       - apparmor:unconfined
     environment:
-      POSTGRES_URL: "jdbc:postgresql://${POSTGRES_HOST:-db}:${POSTGRES_PORT:-5432}/${POSTGRES_DB}"
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://${POSTGRES_HOST:-db}:${POSTGRES_PORT:-5432}/${POSTGRES_DB}"
+      POSTGRES_URL: "jdbc:postgresql://db:5432/${POSTGRES_DB}"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://db:5432/${POSTGRES_DB}"
       SPRING_DATASOURCE_USERNAME: "${POSTGRES_USER}"
       SPRING_DATASOURCE_PASSWORD: "${POSTGRES_PASSWORD}"
       GEMINI_API_KEY: "${GEMINI_API_KEY}"
@@ -21,18 +21,12 @@ services:
       TRUSTED_PROXY_IPS: "${TRUSTED_PROXY_IPS:-}"
       JWT_COOKIE_SECURE: "${JWT_COOKIE_SECURE:-true}"
       JWT_COOKIE_SAME_SITE: "${JWT_COOKIE_SAME_SITE:-Lax}"
-      FREE_PLAN_RECIPE_LIMIT: "${FREE_PLAN_RECIPE_LIMIT:-75}"
-      PAID_PLAN_RECIPE_LIMIT: "${PAID_PLAN_RECIPE_LIMIT:--1}"
     depends_on:
       db:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "timeout 10s bash -c '</dev/tcp/localhost/8080' || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
     networks:
-      - recipe-net
+      - frontend-backend
+      - backend-db
 
   frontend:
     image: "${FRONTEND_IMAGE:-ghcr.io/change-me/recipeai-frontend:latest}"
@@ -49,15 +43,14 @@ services:
       - "traefik.http.routers.recipeai-front.entrypoints=websecure"
       - "traefik.http.routers.recipeai-front.tls=true"
       - "traefik.http.routers.recipeai-front.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.recipeai-front.middlewares=recipeai-rate-limit"
       - "traefik.http.services.recipeai-front.loadbalancer.server.port=${FRONTEND_PORT:-8080}"
       - "traefik.docker.network=dokploy-network"
     depends_on:
       backend:
         condition: service_healthy
     networks:
-      - recipe-net
       - dokploy-network
+      - frontend-backend
 
   db:
     image: postgres:17-alpine
@@ -78,13 +71,15 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - recipe-net
+      - backend-db
 
 volumes:
   postgres_data_final:
 
 networks:
-  recipe-net:
-    driver: bridge
   dokploy-network:
     external: true
+  frontend-backend:
+    driver: bridge
+  backend-db:
+    driver: bridge
