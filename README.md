@@ -122,7 +122,6 @@ Create a `.env` file in the root directory:
 # Image-only deployment (published by GitHub Actions)
 BACKEND_IMAGE=ghcr.io/your-github-namespace/recipeai-backend:latest
 FRONTEND_IMAGE=ghcr.io/your-github-namespace/recipeai-frontend:latest
-DB_IMAGE=ghcr.io/your-github-namespace/recipeai-db:latest
 
 # Database Configuration
 POSTGRES_DB=recipeai
@@ -177,7 +176,8 @@ FRONTEND_PORT=80
 4. **Set environment variables in Dokploy UI**
 
 - Use `.env.example` as source of required keys
-- Set `BACKEND_IMAGE`, `FRONTEND_IMAGE`, `DB_IMAGE` to images published by CI (GHCR)
+- Set `BACKEND_IMAGE` and `FRONTEND_IMAGE` to images published by CI (GHCR)
+- The database uses the official `postgres:17-alpine` image from `docker-compose.yml`
 
 5. **Deploy and validate**
 
@@ -194,7 +194,7 @@ FRONTEND_PORT=80
 2. **Set environment variables in Dokploy UI**
 
 - Use values from `.env.example`
-- Required minimum: `BACKEND_IMAGE`, `FRONTEND_IMAGE`, `DB_IMAGE`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `GEMINI_API_KEY`, `ALLOWED_ORIGINS`, `JWT_SECRET_KEY`
+- Required minimum: `BACKEND_IMAGE`, `FRONTEND_IMAGE`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `GEMINI_API_KEY`, `ALLOWED_ORIGINS`, `JWT_SECRET_KEY`
 - For deterministic deploys, use image tags `sha-<commit>` instead of `latest`
 
 3. **Expose services in Dokploy**
@@ -206,6 +206,8 @@ FRONTEND_PORT=80
 
 - Check logs for `frontend`, `backend`, `db`
 - Verify login/refresh flow and browser CORS
+- If backend logs show `FlywaySqlException` or `SocketTimeoutException: Connect timed out`, the backend cannot reach PostgreSQL. In the bundled compose setup the DB host should normally be `db:5432`; for external databases, update `POSTGRES_HOST` / `POSTGRES_PORT` and confirm network access.
+- The bundled database service uses the official `postgres:17-alpine` image and does not need a separate database image variable.
 
 Detailed checklist: `docs/DOKPLOY_DEPLOYMENT.md`
 

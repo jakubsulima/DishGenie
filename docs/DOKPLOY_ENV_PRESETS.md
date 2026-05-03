@@ -11,7 +11,6 @@ Public domains:
 Set in Dokploy:
 - BACKEND_IMAGE=ghcr.io/your-github-namespace/recipeai-backend:latest
 - FRONTEND_IMAGE=ghcr.io/your-github-namespace/recipeai-frontend:latest
-- DB_IMAGE=ghcr.io/your-github-namespace/recipeai-db:latest
 - POSTGRES_DB=recipeai
 - POSTGRES_USER=recipe_user
 - POSTGRES_PASSWORD=change_me
@@ -44,7 +43,6 @@ Public domains:
 Set in Dokploy:
 - BACKEND_IMAGE=ghcr.io/your-github-namespace/recipeai-backend:latest
 - FRONTEND_IMAGE=ghcr.io/your-github-namespace/recipeai-frontend:latest
-- DB_IMAGE=ghcr.io/your-github-namespace/recipeai-db:latest
 - POSTGRES_DB=recipeai
 - POSTGRES_USER=recipe_user
 - POSTGRES_PASSWORD=change_me
@@ -77,3 +75,4 @@ Dokploy exposure:
 - Frontend build-time variables are configured in GitHub Actions repository variables: `VITE_API_URL`.
 - Google login on the frontend is configured at runtime through `GOOGLE_OAUTH_CLIENT_ID` in compose/Dokploy.
 - For deterministic releases, replace `latest` with SHA tags from the CI workflow.
+- The database service uses the official `postgres:17-alpine` image defined in `docker-compose.yml`.

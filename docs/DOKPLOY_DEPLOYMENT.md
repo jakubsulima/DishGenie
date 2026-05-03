@@ -51,7 +51,6 @@ Copy-ready presets are available in [DOKPLOY_ENV_PRESETS.md](DOKPLOY_ENV_PRESETS
 Minimum required:
 - BACKEND_IMAGE
 - FRONTEND_IMAGE
-- DB_IMAGE
 - APP_DOMAIN
 - POSTGRES_DB
 - POSTGRES_USER
@@ -82,7 +81,8 @@ Frontend Google login is runtime-configured from compose/Dokploy env:
 For immutable deploys, point image variables to SHA tags, for example:
 - `BACKEND_IMAGE=ghcr.io/<namespace>/<repo>-backend:sha-abc1234`
 - `FRONTEND_IMAGE=ghcr.io/<namespace>/<repo>-frontend:sha-abc1234`
-- `DB_IMAGE=ghcr.io/<namespace>/<repo>-db:sha-abc1234`
+
+The database service uses the official `postgres:17-alpine` image from `docker-compose.yml`.
 
 ## 5. First Deployment Checklist
 
@@ -93,9 +93,16 @@ For immutable deploys, point image variables to SHA tags, for example:
 5. Confirm cookies are set with expected attributes.
 6. Confirm DB migrations and startup complete successfully.
 
+If backend logs show `FlywaySqlException`, `PSQLException`, or `SocketTimeoutException: Connect timed out` during startup, the backend cannot reach PostgreSQL. Check these first:
+
+- `POSTGRES_URL` resolves to a host that is reachable from the backend container.
+- For bundled Docker Compose deployments, the DB host should usually be `db` on port `5432`.
+- For external or managed PostgreSQL, update `POSTGRES_HOST` / `POSTGRES_PORT` and make sure firewall, network rules, and SSL requirements allow the connection.
+- Confirm the `db` service is healthy before the backend starts.
+
 Update flow after each release:
 1. Push to `main` and wait for CI image publish.
-2. Update `BACKEND_IMAGE`, `FRONTEND_IMAGE`, `DB_IMAGE` to the new SHA tags in Dokploy.
+2. Update `BACKEND_IMAGE` and `FRONTEND_IMAGE` to the new SHA tags in Dokploy.
 3. Redeploy (Dokploy will pull new images).
 
 ## 6. Scaling Guidance
