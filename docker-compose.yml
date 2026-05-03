@@ -80,10 +80,8 @@ services:
       - dokploy-network
 
   db:
-    image: "${DB_IMAGE:-ghcr.io/change-me/recipeai-db:latest}"
-    pull_policy: always
+    image: postgres:17-alpine
     restart: unless-stopped
-    privileged: true
     security_opt:
       - no-new-privileges:true
     environment:

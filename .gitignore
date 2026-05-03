@@ -56,9 +56,5 @@ docker-compose.dev.yml
 .vscode/
 .idea/
 *.iml
-postgres/Dockerfile
-postgres/Dockerfile
 *.sh
-postgres/init-admin.sh
-postgres/init-users.sh
 .playwright-mcp/

@@ -169,7 +169,6 @@ jobs:
         dockerfile:
           - backendApi/Dockerfile
           - frontend/recipeai/Dockerfile
-          - postgres/Dockerfile
 
     steps:
       - name: Checkout
@@ -226,7 +225,6 @@ jobs:
         image_name:
           - backend
           - frontend
-          - db
 
     steps:
       - name: Checkout
@@ -244,9 +242,6 @@ jobs:
               docker build --pull -f frontend/recipeai/Dockerfile frontend/recipeai \
                 --build-arg VITE_API_URL="${{ vars.VITE_API_URL || '/api/' }}" \
                 -t recipeai-scan:frontend
-              ;;
-            db)
-              docker build --pull -f postgres/Dockerfile postgres -t recipeai-scan:db
               ;;
             *)
               echo "Unsupported image '${{ matrix.image_name }}'"
@@ -308,10 +303,6 @@ jobs:
             dockerfile: ./frontend/recipeai/Dockerfile
             build_args: |
               VITE_API_URL=${{ vars.VITE_API_URL || '/api/' }}
-          - image_name: db
-            context: ./postgres
-            dockerfile: ./postgres/Dockerfile
-            build_args: ""
 
     steps:
       - name: Checkout
