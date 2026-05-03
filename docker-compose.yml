@@ -24,9 +24,15 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.recipeai-backend.rule=Host(`${APP_DOMAIN}`) && PathPrefix(`${TRAEFIK_BACKEND_PATH_PREFIX:-/api}`)"
+      - "traefik.http.routers.recipeai-backend.priority=${TRAEFIK_BACKEND_ROUTER_PRIORITY:-100}"
+      - "traefik.http.services.recipeai-backend.loadbalancer.server.port=${BACKEND_INTERNAL_PORT:-8080}"
     networks:
       - frontend-backend
       - backend-db
+      - dokploy-network
 
   frontend:
     image: "${FRONTEND_IMAGE:-ghcr.io/change-me/recipeai-frontend:latest}"
@@ -40,12 +46,9 @@ services:
       GOOGLE_OAUTH_CLIENT_ID: "${GOOGLE_OAUTH_CLIENT_ID:-}"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.recipeai-front.rule=Host(`${APP_DOMAIN}`)"
-      - "traefik.http.routers.recipeai-front.entrypoints=websecure"
-      - "traefik.http.routers.recipeai-front.tls=true"
-      - "traefik.http.routers.recipeai-front.tls.certresolver=letsencrypt"
-      - "traefik.http.services.recipeai-front.loadbalancer.server.port=${FRONTEND_PORT:-8080}"
-      - "traefik.docker.network=dokploy-network"
+      - "traefik.http.routers.recipeai-frontend.rule=Host(`${APP_DOMAIN}`)"
+      - "traefik.http.routers.recipeai-frontend.priority=${TRAEFIK_FRONTEND_ROUTER_PRIORITY:-50}"
+      - "traefik.http.services.recipeai-frontend.loadbalancer.server.port=${FRONTEND_INTERNAL_PORT:-8080}"
     depends_on:
       - backend
     networks:
