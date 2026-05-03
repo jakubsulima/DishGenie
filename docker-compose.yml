@@ -3,7 +3,6 @@ services:
     image: "${BACKEND_IMAGE:-ghcr.io/change-me/recipeai-backend:latest}"
     pull_policy: always
     restart: unless-stopped
-    init: true
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -48,7 +47,6 @@ services:
     image: "${FRONTEND_IMAGE:-ghcr.io/change-me/recipeai-frontend:latest}"
     pull_policy: always
     restart: unless-stopped
-    init: true
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -85,7 +83,6 @@ services:
     image: "${DB_IMAGE:-ghcr.io/change-me/recipeai-db:latest}"
     pull_policy: always
     restart: unless-stopped
-    init: true
     security_opt:
       - no-new-privileges:true
     environment:
