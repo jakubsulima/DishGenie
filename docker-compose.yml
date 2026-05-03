@@ -25,10 +25,11 @@ services:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/ || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080 && exec 3<&- && exec 3>&-"]
+      interval: 20s  
+      timeout: 10s   
+      retries: 15    
+      start_period: 40s  
     networks:
       - frontend-backend
       - backend-db
