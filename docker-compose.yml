@@ -4,7 +4,8 @@ services:
     pull_policy: always
     restart: unless-stopped
     security_opt:
-      - no-new-privileges:true
+      - seccomp:unconfined
+      - apparmor:unconfined
     environment:
       POSTGRES_URL: "jdbc:postgresql://${POSTGRES_HOST:-db}:${POSTGRES_PORT:-5432}/${POSTGRES_DB}"
       SPRING_DATASOURCE_URL: "jdbc:postgresql://${POSTGRES_HOST:-db}:${POSTGRES_PORT:-5432}/${POSTGRES_DB}"
@@ -61,15 +62,18 @@ services:
   db:
     image: postgres:17-alpine
     restart: unless-stopped
+    security_opt:
+      - seccomp:unconfined
+      - apparmor:unconfined
     environment:
       POSTGRES_DB: "${POSTGRES_DB}"
       POSTGRES_USER: "${POSTGRES_USER}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - postgres_data_new:/var/lib/postgresql/data 
+      - postgres_data_final:/var/lib/postgresql/data 
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"] # ZMIANA: Podwójne $$ dla zmiennych w CMD-SHELL
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -77,7 +81,7 @@ services:
       - recipe-net
 
 volumes:
-  postgres_data_new:
+  postgres_data_final:
 
 networks:
   recipe-net:
