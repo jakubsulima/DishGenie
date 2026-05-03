@@ -24,6 +24,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     networks:
       - frontend-backend
       - backend-db
@@ -33,7 +38,8 @@ services:
     pull_policy: always
     restart: unless-stopped
     security_opt:
-      - no-new-privileges:true
+      - seccomp:unconfined
+      - apparmor:unconfined
     environment:
       PORT: "${FRONTEND_PORT:-8080}"
       GOOGLE_OAUTH_CLIENT_ID: "${GOOGLE_OAUTH_CLIENT_ID:-}"
