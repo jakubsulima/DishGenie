@@ -213,6 +213,16 @@ Detailed checklist: `docs/DOKPLOY_DEPLOYMENT.md`
 
 ### Local Development
 
+#### Docker Dev Stack
+
+Use the dedicated dev compose file, not `docker compose run`:
+
+```bash
+docker compose -f docker-compose.dev.yml up --build
+```
+
+The app will be available through nginx on http://localhost.
+
 #### Backend Development
 
 ```bash

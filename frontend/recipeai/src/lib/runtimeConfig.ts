@@ -12,4 +12,4 @@ const getRuntimeConfig = (): RecipeAiRuntimeConfig => {
 };
 
 export const getGoogleClientId = (): string =>
-  getRuntimeConfig().googleClientId ?? import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
+  getRuntimeConfig().googleClientId?.trim() || import.meta.env.VITE_GOOGLE_CLIENT_ID || "";

@@ -32,6 +32,8 @@ const getErrorMessage = (error: unknown, fallback: string) => {
   return fallback;
 };
 
+const GOOGLE_SIGN_IN_ERROR_MESSAGE = "Google sign-in failed. Please try again.";
+
 const getGsiState = (): GsiState => {
   const globalWindow = window as RecipeAiWindow;
   if (!globalWindow.__recipeAiGsiState) {
@@ -86,7 +88,7 @@ const Login = () => {
         });
         handleAuthSuccess(userData);
       } catch (err: unknown) {
-        setError(getErrorMessage(err, "Google sign-in failed"));
+        setError(GOOGLE_SIGN_IN_ERROR_MESSAGE);
       } finally {
         setIsSubmitting(false);
       }

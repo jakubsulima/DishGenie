@@ -28,6 +28,18 @@ const getErrorMessage = (error: unknown, fallback: string) => {
   return fallback;
 };
 
+const isSensitiveAiErrorMessage = (message: string): boolean => {
+  const normalizedMessage = message.toLowerCase();
+  return (
+    normalizedMessage.includes("api key not valid") ||
+    normalizedMessage.includes("api_key_invalid") ||
+    normalizedMessage.includes("generativelanguage.googleapis.com") ||
+    normalizedMessage.includes("googleapis.com") ||
+    normalizedMessage.includes("error creating recipe") ||
+    normalizedMessage.includes("invalid_argument")
+  );
+};
+
 const getErrorStatus = (error: unknown): number | undefined => {
   if (
     error &&
@@ -43,9 +55,9 @@ const getErrorStatus = (error: unknown): number | undefined => {
 const hasContentTypeError = (error: unknown): boolean => {
   return Boolean(
     error &&
-      typeof error === "object" &&
-      "isContentTypeError" in error &&
-      (error as { isContentTypeError?: unknown }).isContentTypeError,
+    typeof error === "object" &&
+    "isContentTypeError" in error &&
+    (error as { isContentTypeError?: unknown }).isContentTypeError,
   );
 };
 
@@ -372,7 +384,16 @@ export const apiClient = async function (
         );
       }
     } else if (error instanceof Error) {
-      finalError = error as AppError;
+      const cleanedMessage = error.message
+        .replace(/^AI Generation Error:\s*/i, "")
+        .trim();
+      if (cleanedMessage && isSensitiveAiErrorMessage(cleanedMessage)) {
+        finalError = new Error(
+          "AI Generation Error: Recipe generation service is temporarily unavailable. Please try again later.",
+        ) as AppError;
+      } else {
+        finalError = error as AppError;
+      }
     } else {
       finalError = new Error(
         "An unknown AJAX error occurred: " + String(error),

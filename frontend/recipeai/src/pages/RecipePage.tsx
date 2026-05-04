@@ -37,6 +37,8 @@ export interface RecipeData {
 
 const GENERATED_RECIPES_REQUEST_COUNT = 3;
 const RECIPE_GENERATION_TIMEOUT_MS = 45000;
+const GENERATION_FAILED_MESSAGE =
+  "Something went wrong while generating the recipe. Please try again.";
 type ApiRecord = Record<string, unknown>;
 
 const asRecord = (value: unknown): ApiRecord | null => {
@@ -208,6 +210,22 @@ const normalizeGeneratedRecipes = (raw: unknown): RecipeData[] => {
     );
 };
 
+const parseGeneratedRecipeResponse = (response: unknown): RecipeData[] => {
+  try {
+    const jsonString = cleanAiJsonString(response);
+    const parsedData = JSON.parse(jsonString);
+    const generatedRecipes = normalizeGeneratedRecipes(parsedData);
+
+    if (!generatedRecipes.length) {
+      throw new Error();
+    }
+
+    return generatedRecipes;
+  } catch {
+    throw new Error(GENERATION_FAILED_MESSAGE);
+  }
+};
+
 const RecipePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -237,13 +255,7 @@ const RecipePage = () => {
 
   const applyGeneratedRecipeResponse = useCallback(
     (response: unknown, identifier: string) => {
-      const jsonString = cleanAiJsonString(response);
-      const parsedData = JSON.parse(jsonString);
-      const generatedRecipes = normalizeGeneratedRecipes(parsedData);
-
-      if (!generatedRecipes.length) {
-        throw new Error("AI response did not include valid recipes.");
-      }
+      const generatedRecipes = parseGeneratedRecipeResponse(response);
 
       setRecipeOptions(generatedRecipes);
       setSelectedRecipeIndex(0);
@@ -263,11 +275,11 @@ const RecipePage = () => {
       .replace(/^AI Generation Error:\s*/i, "")
       .trim();
     if (!normalizedMessage) {
-      return "Failed to load recipe. Please try again.";
+      return GENERATION_FAILED_MESSAGE;
     }
 
     if (normalizedMessage.startsWith("AJAX Error (502)")) {
-      return "Recipe generation service is temporarily unavailable (502). Please try again in a moment.";
+      return GENERATION_FAILED_MESSAGE;
     }
 
     return normalizedMessage;
