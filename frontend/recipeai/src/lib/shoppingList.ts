@@ -1,5 +1,4 @@
-import axios from "axios";
-import { API_URL } from "./constants";
+import { apiClient, putClient } from "./hooks";
 
 export interface ShoppingListItem {
   id: string;
@@ -30,8 +29,6 @@ const STORAGE_KEY = "recipeai.shoppingList";
 const normalizeName = (value: string) => value.trim().toLowerCase();
 const normalizeUnit = (value: string | null | undefined) =>
   typeof value === "string" && value.trim() ? value.trim().toLowerCase() : null;
-const SHOPPING_LIST_ENDPOINT = `${API_URL}shoppingList`;
-
 export const createShoppingListItemId = (): string => {
   if (
     typeof crypto !== "undefined" &&
@@ -261,25 +258,17 @@ export const addShoppingItems = (
 };
 
 export const fetchShoppingList = async (): Promise<ShoppingListItem[]> => {
-  const response = await axios.get(SHOPPING_LIST_ENDPOINT, {
-    withCredentials: true,
-  });
+  const response = await apiClient("shoppingList");
 
-  return normalizeShoppingListItems(response.data);
+  return normalizeShoppingListItems(response);
 };
 
 export const syncShoppingList = async (
   items: ShoppingListItem[],
 ): Promise<ShoppingListItem[]> => {
-  const response = await axios.put(
-    SHOPPING_LIST_ENDPOINT,
-    {
-      items: normalizeShoppingListItems(items).map(toSyncPayloadItem),
-    },
-    {
-      withCredentials: true,
-    },
-  );
+  const response = await putClient("shoppingList", {
+    items: normalizeShoppingListItems(items).map(toSyncPayloadItem),
+  });
 
-  return normalizeShoppingListItems(response.data);
+  return normalizeShoppingListItems(response);
 };
