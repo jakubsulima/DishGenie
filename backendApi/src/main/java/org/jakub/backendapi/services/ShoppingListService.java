@@ -52,6 +52,7 @@ public class ShoppingListService {
         }
 
         shoppingListItemRepository.deleteByUser(user);
+        shoppingListItemRepository.flush();
 
         List<ShoppingListItem> entities = safeItems.stream()
                 .map(item -> toEntity(item, user))
