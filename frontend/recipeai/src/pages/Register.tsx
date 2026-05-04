@@ -105,7 +105,7 @@ const Register = () => {
           idToken: response.credential,
         });
         handleAuthSuccess(userData);
-      } catch (err: unknown) {
+      } catch {
         setError(GOOGLE_SIGN_UP_ERROR_MESSAGE);
       } finally {
         setIsSubmitting(false);

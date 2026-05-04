@@ -8,6 +8,8 @@ import {
 } from "react";
 import { apiClient } from "../lib/hooks";
 
+/* eslint-disable react-refresh/only-export-components */
+
 interface UserPreferences {
   diet: string;
   diets?: string[];
@@ -52,9 +54,9 @@ const getErrorStatus = (error: unknown): number | undefined => {
 const hasContentTypeError = (error: unknown): boolean => {
   return Boolean(
     error &&
-      typeof error === "object" &&
-      "isContentTypeError" in error &&
-      (error as { isContentTypeError?: unknown }).isContentTypeError,
+    typeof error === "object" &&
+    "isContentTypeError" in error &&
+    (error as { isContentTypeError?: unknown }).isContentTypeError,
   );
 };
 

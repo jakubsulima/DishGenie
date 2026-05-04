@@ -87,7 +87,7 @@ const Login = () => {
           idToken: response.credential,
         });
         handleAuthSuccess(userData);
-      } catch (err: unknown) {
+      } catch {
         setError(GOOGLE_SIGN_IN_ERROR_MESSAGE);
       } finally {
         setIsSubmitting(false);
