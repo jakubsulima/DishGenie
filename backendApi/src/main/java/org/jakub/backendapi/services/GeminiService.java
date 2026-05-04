@@ -40,6 +40,8 @@ import java.util.stream.Collectors;
 public class GeminiService {
 
     private static final Logger log = LoggerFactory.getLogger(GeminiService.class);
+    private static final String GENERIC_GEMINI_ERROR_MESSAGE =
+            "Recipe generation service is temporarily unavailable. Please try again later.";
 
     private static final long MAX_RECEIPT_FILE_SIZE_BYTES = 5L * 1024L * 1024L;
     private static final int MAX_IMAGE_DIMENSION = 6000;
@@ -48,6 +50,8 @@ public class GeminiService {
     private static final int GEMINI_READ_TIMEOUT_MS = 45_000;
     private static final int MIN_RECIPE_COUNT = 1;
     private static final int MAX_RECIPE_COUNT = 5;
+    private static final String INVALID_RECIPE_JSON_MESSAGE =
+            "Gemini returned recipe JSON in an invalid format.";
 
     private static final Set<String> SUPPORTED_UNITS =
             java.util.Arrays.stream(Unit.values()).map(Enum::name).collect(Collectors.toSet());
@@ -80,25 +84,13 @@ public class GeminiService {
     }
 
     public String generateRecipe(String recipePrompt) {
-        if (!StringUtils.hasText(geminiApiKey)) {
-            throw new AppException("Gemini API key is not configured on the server.", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        Map<String, Object> payload = buildTextPromptPayload(recipePrompt);
-        JsonNode responseBody = invokeGemini(payload, "Error creating recipe");
-
-        String textResponse = extractTextFromGeminiResponse(responseBody);
-        if (!StringUtils.hasText(textResponse)) {
-            throw new AppException("Gemini returned an empty recipe response.", HttpStatus.BAD_GATEWAY);
-        }
-
-        return textResponse;
+        return generateValidatedRecipeResponse(recipePrompt, 1);
     }
 
     public String generateRecipes(String recipePrompt, Integer requestedCount) {
         int recipeCount = normalizeRecipeCount(requestedCount);
         if (recipeCount == 1) {
-            return generateRecipe(recipePrompt);
+            return generateValidatedRecipeResponse(recipePrompt, 1);
         }
 
         String batchPrompt = recipePrompt + """
@@ -113,7 +105,23 @@ public class GeminiService {
                 - The recipes array must contain exactly %d items.
                 """.formatted(recipeCount, recipeCount);
 
-        return generateRecipe(batchPrompt);
+        return generateValidatedRecipeResponse(batchPrompt, recipeCount);
+    }
+
+    private String generateValidatedRecipeResponse(String recipePrompt, int expectedRecipeCount) {
+        if (!StringUtils.hasText(geminiApiKey)) {
+            throw new AppException("Gemini API key is not configured on the server.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        Map<String, Object> payload = buildTextPromptPayload(recipePrompt);
+        JsonNode responseBody = invokeGemini(payload, "Error creating recipe");
+
+        String textResponse = extractTextFromGeminiResponse(responseBody);
+        if (!StringUtils.hasText(textResponse)) {
+            throw new AppException("Gemini returned an empty recipe response.", HttpStatus.BAD_GATEWAY);
+        }
+
+        return parseAndValidateGeneratedRecipeResponse(textResponse, expectedRecipeCount);
     }
 
     private int normalizeRecipeCount(Integer requestedCount) {
@@ -172,6 +180,10 @@ public class GeminiService {
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("contents", List.of(content));
+
+        Map<String, Object> generationConfig = new HashMap<>();
+        generationConfig.put("responseMimeType", "application/json");
+        payload.put("generationConfig", generationConfig);
         return payload;
     }
 
@@ -280,15 +292,18 @@ public class GeminiService {
             return new AppException("AI provider quota/rate limit reached. Please try again in a minute.", HttpStatus.TOO_MANY_REQUESTS);
         }
 
-        if (e.getStatusCode().is4xxClientError()) {
-            return new AppException(operationLabel + ": " + extractGeminiErrorMessage(e), HttpStatus.BAD_REQUEST);
-        }
-
-        return new AppException(operationLabel + ": " + extractGeminiErrorMessage(e), HttpStatus.BAD_GATEWAY);
+        log.warn(
+                "Gemini {} failed with status {}: {}",
+                operationLabel,
+                statusCode,
+                extractGeminiErrorMessage(e)
+        );
+        return new AppException(GENERIC_GEMINI_ERROR_MESSAGE, HttpStatus.BAD_GATEWAY);
     }
 
     private AppException mapGeminiTransportException(String operationLabel, RestClientException e) {
-        return new AppException(operationLabel + ": " + e.getMessage(), HttpStatus.BAD_GATEWAY);
+        log.warn("Gemini {} transport failure: {}", operationLabel, e.getMessage());
+        return new AppException(GENERIC_GEMINI_ERROR_MESSAGE, HttpStatus.BAD_GATEWAY);
     }
 
     private String extractGeminiErrorMessage(RestClientResponseException e) {
@@ -388,6 +403,95 @@ public class GeminiService {
             cleaned = cleaned.replace("```json", "").replace("```", "").trim();
         }
         return cleaned;
+    }
+
+    private String parseAndValidateGeneratedRecipeResponse(String payload, int expectedRecipeCount) {
+        JsonNode root;
+        try {
+            root = objectMapper.readTree(cleanJsonPayload(payload));
+        } catch (IOException e) {
+            throw new AppException(INVALID_RECIPE_JSON_MESSAGE, HttpStatus.BAD_GATEWAY);
+        }
+
+        if (expectedRecipeCount == 1) {
+            validateRecipeNode(root, 1);
+        } else {
+            if (!root.isObject()) {
+                throw new AppException(INVALID_RECIPE_JSON_MESSAGE, HttpStatus.BAD_GATEWAY);
+            }
+
+            JsonNode recipesNode = root.path("recipes");
+            if (!recipesNode.isArray() || recipesNode.size() != expectedRecipeCount) {
+                throw new AppException(INVALID_RECIPE_JSON_MESSAGE, HttpStatus.BAD_GATEWAY);
+            }
+
+            for (int index = 0; index < recipesNode.size(); index++) {
+                validateRecipeNode(recipesNode.get(index), index + 1);
+            }
+        }
+
+        try {
+            return objectMapper.writeValueAsString(root);
+        } catch (IOException e) {
+            throw new AppException(INVALID_RECIPE_JSON_MESSAGE, HttpStatus.BAD_GATEWAY);
+        }
+    }
+
+    private void validateRecipeNode(JsonNode recipeNode, int recipeIndex) {
+        if (!recipeNode.isObject()) {
+            throw new AppException(INVALID_RECIPE_JSON_MESSAGE, HttpStatus.BAD_GATEWAY);
+        }
+
+        requireTextField(recipeNode, "name");
+        requireTextField(recipeNode, "description");
+        requireTextField(recipeNode, "timeToPrepare");
+
+        JsonNode ingredientsNode = recipeNode.path("ingredients");
+        if (!ingredientsNode.isArray() || ingredientsNode.isEmpty()) {
+            throw new AppException(INVALID_RECIPE_JSON_MESSAGE, HttpStatus.BAD_GATEWAY);
+        }
+        for (int ingredientIndex = 0; ingredientIndex < ingredientsNode.size(); ingredientIndex++) {
+            JsonNode ingredientNode = ingredientsNode.get(ingredientIndex);
+            if (!ingredientNode.isObject()) {
+                throw new AppException(INVALID_RECIPE_JSON_MESSAGE, HttpStatus.BAD_GATEWAY);
+            }
+            requireTextField(ingredientNode, "name");
+            requireNumericField(ingredientNode, "amount");
+            requireTextField(ingredientNode, "unit");
+        }
+
+        JsonNode instructionsNode = recipeNode.path("instructions");
+        if (!instructionsNode.isArray() || instructionsNode.isEmpty()) {
+            throw new AppException(INVALID_RECIPE_JSON_MESSAGE, HttpStatus.BAD_GATEWAY);
+        }
+        for (JsonNode instructionNode : instructionsNode) {
+            if (!instructionNode.isTextual() || !StringUtils.hasText(instructionNode.asText())) {
+                throw new AppException(INVALID_RECIPE_JSON_MESSAGE, HttpStatus.BAD_GATEWAY);
+            }
+        }
+
+        JsonNode nutritionNode = recipeNode.path("nutrition");
+        if (!nutritionNode.isObject()) {
+            throw new AppException(INVALID_RECIPE_JSON_MESSAGE, HttpStatus.BAD_GATEWAY);
+        }
+        requireNumericField(nutritionNode, "calories");
+        requireNumericField(nutritionNode, "protein");
+        requireNumericField(nutritionNode, "carbs");
+        requireNumericField(nutritionNode, "fats");
+    }
+
+    private void requireTextField(JsonNode node, String fieldName) {
+        JsonNode fieldNode = node.get(fieldName);
+        if (fieldNode == null || !fieldNode.isTextual() || !StringUtils.hasText(fieldNode.asText())) {
+            throw new AppException(INVALID_RECIPE_JSON_MESSAGE, HttpStatus.BAD_GATEWAY);
+        }
+    }
+
+    private void requireNumericField(JsonNode node, String fieldName) {
+        JsonNode fieldNode = node.get(fieldName);
+        if (fieldNode == null || !fieldNode.isNumber()) {
+            throw new AppException(INVALID_RECIPE_JSON_MESSAGE, HttpStatus.BAD_GATEWAY);
+        }
     }
 
     private List<FridgeIngredientDto> parseReceiptItems(String payload) {

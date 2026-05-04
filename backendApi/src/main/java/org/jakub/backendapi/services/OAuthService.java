@@ -13,6 +13,8 @@ import org.jakub.backendapi.entities.UserPreferences;
 import org.jakub.backendapi.exceptions.AppException;
 import org.jakub.backendapi.mappers.UserMapper;
 import org.jakub.backendapi.repositories.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,10 @@ import java.util.List;
 
 @Service
 public class OAuthService {
+
+    private static final Logger log = LoggerFactory.getLogger(OAuthService.class);
+    private static final String GENERIC_GOOGLE_AUTH_FAILURE_MESSAGE =
+            "Google sign-in failed. Please try again.";
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -44,7 +50,8 @@ public class OAuthService {
 
             GoogleIdToken idToken = verifier.verify(idTokenString);
             if (idToken == null) {
-                throw new AppException("Invalid Google ID token", HttpStatus.UNAUTHORIZED);
+                log.warn("Google sign-in failed: invalid ID token received");
+                throw new AppException(GENERIC_GOOGLE_AUTH_FAILURE_MESSAGE, HttpStatus.UNAUTHORIZED);
             }
 
             GoogleIdToken.Payload payload = idToken.getPayload();
@@ -52,14 +59,16 @@ public class OAuthService {
             Boolean emailVerified = payload.getEmailVerified();
 
             if (email == null || !Boolean.TRUE.equals(emailVerified)) {
-                throw new AppException("Google email not verified", HttpStatus.BAD_REQUEST);
+                log.warn("Google sign-in failed: email missing or not verified");
+                throw new AppException(GENERIC_GOOGLE_AUTH_FAILURE_MESSAGE, HttpStatus.BAD_REQUEST);
             }
 
             return findOrCreateOAuthUser(email, AuthMethod.GOOGLE);
         } catch (AppException e) {
             throw e;
         } catch (Exception e) {
-            throw new AppException("Google authentication failed", HttpStatus.UNAUTHORIZED);
+            log.warn("Google sign-in failed while verifying token", e);
+            throw new AppException(GENERIC_GOOGLE_AUTH_FAILURE_MESSAGE, HttpStatus.UNAUTHORIZED);
         }
     }
 

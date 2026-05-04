@@ -9,6 +9,8 @@ import {
 import { apiClient, deleteClient } from "../lib/hooks";
 import { useUser } from "./context";
 
+/* eslint-disable react-refresh/only-export-components */
+
 export interface FridgeIngredient {
   id: number;
   name: string;
