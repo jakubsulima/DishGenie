@@ -60,10 +60,25 @@ public class UserService {
     }
 
     @Transactional
-    public void consumeDailyRecipeRequestQuota(String email) {
+    public void assertCanCreateRecipe(String email) {
         User user = userRepository.findByEmailForUpdate(email)
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
         recipePlanLimitService.assertCanCreateRecipe(user);
+    }
+
+    @Transactional
+    public void incrementDailyRecipeCount(String email) {
+        User user = userRepository.findByEmailForUpdate(email)
+                .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
+                
+        java.time.LocalDate today = java.time.LocalDate.now();
+        if (user.getLastRecipeResetDate() == null || !user.getLastRecipeResetDate().equals(today)) {
+            user.setDailyRecipeCount(1);
+            user.setLastRecipeResetDate(today);
+        } else {
+            user.setDailyRecipeCount(user.getDailyRecipeCount() + 1);
+        }
+        userRepository.save(user);
     }
 
     public UserDto login(CredentialsDto credentialsDto) {
