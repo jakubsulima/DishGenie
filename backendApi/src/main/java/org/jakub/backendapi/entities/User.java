@@ -34,6 +34,12 @@ public class User {
     @Enumerated(EnumType.STRING)
     private SubscriptionPlan subscriptionPlan = SubscriptionPlan.FREE;
 
+    @Column(name = "daily_recipe_count", nullable = false)
+    private int dailyRecipeCount = 0;
+
+    @Column(name = "last_recipe_reset_date")
+    private java.time.LocalDate lastRecipeResetDate;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Recipe> recipes;
 
@@ -126,6 +132,22 @@ public class User {
 
     public void setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
         this.subscriptionPlan = subscriptionPlan;
+    }
+
+    public int getDailyRecipeCount() {
+        return dailyRecipeCount;
+    }
+
+    public void setDailyRecipeCount(int dailyRecipeCount) {
+        this.dailyRecipeCount = dailyRecipeCount;
+    }
+
+    public java.time.LocalDate getLastRecipeResetDate() {
+        return lastRecipeResetDate;
+    }
+
+    public void setLastRecipeResetDate(java.time.LocalDate lastRecipeResetDate) {
+        this.lastRecipeResetDate = lastRecipeResetDate;
     }
 
     @Override

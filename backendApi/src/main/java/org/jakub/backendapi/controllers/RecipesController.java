@@ -140,13 +140,18 @@ public class RecipesController {
         );
 
         if (StringUtils.hasText(userEmail)) {
-            userService.consumeDailyRecipeRequestQuota(userEmail);
+            userService.assertCanCreateRecipe(userEmail);
         }
 
         UserPreferencesDto preferences = resolvePromptPreferences(userEmail);
         recipePrompt = appendPreferencesToPrompt(recipePrompt, preferences);
 
-        return ResponseEntity.ok(geminiService.generateRecipes(recipePrompt, recipeCount));
+        String generatedRecipe = geminiService.generateRecipes(recipePrompt, recipeCount);
+
+        if (StringUtils.hasText(userEmail)) {
+            userService.incrementDailyRecipeCount(userEmail);
+        }
+        return ResponseEntity.ok(generatedRecipe);
     }
 
     private String appendPreferencesToPrompt(String recipePrompt, UserPreferencesDto preferences) {

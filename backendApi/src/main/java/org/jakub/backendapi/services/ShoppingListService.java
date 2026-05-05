@@ -62,7 +62,7 @@ public class ShoppingListService {
         if (entities.isEmpty()) {
             return List.of();
         }
-
+ 
         shoppingListItemRepository.saveAll(entities);
 
         return shoppingListItemRepository.findByUserOrderByCreatedAtAsc(user)
