@@ -17,6 +17,8 @@ const DropDownMenu = ({
   const handleClick = (item: string) => {
     if (item === "Logout") {
       handleLogout();
+    } else if (item === "Home") {
+      navigate("/");
     } else {
       navigate("/" + item);
     }
@@ -30,7 +32,7 @@ const DropDownMenu = ({
           const isLogout = item === "Logout";
           return (
             <DropDownItem
-              to={isLogout ? "#" : "/" + item}
+              to={isLogout ? "#" : item === "Home" ? "/" : "/" + item}
               key={index}
               className={`block w-full py-4 px-6 text-center text-[1.1rem] transition-all duration-200 focus:outline-none focus:bg-white/5 active:scale-[0.98] ${
                 isLogout

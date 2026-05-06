@@ -21,6 +21,7 @@ services:
       TRUSTED_PROXY_IPS: "${TRUSTED_PROXY_IPS:-}"
       JWT_COOKIE_SECURE: "${JWT_COOKIE_SECURE:-true}"
       JWT_COOKIE_SAME_SITE: "${JWT_COOKIE_SAME_SITE:-Lax}"
+      FREE_PLAN_RECIPE_LIMIT: "${FREE_PLAN_RECIPE_LIMIT:-75}"
     depends_on:
       db:
         condition: service_healthy

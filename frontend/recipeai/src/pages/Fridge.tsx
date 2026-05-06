@@ -267,13 +267,15 @@ export const Fridge = () => {
               </button>
               <button
                 onClick={() => setIsReceiptScannerOpen(true)}
-                className="mobile-soft-press flex min-h-16 flex-col items-center justify-center rounded-xl border border-accent/35 bg-background px-3 py-2 text-center transition-colors hover:bg-accent/20"
+                disabled={true}
+                title="Coming soon"
+                className="mobile-soft-press flex min-h-16 flex-col items-center justify-center rounded-xl border border-accent/20 bg-background/50 px-3 py-2 text-center opacity-60 cursor-not-allowed"
               >
                 <span className="text-sm font-semibold text-text">
                   Scan Receipt
                 </span>
                 <span className="mt-0.5 text-[11px] text-text/60">
-                  Import multiple items
+                  Coming soon
                 </span>
               </button>
               <button
