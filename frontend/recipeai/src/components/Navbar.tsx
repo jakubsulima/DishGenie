@@ -28,7 +28,7 @@ const Navbar = () => {
   };
 
   const getNavItems = () => {
-    const baseItems = ["Recipes"];
+    const baseItems = ["Home", "Recipes"];
 
     if (loading) {
       return [...baseItems, "Login"];
@@ -79,7 +79,7 @@ const Navbar = () => {
                   {navItems.map((item, index) => (
                     <li key={index} className="list-none">
                       <Link
-                        to={"/" + item}
+                        to={item === "Home" ? "/" : "/" + item}
                         className="px-4 py-2 rounded-full text-background hover:text-accent inline-block border-none"
                       >
                         {item}
