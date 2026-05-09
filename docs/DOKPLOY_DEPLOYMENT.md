@@ -78,6 +78,10 @@ Frontend build-time variables are configured in GitHub Actions repository variab
 Frontend Google login is runtime-configured from compose/Dokploy env:
 - `GOOGLE_OAUTH_CLIENT_ID`
 
+Frontend crawl files are runtime-generated from compose/Dokploy env:
+- `PUBLIC_SITE_URL` if you want to override the canonical site origin
+- otherwise the frontend falls back to `https://$APP_DOMAIN`
+
 For immutable deploys, point image variables to SHA tags, for example:
 - `BACKEND_IMAGE=ghcr.io/<namespace>/<repo>-backend:sha-abc1234`
 - `FRONTEND_IMAGE=ghcr.io/<namespace>/<repo>-frontend:sha-abc1234`

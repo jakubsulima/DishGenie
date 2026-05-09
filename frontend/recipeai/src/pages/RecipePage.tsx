@@ -12,6 +12,7 @@ import FoodLoadingScreen from "../components/FoodLoadingScreen";
 import { addShoppingItems } from "../lib/shoppingList";
 import ErrorAlert from "../components/ErrorAlert";
 import { getMissingIngredients } from "../lib/ingredientMatching";
+import { applySeo } from "../lib/seo";
 
 export interface RecipeIngredient {
   name: string;
@@ -422,6 +423,29 @@ const RecipePage = () => {
       setError("Recipe data is incomplete and cannot be saved.");
       return;
     }
+
+    useEffect(() => {
+      const isPublicRecipeDetail = Boolean(recipeId);
+      const seoTitle = isLoading
+        ? "Loading recipe | Recipe AI"
+        : recipeData?.name
+          ? `${recipeData.name} | Recipe AI`
+          : isPublicRecipeDetail
+            ? "Recipe details | Recipe AI"
+            : "Recipe generator | Recipe AI";
+      const seoDescription = recipeData?.description?.trim()
+        ? recipeData.description.trim()
+        : isPublicRecipeDetail
+          ? "Open a public recipe on Recipe AI to view ingredients, steps, and cooking time."
+          : "Generate a recipe from your ingredients, then save it or try a different variation.";
+
+      applySeo({
+        title: seoTitle,
+        description: seoDescription,
+        canonicalPath: location.pathname,
+        noindex: !isPublicRecipeDetail,
+      });
+    }, [isLoading, location.pathname, recipeData, recipeId]);
     try {
       setSaveStatus("saving");
       setError("");

@@ -1,2 +1,9 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /login
+Disallow: /register
+Disallow: /My%20Profile
+Disallow: /My%20Preferences
+Disallow: /ShoppingList
+Disallow: /Fridge
