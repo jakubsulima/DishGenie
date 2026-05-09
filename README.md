@@ -150,6 +150,7 @@ FRONTEND_PORT=80
 # Frontend configuration:
 # - VITE_API_URL is build-time and comes from GitHub Actions Variables (default /api/)
 # - GOOGLE_OAUTH_CLIENT_ID is runtime and comes from compose/Dokploy
+# - PUBLIC_SITE_URL is optional runtime input for canonical SEO files; otherwise the frontend falls back to https://$APP_DOMAIN
 ```
 
 ### Quick Start (Dokploy)

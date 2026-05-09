@@ -68,11 +68,11 @@ const HomePage = () => {
             style={{ animationDelay: "80ms" }}
           >
             <h1 className="flex-col p-3 text-text">
-              Welcome to AI Kitchen! &#127869; &#129302;
+              Recipe AI turns ingredients into recipes &#127869; &#129302;
             </h1>
             <p className="mb-5 text-sm text-text/70 md:text-base">
-              Turn your ingredients and cravings into quick, tailored meal
-              ideas.
+              Generate meal ideas from what you already have, browse public
+              recipes, and keep your cooking plan organized in one place.
             </p>
             <article className="relative w-full">
               <input

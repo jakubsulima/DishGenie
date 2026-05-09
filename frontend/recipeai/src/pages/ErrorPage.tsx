@@ -1,4 +1,10 @@
-import { isRouteErrorResponse, useRouteError } from "react-router-dom";
+import { useEffect } from "react";
+import {
+  isRouteErrorResponse,
+  useLocation,
+  useRouteError,
+} from "react-router-dom";
+import { applySeo } from "../lib/seo";
 
 interface ErrorPageProps {
   title?: string;
@@ -10,6 +16,7 @@ const ErrorPage = ({
   subtitle = "An unexpected error occurred. Please try again.",
 }: ErrorPageProps) => {
   const routeError = useRouteError();
+  const location = useLocation();
 
   const isNotFound =
     isRouteErrorResponse(routeError) && routeError.status === 404;
@@ -18,6 +25,15 @@ const ErrorPage = ({
   const finalSubtitle = isNotFound
     ? "The page you requested does not exist."
     : subtitle;
+
+  useEffect(() => {
+    applySeo({
+      title: finalTitle,
+      description: finalSubtitle,
+      canonicalPath: location.pathname,
+      noindex: true,
+    });
+  }, [finalSubtitle, finalTitle, location.pathname]);
 
   return (
     <div className="min-h-screen bg-background px-4 py-16">
