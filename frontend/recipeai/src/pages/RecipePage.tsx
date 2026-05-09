@@ -287,6 +287,29 @@ const RecipePage = () => {
   };
 
   useEffect(() => {
+    const isPublicRecipeDetail = Boolean(recipeId);
+    const seoTitle = isLoading
+      ? "Loading recipe | Recipe AI"
+      : recipeData?.name
+        ? `${recipeData.name} | Recipe AI`
+        : isPublicRecipeDetail
+          ? "Recipe details | Recipe AI"
+          : "Recipe generator | Recipe AI";
+    const seoDescription = recipeData?.description?.trim()
+      ? recipeData.description.trim()
+      : isPublicRecipeDetail
+        ? "Open a public recipe on Recipe AI to view ingredients, steps, and cooking time."
+        : "Generate a recipe from your ingredients, then save it or try a different variation.";
+
+    applySeo({
+      title: seoTitle,
+      description: seoDescription,
+      canonicalPath: location.pathname,
+      noindex: !isPublicRecipeDetail,
+    });
+  }, [isLoading, location.pathname, recipeData, recipeId]);
+
+  useEffect(() => {
     const loadRecipe = async () => {
       if (existingRecipe) {
         setRecipeOptions([]);
@@ -304,10 +327,14 @@ const RecipePage = () => {
             setIsLoading(true);
             setError("");
             const response = await apiClient(`getRecipe/${recipeId}`, false);
+            const normalizedRecipe = normalizeGeneratedRecipes(response)[0];
+            if (!normalizedRecipe) {
+              throw new Error("Failed to load recipe.");
+            }
             setRecipeOptions([]);
             setSelectedRecipeIndex(0);
             setSaveStatus("idle");
-            setRecipeData(response);
+            setRecipeData(normalizedRecipe);
             currentRecipeIdentifierRef.current = recipeId;
           } catch (err: unknown) {
             console.error("Error fetching recipe:", err);
@@ -423,29 +450,6 @@ const RecipePage = () => {
       setError("Recipe data is incomplete and cannot be saved.");
       return;
     }
-
-    useEffect(() => {
-      const isPublicRecipeDetail = Boolean(recipeId);
-      const seoTitle = isLoading
-        ? "Loading recipe | Recipe AI"
-        : recipeData?.name
-          ? `${recipeData.name} | Recipe AI`
-          : isPublicRecipeDetail
-            ? "Recipe details | Recipe AI"
-            : "Recipe generator | Recipe AI";
-      const seoDescription = recipeData?.description?.trim()
-        ? recipeData.description.trim()
-        : isPublicRecipeDetail
-          ? "Open a public recipe on Recipe AI to view ingredients, steps, and cooking time."
-          : "Generate a recipe from your ingredients, then save it or try a different variation.";
-
-      applySeo({
-        title: seoTitle,
-        description: seoDescription,
-        canonicalPath: location.pathname,
-        noindex: !isPublicRecipeDetail,
-      });
-    }, [isLoading, location.pathname, recipeData, recipeId]);
     try {
       setSaveStatus("saving");
       setError("");
