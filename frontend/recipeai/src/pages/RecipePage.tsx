@@ -279,7 +279,10 @@ const RecipePage = () => {
       return GENERATION_FAILED_MESSAGE;
     }
 
-    if (normalizedMessage.startsWith("AJAX Error (502)")) {
+    if (
+      normalizedMessage.startsWith("Server error (502)") ||
+      normalizedMessage.includes("502")
+    ) {
       return GENERATION_FAILED_MESSAGE;
     }
 

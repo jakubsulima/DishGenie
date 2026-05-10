@@ -3,9 +3,6 @@ services:
     image: "${BACKEND_IMAGE:-ghcr.io/change-me/recipeai-backend:latest}"
     pull_policy: always
     restart: unless-stopped
-    security_opt:
-      - seccomp:unconfined
-      - apparmor:unconfined
     environment:
       POSTGRES_URL: "jdbc:postgresql://db:5432/${POSTGRES_DB}"
       SPRING_DATASOURCE_URL: "jdbc:postgresql://db:5432/${POSTGRES_DB}"
@@ -27,7 +24,9 @@ services:
         condition: service_healthy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.recipeai-backend.rule=Host(`${APP_DOMAIN}`) && PathPrefix(`${TRAEFIK_BACKEND_PATH_PREFIX:-/api}`)"
+      - "traefik.http.routers.recipeai-backend.rule=(Host(`${APP_DOMAIN}`) || Host(`www.${APP_DOMAIN}`)) && PathPrefix(`${TRAEFIK_BACKEND_PATH_PREFIX:-/api}`)"
+      - "traefik.http.routers.recipeai-backend.entrypoints=websecure"
+      - "traefik.http.routers.recipeai-backend.tls=true"
       - "traefik.http.routers.recipeai-backend.priority=${TRAEFIK_BACKEND_ROUTER_PRIORITY:-100}"
       - "traefik.http.services.recipeai-backend.loadbalancer.server.port=${BACKEND_INTERNAL_PORT:-8080}"
     networks:
@@ -39,9 +38,6 @@ services:
     image: "${FRONTEND_IMAGE:-ghcr.io/change-me/recipeai-frontend:latest}"
     pull_policy: always
     restart: unless-stopped
-    security_opt:
-      - seccomp:unconfined
-      - apparmor:unconfined
     environment:
       PORT: "${FRONTEND_PORT:-8080}"
       GOOGLE_OAUTH_CLIENT_ID: "${GOOGLE_OAUTH_CLIENT_ID:-}"
@@ -49,7 +45,9 @@ services:
       PUBLIC_SITE_URL: "${PUBLIC_SITE_URL:-}"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.recipeai-frontend.rule=Host(`${APP_DOMAIN}`)"
+      - "traefik.http.routers.recipeai-frontend.rule=Host(`${APP_DOMAIN}`) || Host(`www.${APP_DOMAIN}`)"
+      - "traefik.http.routers.recipeai-frontend.entrypoints=websecure"
+      - "traefik.http.routers.recipeai-frontend.tls=true"
       - "traefik.http.routers.recipeai-frontend.priority=${TRAEFIK_FRONTEND_ROUTER_PRIORITY:-50}"
       - "traefik.http.services.recipeai-frontend.loadbalancer.server.port=${FRONTEND_INTERNAL_PORT:-8080}"
     depends_on:
@@ -61,9 +59,6 @@ services:
   db:
     image: postgres:17-alpine
     restart: unless-stopped
-    security_opt:
-      - seccomp:unconfined
-      - apparmor:unconfined
     environment:
       POSTGRES_DB: "${POSTGRES_DB}"
       POSTGRES_USER: "${POSTGRES_USER}"
@@ -78,7 +73,7 @@ services:
       retries: 5
     networks:
       - backend-db
-
+  
 volumes:
   postgres_data_final:
 

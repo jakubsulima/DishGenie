@@ -13,15 +13,20 @@ import org.jakub.backendapi.dto.UserDto;
 import org.jakub.backendapi.exceptions.AppException;
 import org.jakub.backendapi.services.OAuthService;
 import org.jakub.backendapi.services.UserService;
+import org.jakub.backendapi.services.RateLimitService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 public class AuthController {
@@ -29,16 +34,44 @@ public class AuthController {
     private final UserService userService;
     private final UserAuthProvider userAuthProvider;
     private final OAuthService oAuthService;
+    private final RateLimitService rateLimitService;
 
-    public AuthController(UserService userService, UserAuthProvider userAuthProvider, OAuthService oAuthService) {
+    @Value("${app.security.trusted-proxies:127.0.0.1,0:0:0:0:0:0:0:1}")
+    private String trustedProxyIps;
+
+    public AuthController(UserService userService, UserAuthProvider userAuthProvider, OAuthService oAuthService, RateLimitService rateLimitService) {
         this.userService = userService;
         this.userAuthProvider = userAuthProvider;
         this.oAuthService = oAuthService;
+        this.rateLimitService = rateLimitService;
+    }
+
+    private String resolveClientIp(HttpServletRequest request) {
+        String forwardedFor = request.getHeader("X-Forwarded-For");
+        if (StringUtils.hasText(forwardedFor) && isFromTrustedProxy(request.getRemoteAddr())) {
+            return forwardedFor.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
+    }
+
+    private boolean isFromTrustedProxy(String remoteAddr) {
+        Set<String> trusted = Arrays.stream(trustedProxyIps.split(","))
+                .map(String::trim)
+                .collect(java.util.stream.Collectors.toSet());
+        return trusted.contains(remoteAddr);
     }
 
     // Login endpoint: generates an access token and refresh token
     @PostMapping("/login")
-    public ResponseEntity<UserDto> login(@Valid @RequestBody CredentialsDto credentialsDto, HttpServletResponse response) {
+    public ResponseEntity<UserDto> login(@Valid @RequestBody CredentialsDto credentialsDto, HttpServletRequest request, HttpServletResponse response) {
+        String clientIp = resolveClientIp(request);
+        rateLimitService.assertAllowed(
+            "login_" + clientIp,
+            10, // Max 10 attempts
+            15 * 60 * 1000L, // per 15 minutes
+            "Przekroczono limit prób logowania. Spróbuj ponownie później."
+        );
+
         UserDto user = userService.login(credentialsDto);
 
         CreateToken(response, user.getEmail()); // Pass email directly
@@ -48,7 +81,15 @@ public class AuthController {
 
     // Register endpoint: generates an access token and refresh token
     @PostMapping("/register")
-    public ResponseEntity<UserDto> register(@Valid @RequestBody SignUpDto signUpDto, HttpServletResponse response) {
+    public ResponseEntity<UserDto> register(@Valid @RequestBody SignUpDto signUpDto, HttpServletRequest request, HttpServletResponse response) {
+        String clientIp = resolveClientIp(request);
+        rateLimitService.assertAllowed(
+            "register_" + clientIp,
+            5, // Max 5 attempts
+            60 * 60 * 1000L, // per 1 hour
+            "Przekroczono limit prób rejestracji. Spróbuj ponownie później."
+        );
+
         UserDto user = userService.register(signUpDto);
         CreateToken(response, user.getEmail()); // Pass email directly
 
@@ -66,7 +107,15 @@ public class AuthController {
     }
 
     @PostMapping("/oauth/google")
-    public ResponseEntity<UserDto> oauthGoogle(@Valid @RequestBody OAuthLoginDto oAuthLoginDto, HttpServletResponse response) {
+    public ResponseEntity<UserDto> oauthGoogle(@Valid @RequestBody OAuthLoginDto oAuthLoginDto, HttpServletRequest request, HttpServletResponse response) {
+        String clientIp = resolveClientIp(request);
+        rateLimitService.assertAllowed(
+            "login_" + clientIp,
+            10, // Max 10 attempts
+            15 * 60 * 1000L, // per 15 minutes
+            "Przekroczono limit prób logowania. Spróbuj ponownie później."
+        );
+
         UserDto user = oAuthService.authenticateGoogle(oAuthLoginDto.getIdToken());
         CreateToken(response, user.getEmail());
         return ResponseEntity.ok(user);

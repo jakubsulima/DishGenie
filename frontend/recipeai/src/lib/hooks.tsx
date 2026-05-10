@@ -355,7 +355,7 @@ export const apiClient = async function (
     if (axios.isAxiosError(error)) {
       if (error.response) {
         const responseStatus = error.response.status;
-        let message = `Server error with status ${responseStatus}`;
+        let message = `Server error (status: ${responseStatus}`;
         const responseData = error.response.data;
 
         if (typeof responseData === "string" && responseData.trim() !== "") {
@@ -371,17 +371,15 @@ export const apiClient = async function (
           }
         }
 
-        finalError = new Error(`AJAX Error (${responseStatus}): ${message}`);
+        finalError = new Error(message || `Server error (${responseStatus})`);
         finalError.status = responseStatus;
       } else if (error.request) {
         finalError = new Error(
-          "AJAX Error: No response from server. Check network or server availability.",
+          "No response from server. Check network or server availability.",
         );
         finalError.isNetworkError = true;
       } else {
-        finalError = new Error(
-          `AJAX Error: Request setup failed - ${error.message}`,
-        );
+        finalError = new Error(`Request error: ${error.message}`);
       }
     } else if (error instanceof Error) {
       const cleanedMessage = error.message
@@ -424,10 +422,8 @@ export const deleteClient = async function (url: string) {
         const message =
           typeof nestedMessage === "string"
             ? nestedMessage
-            : `Server error with status ${status}`;
-        const finalError = new Error(
-          `AJAX Error (${status}): ${message}`,
-        ) as AppError;
+            : `Server error (status: ${status}`;
+        const finalError = new Error(message) as AppError;
         finalError.status = status;
         throw finalError;
       }
@@ -459,10 +455,8 @@ export const putClient = async function (url: string, body: unknown = null) {
         const message =
           typeof nestedMessage === "string"
             ? nestedMessage
-            : `Server error with status ${status}`;
-        const finalError = new Error(
-          `AJAX Error (${status}): ${message}`,
-        ) as AppError;
+            : `Server error (status: ${status}`;
+        const finalError = new Error(message) as AppError;
         finalError.status = status;
         throw finalError;
       }
