@@ -6,10 +6,10 @@ export interface SeoConfig {
 	structuredData?: Record<string, unknown>;
 }
 
-const SITE_NAME = "Recipe AI";
-const DEFAULT_TITLE = "Recipe AI";
+const SITE_NAME = "Dish Genie";
+const DEFAULT_TITLE = "Dish Genie";
 const DEFAULT_DESCRIPTION =
-	"Recipe AI helps you generate recipes from the ingredients you already have, browse public recipes, and plan meals faster.";
+	"Dish Genie helps you generate recipes from the ingredients you already have, browse public recipes, and plan meals faster.";
 
 const getOrigin = () => window.location.origin.replace(/\/$/, "");
 
@@ -135,9 +135,9 @@ export const getSeoConfig = (pathname: string): SeoConfig => {
 
 	if (decodedPath === "/") {
 		return {
-			title: "Recipe AI | Smart recipe generation from ingredients you already have",
+			title: "Dish Genie | Smart recipe generation from ingredients you already have",
 			description:
-				"Recipe AI generates meal ideas from ingredients you already have, helps you browse public recipes, and keeps your cooking plan organized.",
+				"Dish Genie generates meal ideas from ingredients you already have, helps you browse public recipes, and keeps your cooking plan organized.",
 			canonicalPath: "/",
 			structuredData: {
 				"@context": "https://schema.org",
@@ -145,25 +145,25 @@ export const getSeoConfig = (pathname: string): SeoConfig => {
 				name: SITE_NAME,
 				url: toAbsoluteUrl("/"),
 				description:
-					"Recipe AI generates meal ideas from ingredients you already have, helps you browse public recipes, and keeps your cooking plan organized.",
+					"Dish Genie generates meal ideas from ingredients you already have, helps you browse public recipes, and keeps your cooking plan organized.",
 			},
 		};
 	}
 
 	if (decodedPath === "/Recipes") {
 		return {
-			title: "Browse public recipes | Recipe AI",
+			title: "Browse public recipes | Dish Genie",
 			description:
-				"Discover the latest public recipes on Recipe AI and open any recipe for ingredients, steps, and cooking time.",
+				"Discover the latest public recipes on Dish Genie and open any recipe for ingredients, steps, and cooking time.",
 			canonicalPath: "/Recipes",
 		};
 	}
 
 	if (decodedPath.startsWith("/Recipe/") && decodedPath !== "/Recipe") {
 		return {
-			title: "Recipe details | Recipe AI",
+			title: "Recipe details | Dish Genie",
 			description:
-				"Open a public recipe on Recipe AI to view its ingredients, steps, and cooking time.",
+				"Open a public recipe on Dish Genie to view its ingredients, steps, and cooking time.",
 			canonicalPath: decodedPath,
 		};
 	}
@@ -173,18 +173,18 @@ export const getSeoConfig = (pathname: string): SeoConfig => {
 	) {
 		return {
 			title: decodedPath === "/login"
-				? "Log in | Recipe AI"
+				? "Log in | Dish Genie"
 				: decodedPath === "/register"
-					? "Create account | Recipe AI"
+					? "Create account | Dish Genie"
 					: decodedPath === "/Recipe"
-						? "Recipe generator | Recipe AI"
+						? "Recipe generator | Dish Genie"
 						: decodedPath === "/admin"
-							? "Admin | Recipe AI"
+							? "Admin | Dish Genie"
 							: decodedPath === "/ShoppingList"
-								? "Shopping list | Recipe AI"
+								? "Shopping list | Dish Genie"
 								: decodedPath === "/My Profile"
-									? "My profile | Recipe AI"
-									: "My preferences | Recipe AI",
+									? "My profile | Dish Genie"
+									: "My preferences | Dish Genie",
 			description: DEFAULT_DESCRIPTION,
 			canonicalPath: decodedPath,
 			noindex: true,
@@ -192,7 +192,7 @@ export const getSeoConfig = (pathname: string): SeoConfig => {
 	}
 
 	return {
-		title: "Recipe AI",
+		title: "Dish Genie",
 		description: DEFAULT_DESCRIPTION,
 		canonicalPath: decodedPath,
 		noindex: true,

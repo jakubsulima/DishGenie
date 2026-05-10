@@ -292,16 +292,16 @@ const RecipePage = () => {
   useEffect(() => {
     const isPublicRecipeDetail = Boolean(recipeId);
     const seoTitle = isLoading
-      ? "Loading recipe | Recipe AI"
+      ? "Loading recipe | Dish Genie"
       : recipeData?.name
-        ? `${recipeData.name} | Recipe AI`
+        ? `${recipeData.name} | Dish Genie`
         : isPublicRecipeDetail
-          ? "Recipe details | Recipe AI"
-          : "Recipe generator | Recipe AI";
+          ? "Recipe details | Dish Genie"
+          : "Recipe generator | Dish Genie";
     const seoDescription = recipeData?.description?.trim()
       ? recipeData.description.trim()
       : isPublicRecipeDetail
-        ? "Open a public recipe on Recipe AI to view ingredients, steps, and cooking time."
+        ? "Open a public recipe on Dish Genie to view ingredients, steps, and cooking time."
         : "Generate a recipe from your ingredients, then save it or try a different variation.";
 
     applySeo({

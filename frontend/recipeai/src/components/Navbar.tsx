@@ -56,7 +56,7 @@ const Navbar = () => {
           {/* --- Left Side: Logo --- */}
           <li className="list-none text-lg font-bold transition-colors hover:text-accent">
             <Link to="/" onClick={handleLogoClick}>
-              Recipe.ai
+              DishGenie
             </Link>
           </li>
 
