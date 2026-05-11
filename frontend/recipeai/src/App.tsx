@@ -23,17 +23,10 @@ import { AuthProvider } from "./context/context"; // Add import for AuthProvider
 import { FridgeProvider } from "./context/fridgeContext.tsx"; // Add import for FridgeProvider
 import { GuestRoute, ProtectedRoute } from "./components/RouteGuards";
 import ErrorPage from "./pages/ErrorPage";
+import { RouteShell } from "./components/RouteShell";
 
 const withSuspense = (element: ReactElement) => (
-  <Suspense
-    fallback={
-      <div className="flex min-h-[40vh] items-center justify-center text-text/70">
-        Loading...
-      </div>
-    }
-  >
-    {element}
-  </Suspense>
+  <Suspense fallback={<RouteShell />}>{element}</Suspense>
 );
 
 function App() {

@@ -7,3 +7,4 @@ Disallow: /My%20Profile
 Disallow: /My%20Preferences
 Disallow: /ShoppingList
 Disallow: /Fridge
+Sitemap: https://dishgenie.app/sitemap.xml

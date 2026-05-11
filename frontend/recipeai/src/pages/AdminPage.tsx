@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState, useContext } from "react";
 import { AuthContext } from "../context/context";
 import { apiClient, deleteClient, putClient } from "../lib/hooks";
 import AdminRecipesPanel from "../components/AdminRecipesPanel";
-import FoodLoadingScreen from "../components/FoodLoadingScreen";
+import { AdminDashboardSkeleton } from "../components/Skeleton";
 import ErrorAlert from "../components/ErrorAlert";
 import PaginationControls from "../components/PaginationControls";
 
@@ -111,17 +111,10 @@ const AdminPage: React.FC = () => {
     }
   };
 
-  if (loading)
-    return (
-      <FoodLoadingScreen
-        title="Loading users..."
-        subtitle="Preparing admin dashboard"
-      />
-    );
-  if (authContext?.loading)
-    return (
-      <FoodLoadingScreen title="Loading..." subtitle="Checking admin access" />
-    );
+  if (authContext?.loading || loading) {
+    return <AdminDashboardSkeleton rows={PAGE_SIZE} columns={5} />;
+  }
+
   if (!authContext || authContext.user?.role !== "ADMIN") {
     return (
       <div className="container mx-auto p-4 bg-background min-h-screen text-accent">
@@ -143,7 +136,7 @@ const AdminPage: React.FC = () => {
         <h2 className="text-2xl font-semibold mb-4 text-text">
           User Management
         </h2>
-        {users.length === 0 && !loading && !error ? (
+        {users.length === 0 && !error ? (
           <p className="text-text/70">No users found.</p>
         ) : (
           <div className="overflow-x-auto">

@@ -12,10 +12,10 @@ const Layout = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex flex-col pt-16 bg-background min-h-screen relative overflow-hidden">
+    <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-background pt-16">
       <ScrollRestoration />
       <Navbar />
-      <main key={location.pathname} className="flex-1 animate-fadeIn">
+      <main key={location.pathname} className="flex-1">
         <Outlet />
       </main>
       <Footer />

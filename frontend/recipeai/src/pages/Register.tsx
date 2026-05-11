@@ -203,7 +203,7 @@ const Register = () => {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-text">Create account</h1>
           <p className="text-text/50 mt-2">
-            Get started with Recipe.ai for free
+            Get started with Dish Genie for free
           </p>
         </div>
 

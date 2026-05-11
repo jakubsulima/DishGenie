@@ -184,7 +184,7 @@ const Login = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-text">Welcome back</h1>
-          <p className="text-text/50 mt-2">Sign in to your Recipe.ai account</p>
+          <p className="text-text/50 mt-2">Sign in to your Dish Genie account</p>
         </div>
 
         {/* Card */}

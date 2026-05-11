@@ -4,7 +4,7 @@ import { apiClient } from "../lib/hooks";
 import { useUser } from "../context/context";
 import RecipeContainer from "../components/RecipeContainer";
 import PaginationControls from "../components/PaginationControls";
-import FoodLoadingScreen from "../components/FoodLoadingScreen";
+import { RecipesPageSkeleton } from "../components/Skeleton";
 import ErrorAlert from "../components/ErrorAlert";
 import { Link } from "react-router-dom";
 
@@ -140,18 +140,18 @@ const Recipes = () => {
     searchRecipes,
   ]);
 
-  if (isLoading || userLoading) {
+  if (userLoading || isLoading) {
     return (
-      <FoodLoadingScreen
-        title="Loading recipes..."
-        subtitle="Warming up the cookbook"
+      <RecipesPageSkeleton
+        showSearch={Boolean(user)}
+        showGuestBanner={!userLoading && !user}
       />
     );
   }
 
   return (
     <>
-      <section className="mobile-page-enter flex flex-col max-w-4xl mx-auto w-full bg-background h-screen p-4 md:p-6">
+      <section className="mobile-page-enter flex flex-col max-w-4xl mx-auto w-full bg-background min-h-screen p-4 md:p-6">
         <article className="flex-1">
           {/* Header with decorative elements */}
           <div className="ambient-gradient-card mb-6 rounded-3xl border border-accent/35 bg-secondary p-6 text-center md:mb-8 sm:p-8">
@@ -285,7 +285,6 @@ const Recipes = () => {
               ))}
             </div>
           ) : (
-            !isLoading &&
             !error && (
               <div className="text-center text-text/50 py-12 md:py-16">
                 <svg

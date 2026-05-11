@@ -1,6 +1,6 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { ReactNode } from "react";
-import FoodLoadingScreen from "./FoodLoadingScreen";
+import { renderRouteShell } from "../lib/routeShell";
 import { useUser } from "../context/context";
 
 interface RouteGuardProps {
@@ -19,12 +19,10 @@ export const ProtectedRoute = ({
   const location = useLocation();
 
   if (loading) {
-    return (
-      <FoodLoadingScreen
-        title="Checking session..."
-        subtitle="Please wait while we verify your login"
-      />
-    );
+    return renderRouteShell({
+      pathname: location.pathname,
+      routeState: location.state as Record<string, unknown> | null,
+    });
   }
 
   if (!user) {
@@ -40,14 +38,13 @@ export const ProtectedRoute = ({
 
 export const GuestRoute = ({ children }: RouteGuardProps) => {
   const { user, loading } = useUser();
+  const location = useLocation();
 
   if (loading) {
-    return (
-      <FoodLoadingScreen
-        title="Preparing sign in..."
-        subtitle="Checking your current session"
-      />
-    );
+    return renderRouteShell({
+      pathname: location.pathname,
+      routeState: location.state as Record<string, unknown> | null,
+    });
   }
 
   if (user) {

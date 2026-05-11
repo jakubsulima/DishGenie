@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<url>
-		<loc>http://localhost:5173/</loc>
+		<loc>https://dishgenie.app/</loc>
 	</url>
 	<url>
-		<loc>http://localhost:5173/Recipes</loc>
+		<loc>https://dishgenie.app/Recipes</loc>
 	</url>
 </urlset>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext, useCallback } from "react";
 import { AuthContext } from "../context/context";
 import { apiClient, deleteClient } from "../lib/hooks";
-import FoodLoadingScreen from "./FoodLoadingScreen";
+import { TableSkeleton } from "./Skeleton";
 import ErrorAlert from "./ErrorAlert";
 
 interface Recipe {
@@ -80,16 +80,6 @@ const AdminRecipesPanel: React.FC = () => {
     return null;
   }
 
-  if (loading)
-    return (
-      <FoodLoadingScreen
-        title="Loading recipes..."
-        subtitle="Refreshing recipe management"
-        fullScreen={false}
-        compact={true}
-      />
-    );
-
   return (
     <div className="mt-8">
       <h2 className="text-2xl font-semibold mb-4">Recipe Management</h2>
@@ -99,12 +89,14 @@ const AdminRecipesPanel: React.FC = () => {
         compact
         onAutoHide={() => setError(null)}
       />
-      {recipes.length === 0 && !loading && !error ? (
-        <p>No recipes found.</p>
+      {loading ? (
+        <TableSkeleton rows={PAGE_SIZE} columns={4} />
+      ) : recipes.length === 0 && !error ? (
+        <p className="text-text/70">No recipes found.</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white shadow-md rounded-lg">
-            <thead className="bg-gray-700 text-white">
+          <table className="min-w-full overflow-hidden rounded-lg bg-secondary shadow-md">
+            <thead className="bg-primary/10 text-text">
               <tr>
                 <th className="py-3 px-4 text-left">ID</th>
                 <th className="py-3 px-4 text-left">Title</th>
@@ -112,11 +104,11 @@ const AdminRecipesPanel: React.FC = () => {
                 <th className="py-3 px-4 text-left">Actions</th>
               </tr>
             </thead>
-            <tbody className="text-gray-700">
+            <tbody className="text-text">
               {recipes.map((recipe) => (
                 <tr
                   key={recipe.id}
-                  className="border-b border-gray-200 hover:bg-gray-100"
+                  className="border-b border-primary/20 transition-colors hover:bg-primary/5"
                 >
                   <td className="py-3 px-4">{recipe.id}</td>
                   <td className="py-3 px-4">{recipe.name}</td>
@@ -124,9 +116,9 @@ const AdminRecipesPanel: React.FC = () => {
                   <td className="py-3 px-4">
                     <button
                       onClick={() => handleDeleteRecipe(recipe.id)}
-                      className="mobile-soft-press bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 rounded focus:outline-none focus:shadow-outline text-sm"
+                      className="mobile-soft-press rounded-lg bg-accent px-3 py-2 text-sm font-semibold text-primary transition-colors hover:bg-accent/85 focus:outline-none"
                     >
-                      🗑 Delete
+                      Delete
                     </button>
                   </td>
                 </tr>
@@ -140,7 +132,7 @@ const AdminRecipesPanel: React.FC = () => {
           <button
             onClick={() => setPage((p) => Math.max(0, p - 1))}
             disabled={page === 0}
-            className="mobile-soft-press px-4 py-2 bg-primary text-white rounded disabled:opacity-40"
+            className="mobile-soft-press rounded-full bg-secondary px-4 py-2 text-sm font-medium text-text transition-all duration-300 hover:bg-accent hover:text-primary disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-secondary"
           >
             Previous
           </button>
@@ -150,7 +142,7 @@ const AdminRecipesPanel: React.FC = () => {
           <button
             onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
             disabled={page >= totalPages - 1}
-            className="mobile-soft-press px-4 py-2 bg-primary text-white rounded disabled:opacity-40"
+            className="mobile-soft-press rounded-full bg-secondary px-4 py-2 text-sm font-medium text-text transition-all duration-300 hover:bg-accent hover:text-primary disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-secondary"
           >
             Next
           </button>
