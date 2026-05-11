@@ -15,12 +15,13 @@ const Recipes = () => {
   const [totalPages, setTotalPages] = useState<number>(1);
   const { user, loading: userLoading } = useUser();
   const [error, setError] = useState<string>("");
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [draftSearchTerm, setDraftSearchTerm] = useState<string>("");
+  const [submittedSearchTerm, setSubmittedSearchTerm] = useState<string>("");
 
   const RECIPES_PER_PAGE = 9;
   const GUEST_RECIPES_LIMIT = 10;
   const isGuest = !user;
+  const isSearching = submittedSearchTerm.trim().length > 0;
 
   const fetchAllRecipes = useCallback(async () => {
     try {
@@ -49,8 +50,6 @@ const Recipes = () => {
   const searchRecipes = useCallback(
     async (term: string) => {
       if (!term.trim()) {
-        setIsSearching(false);
-        setCurrentPage(0);
         return;
       }
 
@@ -71,7 +70,6 @@ const Recipes = () => {
         setTotalPages(
           typeof paged?.totalPages === "number" ? paged.totalPages : 1,
         );
-        setIsSearching(true);
       } catch (error) {
         setError("Error searching recipes");
         console.error("Error searching recipes:", error);
@@ -87,13 +85,14 @@ const Recipes = () => {
       return;
     }
 
+    const trimmedTerm = draftSearchTerm.trim();
     setCurrentPage(0);
-    setIsSearching(!!searchTerm.trim());
+    setSubmittedSearchTerm(trimmedTerm);
   };
 
   const handleClearSearch = () => {
-    setSearchTerm("");
-    setIsSearching(false);
+    setDraftSearchTerm("");
+    setSubmittedSearchTerm("");
     setCurrentPage(0);
   };
 
@@ -104,8 +103,8 @@ const Recipes = () => {
       }
 
       // If searching, use search endpoint
-      if (isSearching && searchTerm.trim()) {
-        searchRecipes(searchTerm);
+      if (isSearching) {
+        searchRecipes(submittedSearchTerm);
         return;
       }
 
@@ -135,7 +134,7 @@ const Recipes = () => {
     userLoading,
     currentPage,
     isSearching,
-    searchTerm,
+    submittedSearchTerm,
     fetchAllRecipes,
     searchRecipes,
   ]);
@@ -190,8 +189,8 @@ const Recipes = () => {
                 <div className="flex items-center rounded-full border border-primary/20 bg-secondary focus-within:ring-2 focus-within:ring-accent transition-all">
                   <input
                     type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    value={draftSearchTerm}
+                    onChange={(e) => setDraftSearchTerm(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         handleSearch();
@@ -200,7 +199,7 @@ const Recipes = () => {
                     placeholder="Search recipes by name..."
                     className="flex-1 min-w-0 px-4 py-3 bg-transparent text-text focus:outline-none placeholder:text-text/50"
                   />
-                  {searchTerm && (
+                  {draftSearchTerm && (
                     <button
                       onClick={handleClearSearch}
                       className="shrink-0 px-2 text-text/70 hover:text-accent focus:outline-none transition-colors"
@@ -231,7 +230,7 @@ const Recipes = () => {
                 {isSearching && (
                   <div className="mt-2 text-center">
                     <span className="inline-block px-3 py-1 bg-accent/20 rounded-full text-text text-sm">
-                      Searching for: "{searchTerm}"
+                      Searching for: "{submittedSearchTerm}"
                     </span>
                   </div>
                 )}
@@ -312,7 +311,7 @@ const Recipes = () => {
                 </svg>
                 <p className="text-lg md:text-xl font-medium">
                   {isSearching
-                    ? `No recipes found for "${searchTerm}"`
+                    ? `No recipes found for "${submittedSearchTerm}"`
                     : isGuest
                       ? "No public recipes available yet."
                       : "No recipes found."}

@@ -159,15 +159,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     let isMounted = true;
 
     const initializeSession = async () => {
-      const shouldAttemptSession =
-        localStorage.getItem("isLoggedIn") === "true";
-      if (!shouldAttemptSession) {
-        if (isMounted) {
-          setLoading(false);
-        }
-        return;
-      }
-
       await refreshSession();
       if (isMounted) {
         setLoading(false);

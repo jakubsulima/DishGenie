@@ -7,10 +7,10 @@ import org.jakub.backendapi.entities.Enums.Role;
 import org.jakub.backendapi.entities.User;
 import org.jakub.backendapi.mappers.UserMapper;
 import org.jakub.backendapi.repositories.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,8 +34,12 @@ public class UserServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
-    @InjectMocks
     private UserService userService;
+
+    @BeforeEach
+    void setUp() {
+        userService = new UserService(userRepository, userMapper, passwordEncoder, null);
+    }
 
     @Test
     void register_shouldCreateUserWithDefaultPreferences() {
@@ -76,7 +80,7 @@ public class UserServiceTest {
 
         assertNotNull(capturedUser.getUserPreferences());
         assertEquals(Diet.NONE, capturedUser.getUserPreferences().getDiet());
-        assertTrue(capturedUser.getUserPreferences().getDislikedIngredients().isEmpty());
+        assertEquals(java.util.List.of(Diet.NONE), capturedUser.getUserPreferences().getDiets());
         assertEquals(capturedUser, capturedUser.getUserPreferences().getUser());
     }
 }

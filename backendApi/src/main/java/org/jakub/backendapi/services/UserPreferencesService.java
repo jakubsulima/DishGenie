@@ -7,6 +7,8 @@ import org.jakub.backendapi.entities.UserPreferences;
 import org.jakub.backendapi.exceptions.AppException;
 import org.jakub.backendapi.mappers.UserPreferencesMapper;
 import org.jakub.backendapi.repositories.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,7 @@ import java.util.List;
 
 @Service
 public class UserPreferencesService {
+    private static final Logger log = LoggerFactory.getLogger(UserPreferencesService.class);
 
     private final UserRepository userRepository;
     private final UserPreferencesMapper userPreferencesMapper;
@@ -67,7 +70,7 @@ public class UserPreferencesService {
         UserPreferences preferences = user.getUserPreferences();
 
         if (!preferences.getDislikedIngredients().contains(ingredient)) {
-            System.out.println("Adding disliked ingredient: " + ingredient);
+            log.debug("Adding disliked ingredient '{}' for {}", ingredient, email);
             List<String> newDislikedIngredients = new ArrayList<>(preferences.getDislikedIngredients());
             newDislikedIngredients.add(ingredient);
             preferences.setDislikedIngredients(newDislikedIngredients);

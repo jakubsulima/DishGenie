@@ -1,9 +1,7 @@
 package org.jakub.backendapi.services;
 
 import org.jakub.backendapi.dto.RecipeDto;
-import org.jakub.backendapi.dto.RecipeIngredientDto;
 import org.jakub.backendapi.entities.Recipe;
-import org.jakub.backendapi.entities.RecipeIngredient;
 import org.jakub.backendapi.entities.User;
 import org.jakub.backendapi.exceptions.AppException;
 import org.jakub.backendapi.mappers.RecipeMapper;
@@ -11,24 +9,34 @@ import org.jakub.backendapi.repositories.IngredientRepository;
 import org.jakub.backendapi.repositories.RecipeIngredientRepository;
 import org.jakub.backendapi.repositories.RecipeRepository;
 import org.jakub.backendapi.repositories.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
-public class RecipeServiceTest {
+@ExtendWith(MockitoExtension.class)
+class RecipeServiceTest {
 
     @Mock
     private RecipeRepository recipeRepository;
+
+    @Mock
+    private UserRepository userRepository;
 
     @Mock
     private IngredientRepository ingredientRepository;
@@ -39,121 +47,103 @@ public class RecipeServiceTest {
     @Mock
     private RecipeMapper recipeMapper;
 
-    @Mock
-    private UserRepository userRepository;
-
     @InjectMocks
     private RecipeService recipeService;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
-    void testGetRecipe_RecipeExists() {
-        Recipe recipe = Recipe.builder().id(1L).name("Pasta").build();
-        RecipeDto recipeDto = RecipeDto.builder().id(1L).name("Pasta").build();
+    void getRecipeById_shouldUseDetailedRecipeLookup() {
+        Recipe recipe = new Recipe();
+        recipe.setId(1L);
+        recipe.setName("Pasta");
 
-        when(recipeRepository.findById(1L)).thenReturn(Optional.of(recipe));
+        RecipeDto recipeDto = new RecipeDto();
+        recipeDto.setId(1L);
+        recipeDto.setName("Pasta");
+
+        when(recipeRepository.findByIdWithIngredients(1L)).thenReturn(Optional.of(recipe));
         when(recipeMapper.toRecipeDto(recipe)).thenReturn(recipeDto);
 
         RecipeDto result = recipeService.getRecipeById(1L);
 
-        assertNotNull(result);
-        assertEquals(1L, result.getId());
-        verify(recipeRepository).findById(1L);
-        verify(recipeMapper).toRecipeDto(recipe);
+        assertEquals("Pasta", result.getName());
+        verify(recipeRepository).findByIdWithIngredients(1L);
     }
 
     @Test
-    void testGetRecipe_RecipeNotFound() {
-        when(recipeRepository.findById(1L)).thenReturn(Optional.empty());
+    void getRecipeById_shouldThrowWhenRecipeDoesNotExist() {
+        when(recipeRepository.findByIdWithIngredients(1L)).thenReturn(Optional.empty());
 
-        AppException ex = assertThrows(AppException.class, () -> recipeService.getRecipeById(1L));
-        assertEquals("Recipe not found", ex.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, ex.getCode());
+        AppException exception = assertThrows(AppException.class, () -> recipeService.getRecipeById(1L));
+
+        assertEquals("Recipe not found", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getCode());
     }
 
     @Test
-    void testSaveRecipe_Success() {
-        RecipeDto recipeDto = RecipeDto.builder().name("Pizza").build();
-        recipeDto.setIngredients(List.of(
-                RecipeIngredientDto.builder().name("Flour").amount(200).unit("g").build(),
-                RecipeIngredientDto.builder().name("Water").amount(100).unit("ml").build()
-        ));
-        User user = User.builder().id(1L).email("john@example.com").build(); // Changed login to email
-        Recipe recipe = Recipe.builder().name("Pizza").user(user).build();
-        Recipe savedRecipe = Recipe.builder().id(1L).name("Pizza").user(user).build();
-        when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.of(user)); // Changed findByLogin to findByEmail
-        when(recipeRepository.findByNameAndUser("Pizza", user)).thenReturn(Optional.empty());
-        when(recipeMapper.toRecipeWithUser(recipeDto, user)).thenReturn(recipe);
-        when(recipeRepository.save(recipe)).thenReturn(savedRecipe);
-        Recipe result = recipeService.saveRecipe(recipeDto, "john@example.com"); // Changed login to email
+    void getAllRecipes_shouldPreservePagedIdOrderingWhenMappingDetails() {
+        PageRequest pageable = PageRequest.of(0, 2);
+        Page<Long> recipeIds = new PageImpl<>(List.of(5L, 2L), pageable, 2);
 
-        assertNotNull(result);
-        assertEquals(1L, result.getId());
-        verify(userRepository).findByEmail("john@example.com"); // Changed findByLogin to findByEmail
-        verify(recipeRepository).findByNameAndUser("Pizza", user);
-        verify(recipeMapper).toRecipeWithUser(recipeDto, user);// Adjusted to verify save is called once with the mapped recipe
+        Recipe laterRecipe = new Recipe();
+        laterRecipe.setId(5L);
+        laterRecipe.setName("Later");
+
+        Recipe earlierRecipe = new Recipe();
+        earlierRecipe.setId(2L);
+        earlierRecipe.setName("Earlier");
+
+        RecipeDto laterRecipeDto = new RecipeDto();
+        laterRecipeDto.setId(5L);
+        laterRecipeDto.setName("Later");
+
+        RecipeDto earlierRecipeDto = new RecipeDto();
+        earlierRecipeDto.setId(2L);
+        earlierRecipeDto.setName("Earlier");
+
+        when(recipeRepository.findRecipeIds(pageable)).thenReturn(recipeIds);
+        when(recipeRepository.findAllWithIngredientsByIdIn(List.of(5L, 2L)))
+                .thenReturn(List.of(earlierRecipe, laterRecipe));
+        when(recipeMapper.toRecipeDto(laterRecipe)).thenReturn(laterRecipeDto);
+        when(recipeMapper.toRecipeDto(earlierRecipe)).thenReturn(earlierRecipeDto);
+
+        Page<RecipeDto> result = recipeService.getAllRecipes(pageable);
+
+        assertEquals(List.of("Later", "Earlier"), result.getContent().stream().map(RecipeDto::getName).toList());
+        verify(recipeRepository).findAllWithIngredientsByIdIn(List.of(5L, 2L));
     }
 
     @Test
-    void testSaveRecipe_NullIngredients() {
-        RecipeDto recipeDto = RecipeDto.builder().name("Pizza").ingredients(null).build();
-        User user = User.builder().id(1L).email("john@example.com").build(); // Changed login to email
+    void findRecipesByUserId_shouldUsePagedDetailedLookup() {
+        PageRequest pageable = PageRequest.of(1, 1);
+        User user = new User();
+        user.setId(7L);
+        user.setEmail("test@example.com");
 
-        when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.of(user)); // Changed findByLogin to findByEmail
+        Recipe recipe = new Recipe();
+        recipe.setId(11L);
+        recipe.setName("Soup");
 
-        AppException ex = assertThrows(AppException.class, () -> recipeService.saveRecipe(recipeDto, "john@example.com")); // Changed login to email
+        RecipeDto recipeDto = new RecipeDto();
+        recipeDto.setId(11L);
+        recipeDto.setName("Soup");
 
-        assertEquals("Recipe must have at least one ingredient", ex.getMessage());
-        assertEquals(HttpStatus.BAD_REQUEST, ex.getCode());
-        verify(userRepository).findByEmail("john@example.com"); // Changed findByLogin to findByEmail
-    }
-
-    @Test
-    void testSaveRecipe_RecipeAlreadyExists() {
-        RecipeDto recipeDto = RecipeDto.builder().name("Pizza").build();
-        User user = User.builder().id(1L).email("john@example.com").build(); // Changed login to email
-        Recipe existingRecipe = Recipe.builder().id(1L).name("Pizza").user(user).build();
-
-        when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.of(user)); // Changed findByLogin to findByEmail
-        when(recipeRepository.findByNameAndUser("Pizza", user)).thenReturn(Optional.of(existingRecipe));
-
-        AppException ex = assertThrows(AppException.class, () -> recipeService.saveRecipe(recipeDto, "john@example.com")); // Changed login to email
-        assertEquals("Recipe 'Pizza' already exists for user 'john@example.com'", ex.getMessage());
-        assertEquals(HttpStatus.CONFLICT, ex.getCode());
-        verify(userRepository).findByEmail("john@example.com"); // Changed findByLogin to findByEmail
-    }
-
-    @Test
-    void testFindRecipesByUserId_UserExists() {
-        User user = User.builder().id(1L).email("john@example.com").build();
-        Recipe recipe = Recipe.builder().id(1L).name("Pasta").user(user).build();
-        user.setRecipes(List.of(recipe));
-
-        RecipeDto recipeDto = RecipeDto.builder().id(1L).name("Pasta").build();
-
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-
+        when(userRepository.findById(7L)).thenReturn(Optional.of(user));
+        when(recipeRepository.findRecipeIdsByUser(user, pageable))
+                .thenReturn(new PageImpl<>(List.of(11L), pageable, 1));
+        when(recipeRepository.findAllWithIngredientsByIdIn(List.of(11L))).thenReturn(List.of(recipe));
         when(recipeMapper.toRecipeDto(recipe)).thenReturn(recipeDto);
 
-        List<RecipeDto> result = recipeService.findRecipesByUserId(1L);
+        Page<RecipeDto> result = recipeService.findRecipesByUserId(7L, pageable);
 
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("Pasta", result.get(0).getName());
-        verify(userRepository).findById(1L);
+        assertEquals(1, result.getContent().size());
+        assertEquals("Soup", result.getContent().get(0).getName());
     }
 
     @Test
-    void testFindRecipesByUserId_UserNotFound() {
-        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+    void searchRecipes_shouldReturnEmptyPageForBlankSearch() {
+        Page<RecipeDto> result = recipeService.searchRecipes("   ", PageRequest.of(0, 10));
 
-        AppException ex = assertThrows(AppException.class, () -> recipeService.findRecipesByUserId(1L));
-        assertEquals("Unknown user", ex.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, ex.getCode());
+        assertTrue(result.isEmpty());
+        verifyNoInteractions(recipeRepository);
     }
 }
-

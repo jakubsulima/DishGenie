@@ -1,6 +1,7 @@
 package org.jakub.backendapi.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ public class Recipe {
     private String description;
 
     @ElementCollection
+    @BatchSize(size = 50)
     @CollectionTable(name = "recipe_instructions", joinColumns = @JoinColumn(name = "recipe_id"))
     @Column(name = "instruction", columnDefinition = "TEXT")
     private List<String> instructions = new ArrayList<>();
