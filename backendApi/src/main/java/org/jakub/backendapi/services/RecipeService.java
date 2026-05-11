@@ -15,6 +15,7 @@ import org.jakub.backendapi.repositories.RecipeIngredientRepository;
 import org.jakub.backendapi.repositories.RecipeRepository;
 import org.jakub.backendapi.repositories.UserRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -48,15 +49,16 @@ public class RecipeService {
 
     @Transactional
     public RecipeDto getRecipeById(Long id) {
-        Recipe recipe = recipeRepository.findById(id)
+        Recipe recipe = recipeRepository.findByIdWithIngredients(id)
                 .orElseThrow(() -> new AppException("Recipe not found", HttpStatus.NOT_FOUND));
+        recipe.getInstructions().size();
         return recipeMapper.toRecipeDto(recipe);
     }
 
     @Transactional
     public Page<RecipeDto> getAllRecipes(Pageable pageable) {
-        Page<Recipe> recipes = recipeRepository.findAll(pageable);
-        return recipes.map(recipeMapper::toRecipeDto);
+        Page<Long> recipeIds = recipeRepository.findRecipeIds(pageable);
+        return mapRecipeIdPage(recipeIds, pageable);
     }
 
     @Transactional
@@ -84,8 +86,8 @@ public class RecipeService {
     public Page<RecipeDto> findRecipesByUserId(long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
-        Page<Recipe> recipes = recipeRepository.findByUser(user, pageable);
-        return recipes.map(recipeMapper::toRecipeDto);
+        Page<Long> recipeIds = recipeRepository.findRecipeIdsByUser(user, pageable);
+        return mapRecipeIdPage(recipeIds, pageable);
     }
 
     public RecipeDto getRecipeByName(String name) {
@@ -210,8 +212,30 @@ public class RecipeService {
             return Page.empty(pageable);
         }
 
-        Page<Recipe> recipes = recipeRepository.search(normalizedSearchTerm, pageable);
-        return recipes.map(recipeMapper::toRecipeDto);
+        Page<Long> recipeIds = recipeRepository.searchRecipeIds(normalizedSearchTerm, pageable);
+        return mapRecipeIdPage(recipeIds, pageable);
+    }
+
+    private Page<RecipeDto> mapRecipeIdPage(Page<Long> recipeIds, Pageable pageable) {
+        List<Long> ids = recipeIds.getContent();
+        if (ids.isEmpty()) {
+            return new PageImpl<>(List.of(), pageable, recipeIds.getTotalElements());
+        }
+
+        Map<Long, Recipe> recipesById = recipeRepository.findAllWithIngredientsByIdIn(ids)
+                .stream()
+                .collect(Collectors.toMap(Recipe::getId, Function.identity()));
+
+        // Instructions are loaded separately to avoid Hibernate's multiple bag fetch restriction.
+        recipesById.values().forEach(recipe -> recipe.getInstructions().size());
+
+        List<RecipeDto> recipeDtos = ids.stream()
+                .map(recipesById::get)
+                .filter(Objects::nonNull)
+                .map(recipeMapper::toRecipeDto)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(recipeDtos, pageable, recipeIds.getTotalElements());
     }
 
     private String requireIngredientName(String ingredientName) {

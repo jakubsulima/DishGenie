@@ -1,51 +1,55 @@
-import React from "react";
-import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { fireEvent, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import DropDownMenu from "../src/components/DropDownMenu";
+import { renderWithRouter } from "./testUtils";
 
 describe("DropDownMenu", () => {
-  const mockItems = ["Recipes", "Fridge", "Login"];
-  const mockClassName = "test-class";
+  it("renders navigation links and a logout button", () => {
+    const handleLogout = vi.fn();
 
-  it("renders the dropdown menu with correct items", () => {
-    render(
-      <DropDownMenu dropdownItems={mockItems} className={mockClassName} />,
+    renderWithRouter(
+      <DropDownMenu
+        dropdownItems={["Home", "Recipes", "Logout"]}
+        className="test-class"
+        handleLogout={handleLogout}
+      />,
     );
 
-    // Check that all items are rendered
-    expect(screen.getByText("Recipes")).toBeInTheDocument();
-    expect(screen.getByText("Fridge")).toBeInTheDocument();
-    expect(screen.getByText("Login")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute(
+      "href",
+      "/",
+    );
+    expect(screen.getByRole("link", { name: "Recipes" })).toHaveAttribute(
+      "href",
+      "/Recipes",
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Logout" }));
+    expect(handleLogout).toHaveBeenCalledTimes(1);
   });
 
   it("applies the provided className to the container", () => {
-    const { container } = render(
-      <DropDownMenu dropdownItems={mockItems} className={mockClassName} />,
+    const { container } = renderWithRouter(
+      <DropDownMenu
+        dropdownItems={["Login"]}
+        className="test-class"
+        handleLogout={vi.fn()}
+      />,
     );
 
-    // Check that the className is applied
-    const menuElement = container.firstChild;
-    expect(menuElement).toHaveClass(mockClassName);
+    expect(container.firstChild).toHaveClass("test-class");
   });
 
-  it("renders the correct number of dropdown items", () => {
-    render(
-      <DropDownMenu dropdownItems={mockItems} className={mockClassName} />,
+  it("renders an empty menu state without crashing", () => {
+    renderWithRouter(
+      <DropDownMenu
+        dropdownItems={[]}
+        className="test-class"
+        handleLogout={vi.fn()}
+      />,
     );
 
-    // Check that there are 3 dropdown items
-    const items = screen.getAllByText(/Recipes|Fridge|Login/);
-    expect(items).toHaveLength(3);
-  });
-
-  it("renders empty when no items are provided", () => {
-    const { container } = render(
-      <DropDownMenu dropdownItems={[]} className={mockClassName} />,
-    );
-
-    // Check that the menu is rendered but has no children
-    const menuElement = container.firstChild;
-    expect(menuElement).toBeInTheDocument();
-    expect(menuElement?.childNodes).toHaveLength(0);
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 });

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
@@ -21,9 +22,35 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     Optional<Recipe> findByNameAndUser(String name, User user);
 
     @Query("""
-
-                SELECT u FROM Recipe u WHERE 
-            LOWER(u.name) LIKE LOWER(CONCAT(:searchTerm, '%'))
+            SELECT r.id FROM Recipe r
             """)
-    Page<Recipe> search(@Param("searchTerm") String searchTerm, Pageable pageable);
+    Page<Long> findRecipeIds(Pageable pageable);
+
+    @Query("""
+            SELECT r.id FROM Recipe r
+            WHERE r.user = :user
+            """)
+    Page<Long> findRecipeIdsByUser(@Param("user") User user, Pageable pageable);
+
+    @Query("""
+            SELECT r.id FROM Recipe r
+            WHERE LOWER(r.name) LIKE LOWER(CONCAT(:searchTerm, '%'))
+            """)
+    Page<Long> searchRecipeIds(@Param("searchTerm") String searchTerm, Pageable pageable);
+
+    @Query("""
+            SELECT DISTINCT r FROM Recipe r
+            LEFT JOIN FETCH r.recipeIngredients ri
+            LEFT JOIN FETCH ri.ingredient
+            WHERE r.id = :id
+            """)
+    Optional<Recipe> findByIdWithIngredients(@Param("id") Long id);
+
+    @Query("""
+            SELECT DISTINCT r FROM Recipe r
+            LEFT JOIN FETCH r.recipeIngredients ri
+            LEFT JOIN FETCH ri.ingredient
+            WHERE r.id IN :ids
+            """)
+    List<Recipe> findAllWithIngredientsByIdIn(@Param("ids") List<Long> ids);
 }

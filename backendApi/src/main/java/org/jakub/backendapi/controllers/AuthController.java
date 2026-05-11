@@ -14,6 +14,8 @@ import org.jakub.backendapi.exceptions.AppException;
 import org.jakub.backendapi.services.OAuthService;
 import org.jakub.backendapi.services.UserService;
 import org.jakub.backendapi.services.RateLimitService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,7 @@ import java.util.Set;
 
 @RestController
 public class AuthController {
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     private final UserService userService;
     private final UserAuthProvider userAuthProvider;
@@ -164,7 +167,7 @@ public class AuthController {
         if (emailFromToken == null) {
             // This means the token's issuer was null, which is an invalid state for an access token.
             // Log this as a server-side issue (token should always have an issuer).
-            System.err.println("Critical: Access token found with null issuer."); // Replace with proper logging
+            log.error("Access token found with null issuer.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new ErrorDto("Invalid token: User identifier missing."));
         }

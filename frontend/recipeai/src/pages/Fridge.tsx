@@ -1,10 +1,11 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AddFridgeIngredientInput,
   unitType,
   useFridge,
 } from "../context/fridgeContext";
+import { useUser } from "../context/context";
 import { formatDateForBackend, lookupProductByBarcode } from "../lib/hooks";
 import AddFridgeItemForm from "../components/AddFridgeItemForm";
 import FridgeDisplay from "../components/FridgeDisplay";
@@ -24,8 +25,11 @@ const getErrorMessage = (error: unknown, fallback: string) => {
   return fallback;
 };
 
+const EXPIRED_BANNER_STORAGE_PREFIX = "recipeai.expiredBannerDismissed";
+
 export const Fridge = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
   const {
     fridgeItems,
     loading: contextLoading,
@@ -46,7 +50,32 @@ export const Fridge = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isBarcodeScannerOpen, setIsBarcodeScannerOpen] = useState(false);
   const [isReceiptScannerOpen, setIsReceiptScannerOpen] = useState(false);
+  const [showExpiredBanner, setShowExpiredBanner] = useState(false);
   const isBarcodeAddInFlight = useRef(false);
+
+  const expiredItems = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return fridgeItems.filter((item) => {
+      if (!item.expirationDate) {
+        return false;
+      }
+
+      const expDate = parseBackendDate(item.expirationDate);
+      expDate.setHours(0, 0, 0, 0);
+      return expDate < today;
+    });
+  }, [fridgeItems]);
+
+  const expiredItemsFingerprint = useMemo(
+    () =>
+      expiredItems
+        .map((item) => `${item.id}:${item.name}:${item.expirationDate ?? ""}`)
+        .sort()
+        .join("|"),
+    [expiredItems],
+  );
 
   const expiringSoonNames = useMemo(() => {
     const today = new Date();
@@ -236,12 +265,60 @@ export const Fridge = () => {
 
   const displayError = error || contextError;
   const displayLoading = isLoading || contextLoading;
+  const expiredBannerStorageKey = user?.id
+    ? `${EXPIRED_BANNER_STORAGE_PREFIX}:${user.id}`
+    : null;
+
+  useEffect(() => {
+    if (!expiredBannerStorageKey) {
+      setShowExpiredBanner(false);
+      return;
+    }
+
+    if (!expiredItemsFingerprint) {
+      localStorage.removeItem(expiredBannerStorageKey);
+      setShowExpiredBanner(false);
+      return;
+    }
+
+    const dismissedFingerprint = localStorage.getItem(expiredBannerStorageKey);
+    setShowExpiredBanner(dismissedFingerprint !== expiredItemsFingerprint);
+  }, [expiredBannerStorageKey, expiredItemsFingerprint]);
+
+  const dismissExpiredBanner = () => {
+    if (expiredBannerStorageKey) {
+      localStorage.setItem(expiredBannerStorageKey, expiredItemsFingerprint);
+    }
+    setShowExpiredBanner(false);
+  };
 
   return (
     <>
       <div className="mobile-page-enter container mx-auto grid grid-cols-1 items-start gap-5 bg-background px-4 py-5 sm:px-6 md:grid-cols-3 md:gap-6">
         <div className="w-full space-y-4">
           <ErrorAlert message={displayError} onAutoHide={() => setError("")} />
+
+          {showExpiredBanner && expiredItems.length > 0 && (
+            <div className="rounded-2xl border border-amber-300/60 bg-amber-100/80 p-4 text-sm text-amber-950 shadow-sm">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-semibold">Expired ingredients detected</p>
+                  <p className="mt-1 text-amber-900/80">
+                    Review these items before they affect your next recipe:
+                    {" "}
+                    {expiredItems.map((item) => item.name).join(", ")}.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={dismissExpiredBanner}
+                  className="rounded-full border border-amber-400/60 px-3 py-1 text-xs font-semibold text-amber-900 transition-colors hover:bg-amber-200/70"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="ambient-gradient-card rounded-2xl border border-accent/30 bg-accent/10 p-3 sm:p-3.5">
             <div className="mb-2.5 px-1">

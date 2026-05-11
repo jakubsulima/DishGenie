@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "open -a 'Google Chrome' http://localhost:5173 && vite",
+    "dev": "vite",
+    "dev:chrome": "open -a 'Google Chrome' http://localhost:5173 && vite",
     "dev:docker": "vite",
     "build": "vite build",
     "lint": "eslint .",

@@ -75,19 +75,7 @@ export const FridgeProvider = ({ children }: { children: React.ReactNode }) => {
   const [fridgeItems, setFridgeItems] = useState<FridgeIngredient[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
-  const [expirationNotificationShown, setExpirationNotificationShown] =
-    useState(
-      () => localStorage.getItem("expirationNotificationShown") === "true",
-    );
   const { user, loading: userLoading } = useUser();
-
-  const handleSetExpirationNotificationShown = useCallback((value: boolean) => {
-    setExpirationNotificationShown(value);
-    localStorage.setItem(
-      "expirationNotificationShown",
-      value ? "true" : "false",
-    );
-  }, []);
 
   const refreshFridgeItems = useCallback(async () => {
     setLoading(true);
@@ -95,34 +83,12 @@ export const FridgeProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const response = await apiClient("getFridgeIngredients", false);
       setFridgeItems(response);
-
-      if (!expirationNotificationShown) {
-        const today = new Date();
-        const expiredItems = response.filter((item: FridgeIngredient) => {
-          if (!item.expirationDate) {
-            return false;
-          }
-          const [day, month, year] = item.expirationDate.split("-");
-          const expDate = new Date(`${year}-${month}-${day}`);
-          expDate.setHours(0, 0, 0, 0);
-          return expDate < today;
-        });
-
-        if (expiredItems.length > 0) {
-          alert(
-            `Warning: You have expired products: ${expiredItems
-              .map((item: FridgeIngredient) => item.name)
-              .join(", ")}`,
-          );
-          handleSetExpirationNotificationShown(true);
-        }
-      }
     } catch (err: unknown) {
       setError(getErrorMessage(err, "Failed to fetch fridge items"));
     } finally {
       setLoading(false);
     }
-  }, [expirationNotificationShown, handleSetExpirationNotificationShown]);
+  }, []);
 
   const addFridgeItem = useCallback(
     async (item: AddFridgeIngredientInput) => {
@@ -209,8 +175,6 @@ export const FridgeProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (!user || !user.id) {
       setFridgeItems([]);
-      localStorage.removeItem("expirationNotificationShown");
-      setExpirationNotificationShown(false);
       return;
     }
 

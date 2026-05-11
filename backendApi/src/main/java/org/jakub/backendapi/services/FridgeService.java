@@ -67,15 +67,16 @@ public class FridgeService {
         if (amount < 0) {
             throw new AppException("Amount must be positive", HttpStatus.BAD_REQUEST);
         }
-        if (amount == 0) {
-            fridgeIngredientRepository.deleteById(id);
-            return;
-        }
         UserDto userDto = userService.findByEmail(email);
         FridgeIngredient fridgeIngredient = fridgeIngredientRepository.findById(id).orElseThrow(() -> new AppException("Fridge ingredient not found", HttpStatus.NOT_FOUND));
 
         if (!fridgeIngredient.getUser().getId().equals(userDto.getId())) {
             throw new AppException("You do not have permission to change this fridge ingredient", HttpStatus.FORBIDDEN);
+        }
+
+        if (amount == 0) {
+            fridgeIngredientRepository.deleteById(id);
+            return;
         }
 
         fridgeIngredient.setAmount(amount);

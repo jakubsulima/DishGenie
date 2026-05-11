@@ -20,6 +20,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -28,6 +30,8 @@ import java.util.stream.Collectors;
 
 @RestController
 public class RecipesController {
+    private static final Logger log = LoggerFactory.getLogger(RecipesController.class);
+
     private final RecipeService recipeService;
     private final UserService userService;
     private final UserPreferencesService userPreferencesService;
@@ -75,7 +79,6 @@ public class RecipesController {
     @GetMapping("/getRecipe/{id}")
     public ResponseEntity<RecipeDto> getRecipe(@PathVariable Long id) {
         RecipeDto recipe = recipeService.getRecipeById(id);
-        System.out.println("Fetched Recipe: " + recipe);
         return ResponseEntity.ok(recipe);
     }
 
@@ -181,7 +184,7 @@ public class RecipesController {
             UserPreferencesDto preferences = userPreferencesService.getPreferences(userEmail);
             return preferences != null ? preferences : fallbackPreferences;
         } catch (Exception e) {
-            System.err.println("Could not retrieve user preferences: " + e.getMessage());
+            log.warn("Could not retrieve user preferences for {}: {}", userEmail, e.getMessage());
             return fallbackPreferences;
         }
     }
