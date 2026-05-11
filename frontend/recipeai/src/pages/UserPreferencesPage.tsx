@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { useUser } from "../context/context";
 import { useNavigate, useLocation } from "react-router-dom";
 import { apiClient } from "../lib/hooks";
-import FoodLoadingScreen from "../components/FoodLoadingScreen";
+import { PreferencesPageSkeleton } from "../components/Skeleton";
 import ErrorAlert from "../components/ErrorAlert";
 import ProfileSummaryCard from "../components/userPreferences/ProfileSummaryCard";
 import PlanLimitsPanel from "../components/userPreferences/PlanLimitsPanel";
@@ -261,12 +261,7 @@ const MePage = () => {
   };
 
   if (userLoading || loading) {
-    return (
-      <FoodLoadingScreen
-        title="Loading preferences..."
-        subtitle="Getting your taste profile ready"
-      />
-    );
+    return <PreferencesPageSkeleton />;
   }
 
   if (!user) {

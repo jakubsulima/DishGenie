@@ -9,6 +9,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useFridge } from "../context/fridgeContext.tsx";
 import { useUser } from "../context/context";
 import FoodLoadingScreen from "../components/FoodLoadingScreen";
+import { RecipePageSkeleton } from "../components/Skeleton";
 import { addShoppingItems } from "../lib/shoppingList";
 import ErrorAlert from "../components/ErrorAlert";
 import { getMissingIngredients } from "../lib/ingredientMatching";
@@ -553,26 +554,24 @@ const RecipePage = () => {
   if (isLoading) {
     const isGeneratingRecipe = Boolean(search) && !recipeId && !existingRecipe;
 
-    return (
-      <FoodLoadingScreen
-        title={
-          isGeneratingRecipe ? "Generating your recipe..." : "Loading recipe..."
-        }
-        subtitle={
-          isGeneratingRecipe
-            ? "Mixing ingredients, matching flavors, and adding a spicy twist"
-            : "Preparing your delicious recipe"
-        }
-        variant={isGeneratingRecipe ? "generating" : "default"}
-      />
-    );
+    if (isGeneratingRecipe) {
+      return (
+        <FoodLoadingScreen
+          title="Generating your recipe..."
+          subtitle="Mixing ingredients, matching flavors, and adding a spicy twist"
+          variant="generating"
+        />
+      );
+    }
+
+    return <RecipePageSkeleton />;
   }
 
   if (!recipeData) {
     const canRetryGeneration = Boolean(search) && !recipeId && !existingRecipe;
 
     return (
-      <div className="flex h-screen items-center justify-center bg-background px-4">
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <div className="rounded-2xl border border-primary/15 bg-secondary px-6 py-8 text-center shadow-sm">
           <div className="text-xl font-semibold text-text">
             No recipe data available
