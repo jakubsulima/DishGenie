@@ -1,4 +1,4 @@
-# RecipeAI 🍳
+# Dish Genie 🍳
 
 A full-stack web application that helps users discover and manage recipes using AI-powered recipe generation. The app features a virtual fridge to track ingredients, personalized dietary preferences, and smart recipe suggestions based on what you have available.
 
@@ -133,7 +133,7 @@ POSTGRES_PORT=5432
 # Backend Configuration
 GEMINI_API_KEY=your_gemini_api_key_here
 GOOGLE_OAUTH_CLIENT_ID=
-ALLOWED_ORIGINS=https://example.com,https://www.example.com
+ALLOWED_ORIGINS=https://dishgenie.app,https://www.dishgenie.app
 SPRING_PROFILES_ACTIVE=prod
 JWT_SECRET_KEY=your_super_long_jwt_secret_min_32_chars
 TRUSTED_PROXY_IPS=

@@ -13,15 +13,15 @@ Published image tags:
 ## 1. Recommended Topology
 
 Option A: Single public domain (simpler)
-- Public: https://app.example.com -> frontend service (port 80)
+- Public: https://dishgenie.app -> frontend service (port 80)
 - Configure Dokploy path routing /api/* -> backend service (port 8080)
 - Set VITE_API_URL=/api/
 
 Option B: Separate API domain
-- Public: https://app.example.com -> frontend service (port 80)
-- Public: https://api.example.com -> backend service (port 8080)
-- Set VITE_API_URL=https://api.example.com/
-- Set ALLOWED_ORIGINS=https://app.example.com
+- Public: https://dishgenie.app -> frontend service (port 80)
+- Public: https://api.dishgenie.app -> backend service (port 8080)
+- Set VITE_API_URL=https://api.dishgenie.app/
+- Set ALLOWED_ORIGINS=https://dishgenie.app
 
 ## 2. Dokploy App Setup
 
@@ -70,7 +70,7 @@ Recommended:
 - SPRING_PROFILES_ACTIVE=prod
 
 Notes:
-- APP_DOMAIN should be hostname only (for example: app.example.com, without https://).
+- APP_DOMAIN should be hostname only (for example: dishgenie.app, without https://).
 
 Frontend build-time variables are configured in GitHub Actions repository variables (not Dokploy runtime env):
 - `VITE_API_URL` (default `/api/`)

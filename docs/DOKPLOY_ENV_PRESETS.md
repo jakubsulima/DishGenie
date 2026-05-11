@@ -5,7 +5,7 @@ Use one of the following presets in Dokploy for this repository.
 ## Option A: Single public domain with path routing
 
 Public domains:
-- App: https://app.example.com
+- App: https://dishgenie.app
 - API: routed by Dokploy from /api/* to backend service
 
 Set in Dokploy:
@@ -18,9 +18,9 @@ Set in Dokploy:
 - POSTGRES_PORT=5432
 - GEMINI_API_KEY=change_me
 - GOOGLE_OAUTH_CLIENT_ID=
-- APP_DOMAIN=app.example.com
-- PUBLIC_SITE_URL=https://app.example.com
-- ALLOWED_ORIGINS=https://app.example.com
+- APP_DOMAIN=dishgenie.app
+- PUBLIC_SITE_URL=https://dishgenie.app
+- ALLOWED_ORIGINS=https://dishgenie.app
 - SPRING_PROFILES_ACTIVE=prod
 - JWT_SECRET_KEY=change_me_at_least_32_characters
 - TRUSTED_PROXY_IPS=
@@ -38,8 +38,8 @@ Dokploy exposure:
 ## Option B: Separate public API domain
 
 Public domains:
-- App: https://app.example.com
-- API: https://api.example.com
+- App: https://dishgenie.app
+- API: https://api.dishgenie.app
 
 Set in Dokploy:
 - BACKEND_IMAGE=ghcr.io/your-github-namespace/recipeai-backend:latest
@@ -51,9 +51,9 @@ Set in Dokploy:
 - POSTGRES_PORT=5432
 - GEMINI_API_KEY=change_me
 - GOOGLE_OAUTH_CLIENT_ID=
-- APP_DOMAIN=app.example.com
-- PUBLIC_SITE_URL=https://app.example.com
-- ALLOWED_ORIGINS=https://app.example.com
+- APP_DOMAIN=dishgenie.app
+- PUBLIC_SITE_URL=https://dishgenie.app
+- ALLOWED_ORIGINS=https://dishgenie.app
 - SPRING_PROFILES_ACTIVE=prod
 - JWT_SECRET_KEY=change_me_at_least_32_characters
 - TRUSTED_PROXY_IPS=
@@ -72,7 +72,7 @@ Dokploy exposure:
 
 - Keep JWT_SECRET_KEY at least 32 characters.
 - In Option B, ALLOWED_ORIGINS should contain frontend domain only.
-- APP_DOMAIN should be hostname only (for example: app.example.com, without https://).
+- APP_DOMAIN should be hostname only (for example: dishgenie.app, without https://).
 - If you use both root and www frontend domains, add both to ALLOWED_ORIGINS as comma-separated values.
 - Frontend build-time variables are configured in GitHub Actions repository variables: `VITE_API_URL`.
 - Google login on the frontend is configured at runtime through `GOOGLE_OAUTH_CLIENT_ID` in compose/Dokploy.

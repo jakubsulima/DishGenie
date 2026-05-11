@@ -68,7 +68,7 @@ const HomePage = () => {
             style={{ animationDelay: "80ms" }}
           >
             <h1 className="flex-col p-3 text-text">
-              Recipe AI turns ingredients into recipes &#127869; &#129302;
+              Dish Genie turns ingredients into recipes &#127869; &#129302;
             </h1>
             <p className="mb-5 text-sm text-text/70 md:text-base">
               Generate meal ideas from what you already have, browse public
