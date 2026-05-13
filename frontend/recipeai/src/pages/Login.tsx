@@ -3,7 +3,7 @@ import { apiClient } from "../lib/hooks";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useUser } from "../context/context";
+import { useUser, type UserProps } from "../context/context";
 import { useNavigate } from "react-router-dom";
 import ErrorAlert from "../components/ErrorAlert";
 import { getGoogleClientId } from "../lib/runtimeConfig";
@@ -66,7 +66,7 @@ const Login = () => {
   }, [user, authLoading, navigate]);
 
   const handleAuthSuccess = useCallback(
-    (userData: { email: string; id: number; role: string }) => {
+    (userData: UserProps) => {
       localStorage.setItem("isLoggedIn", "true");
       setUser(userData);
       refreshSession().catch(() => {
@@ -83,7 +83,7 @@ const Login = () => {
       setIsSubmitting(true);
       setError("");
       try {
-        const userData = await apiClient("oauth/google", true, {
+        const userData = await apiClient<UserProps>("oauth/google", true, {
           idToken: response.credential,
         });
         handleAuthSuccess(userData);
@@ -169,7 +169,7 @@ const Login = () => {
     setIsSubmitting(true);
     setError("");
     try {
-      const userData = await apiClient("login", true, data);
+      const userData = await apiClient<UserProps>("login", true, data);
       handleAuthSuccess(userData);
     } catch (error: unknown) {
       setError(getErrorMessage(error, "Login failed"));

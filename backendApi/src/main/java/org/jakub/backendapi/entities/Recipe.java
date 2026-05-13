@@ -1,8 +1,11 @@
 package org.jakub.backendapi.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.ColumnDefault;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +38,11 @@ public class Recipe {
 
     @Column
     private String timeToPrepare;
+
+    @UpdateTimestamp
+    @ColumnDefault("CURRENT_TIMESTAMP")
+    @Column(name = "updated_at")
+    private Instant updatedAt;
 
     public Recipe() {
     }
@@ -114,6 +122,14 @@ public class Recipe {
         this.timeToPrepare = timeToPrepare;
     }
 
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -138,6 +154,7 @@ public class Recipe {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", timeToPrepare='" + timeToPrepare + '\'' +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }

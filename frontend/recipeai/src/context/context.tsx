@@ -10,13 +10,13 @@ import { apiClient } from "../lib/hooks";
 
 /* eslint-disable react-refresh/only-export-components */
 
-interface UserPreferences {
+export interface UserPreferences {
   diet: string;
   diets?: string[];
   dislikedIngredients: string[];
 }
 
-interface UserProps {
+export interface UserProps {
   email: string;
   id: number;
   role: string;
@@ -28,7 +28,7 @@ interface UserProps {
   preferences?: UserPreferences;
 }
 
-interface AuthContextType {
+export interface AuthContextType {
   user: UserProps | null;
   setUser: React.Dispatch<React.SetStateAction<UserProps | null>>;
   loading: boolean;
@@ -93,7 +93,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const refreshSession = useCallback(async (): Promise<boolean> => {
     try {
-      const userData = await apiClient("me");
+      const userData = await apiClient<UserProps>("me");
       setUser(userData);
       localStorage.setItem("isLoggedIn", "true");
       return true;
@@ -101,7 +101,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (getErrorStatus(error) === 401) {
         try {
           await apiClient("refresh", true);
-          const userData = await apiClient("me");
+          const userData = await apiClient<UserProps>("me");
           setUser(userData);
           localStorage.setItem("isLoggedIn", "true");
           return true;
@@ -129,10 +129,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const getUserPreferences = useCallback(async () => {
     if (!user) return;
     try {
-      const response: UserPreferences = await apiClient(
-        "user/getPreferences",
-        false,
-      );
+      const response = await apiClient<UserPreferences>("user/getPreferences");
       if (response) {
         setUser((prevUser) =>
           prevUser

@@ -2,6 +2,7 @@ package org.jakub.backendapi.repositories;
 
 import org.jakub.backendapi.entities.Recipe;
 import org.jakub.backendapi.entities.User;
+import org.jakub.backendapi.repositories.projections.RecipeSitemapEntry;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -53,4 +54,11 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             WHERE r.id IN :ids
             """)
     List<Recipe> findAllWithIngredientsByIdIn(@Param("ids") List<Long> ids);
+
+    @Query("""
+            SELECT r.id AS id, r.updatedAt AS updatedAt
+            FROM Recipe r
+            ORDER BY r.updatedAt DESC, r.id DESC
+            """)
+    List<RecipeSitemapEntry> findAllSitemapEntries();
 }

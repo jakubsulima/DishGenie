@@ -16,13 +16,13 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
     show-sql: true
     properties:
       hibernate:
         format_sql: true
   flyway:
-    enabled: false
+    enabled: ${SPRING_FLYWAY_ENABLED:false}
   servlet:
     multipart:
       max-file-size: 5MB

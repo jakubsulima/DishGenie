@@ -2,8 +2,12 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import { Fridge } from "../src/pages/Fridge";
-import { useFridge } from "../src/context/fridgeContext";
-import { useUser } from "../src/context/context";
+import {
+  type FridgeContextType,
+  type FridgeIngredient,
+  useFridge,
+} from "../src/context/fridgeContext";
+import { type AuthContextType, useUser } from "../src/context/context";
 
 vi.mock("../src/context/fridgeContext", () => ({
   useFridge: vi.fn(),
@@ -21,22 +25,33 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-const createFridgeContextValue = (fridgeItems: unknown[]) => ({
+const createFridgeContextValue = (
+  fridgeItems: FridgeIngredient[],
+): FridgeContextType => ({
   fridgeItems,
+  setFridgeItems: vi.fn(),
   loading: false,
   error: "",
   addFridgeItem: vi.fn(),
   addFridgeItemsBatch: vi.fn(),
   removeFridgeItem: vi.fn(),
   updateFridgeItem: vi.fn(),
+  refreshFridgeItems: vi.fn(),
+  getFridgeItemNames: vi.fn(() => fridgeItems.map((item) => item.name)),
 });
 
 describe("Fridge expired banner", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useUser).mockReturnValue({
-      user: { id: 1, role: "USER" },
-    } as ReturnType<typeof useUser>);
+      user: { id: 1, email: "test@example.com", role: "USER" },
+      setUser: vi.fn(),
+      loading: false,
+      isAdmin: false,
+      getUserPreferences: vi.fn(),
+      refreshSession: vi.fn(),
+      logout: vi.fn(),
+    } as AuthContextType);
   });
 
   test("is dismissible and stays hidden for the same expired set", () => {
@@ -49,7 +64,7 @@ describe("Fridge expired banner", () => {
           amount: 1,
           unit: "pcs",
         },
-      ]) as ReturnType<typeof useFridge>,
+      ]),
     );
 
     const { unmount } = render(
@@ -94,7 +109,7 @@ describe("Fridge expired banner", () => {
           amount: 1,
           unit: "pcs",
         },
-      ]) as ReturnType<typeof useFridge>,
+      ]),
     );
 
     render(

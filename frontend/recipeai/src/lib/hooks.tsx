@@ -273,11 +273,11 @@ axios.interceptors.response.use(
   },
 );
 
-export const apiClient = async function (
+export const apiClient = async function <T = unknown>(
   url: string,
   uploadData: boolean = false,
   body: unknown = null,
-) {
+): Promise<T> {
   const normalizedUrl = String(url ?? "");
   const authNoiseEndpoints = [
     "me",
@@ -325,7 +325,7 @@ export const apiClient = async function (
       throw htmlError;
     }
 
-    return res.data;
+    return res.data as T;
   } catch (error: unknown) {
     const status = axios.isAxiosError(error)
       ? error.response?.status

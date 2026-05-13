@@ -8,6 +8,11 @@ import { RecipesPageSkeleton } from "../components/Skeleton";
 import ErrorAlert from "../components/ErrorAlert";
 import { Link } from "react-router-dom";
 
+interface PagedRecipesResponse {
+  content: RecipeData[];
+  totalPages: number;
+}
+
 const Recipes = () => {
   const [recipes, setRecipes] = useState<RecipeData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -30,11 +35,11 @@ const Recipes = () => {
       const endpoint = isGuest
         ? `getAllRecipes?page=0&size=${GUEST_RECIPES_LIMIT}&sort=id,desc`
         : `getAllRecipes?page=${currentPage}&size=${RECIPES_PER_PAGE}`;
-      const response = await apiClient(endpoint, false);
-      const paged =
-        response && typeof response === "object"
-          ? (response as { content?: RecipeData[]; totalPages?: number })
-          : undefined;
+      const response = await apiClient<Partial<PagedRecipesResponse>>(
+        endpoint,
+        false,
+      );
+      const paged = response;
       setRecipes(Array.isArray(paged?.content) ? paged.content : []);
       setTotalPages(
         typeof paged?.totalPages === "number" ? paged.totalPages : 1,
@@ -56,7 +61,7 @@ const Recipes = () => {
       try {
         setIsLoading(true);
         setError("");
-        const response = await apiClient(
+        const response = await apiClient<Partial<PagedRecipesResponse>>(
           `searchRecipes/${encodeURIComponent(
             term,
           )}?page=${currentPage}&size=${RECIPES_PER_PAGE}`,
@@ -112,7 +117,7 @@ const Recipes = () => {
         try {
           setIsLoading(true);
           setError("");
-          const response = await apiClient(
+          const response = await apiClient<PagedRecipesResponse>(
             `getUserRecipes/${user.id}?page=${currentPage}&size=${RECIPES_PER_PAGE}`,
             false,
           );

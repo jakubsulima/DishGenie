@@ -34,8 +34,9 @@ describe("generateRecipe", () => {
   });
 
   it("deduplicates concurrent requests with the same prompt", async () => {
-    let resolveRequest: ((value: { data: { name: string } }) => void) | null =
-      null;
+    let resolveRequest:
+      | ((value: { data: { name: string } }) => void)
+      | undefined;
 
     axiosMock.post.mockReturnValue(
       new Promise((resolve) => {
