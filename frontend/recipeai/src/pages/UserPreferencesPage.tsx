@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { useUser } from "../context/context";
+import { useUser, type UserPreferences } from "../context/context";
 import { useNavigate, useLocation } from "react-router-dom";
 import { apiClient } from "../lib/hooks";
 import { PreferencesPageSkeleton } from "../components/Skeleton";
@@ -58,7 +58,7 @@ const MePage = () => {
   useEffect(() => {
     const fetchDietOptions = async () => {
       try {
-        const response: string[] = await apiClient("user/getDiets");
+        const response = await apiClient<string[]>("user/getDiets");
         const normalizedDiets = response
           .map((diet) => normalizeDietValue(diet))
           .filter(
@@ -202,7 +202,11 @@ const MePage = () => {
   ) => {
     setDietSaving(true);
     try {
-      const response = await apiClient("user/changeDiets", true, nextSelection);
+      const response = await apiClient<UserPreferences>(
+        "user/changeDiets",
+        true,
+        nextSelection,
+      );
       setUser((previousUser) =>
         previousUser
           ? {

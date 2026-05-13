@@ -26,7 +26,7 @@ export interface AddFridgeIngredientInput {
   unit: unitType;
 }
 
-interface FridgeContextType {
+export interface FridgeContextType {
   fridgeItems: FridgeIngredient[];
   setFridgeItems: React.Dispatch<React.SetStateAction<FridgeIngredient[]>>;
   loading: boolean;
@@ -81,7 +81,10 @@ export const FridgeProvider = ({ children }: { children: React.ReactNode }) => {
     setLoading(true);
     setError("");
     try {
-      const response = await apiClient("getFridgeIngredients", false);
+      const response = await apiClient<FridgeIngredient[]>(
+        "getFridgeIngredients",
+        false,
+      );
       setFridgeItems(response);
     } catch (err: unknown) {
       setError(getErrorMessage(err, "Failed to fetch fridge items"));

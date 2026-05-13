@@ -3,6 +3,8 @@ set -e
 
 # Default to a non-privileged port for non-root Nginx runtime
 PORT="${PORT:-8080}"
+BACKEND_INTERNAL_URL="${BACKEND_INTERNAL_URL:-http://backend:8080}"
+export PORT BACKEND_INTERNAL_URL
 
 SITE_ORIGIN="${PUBLIC_SITE_URL:-}"
 if [ -z "$SITE_ORIGIN" ]; then
@@ -31,23 +33,26 @@ Disallow: /register
 Disallow: /My%20Profile
 Disallow: /My%20Preferences
 Disallow: /ShoppingList
+Disallow: /Fridge
 Sitemap: ${SITE_ORIGIN}/sitemap.xml
 EOF
 
-cat > /usr/share/nginx/html/sitemap.xml <<EOF
+cat > /usr/share/nginx/html/sitemap-fallback.xml <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<url>
 		<loc>${SITE_ORIGIN}/</loc>
+		<lastmod>$(date -u +"%Y-%m-%dT%H:%M:%SZ")</lastmod>
 	</url>
 	<url>
 		<loc>${SITE_ORIGIN}/Recipes</loc>
+		<lastmod>$(date -u +"%Y-%m-%dT%H:%M:%SZ")</lastmod>
 	</url>
 </urlset>
 EOF
 
 # Substitute environment variables
-envsubst '${PORT}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf
+envsubst '${PORT} ${BACKEND_INTERNAL_URL}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf
 
 echo "--> Starting Nginx..."
 # Start Nginx

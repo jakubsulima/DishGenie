@@ -20,7 +20,7 @@ const PreferencesForm = ({
           const diet = form.diet.value;
           const dislikedIngredients = form.dislikedIngredients.value
             .split(",")
-            .map((ingredient) => ingredient.trim());
+            .map((ingredient: string) => ingredient.trim());
           onSavePreferences({ diet, dislikedIngredients });
         }}
       >
