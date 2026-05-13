@@ -43,6 +43,7 @@ services:
       GOOGLE_OAUTH_CLIENT_ID: "${GOOGLE_OAUTH_CLIENT_ID:-}"
       APP_DOMAIN: "${APP_DOMAIN}"
       PUBLIC_SITE_URL: "${PUBLIC_SITE_URL:-}"
+      BACKEND_INTERNAL_URL: "${BACKEND_INTERNAL_URL:-http://backend:8080}"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.recipeai-frontend.rule=Host(`${APP_DOMAIN}`) || Host(`www.${APP_DOMAIN}`)"

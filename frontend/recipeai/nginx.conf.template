@@ -23,6 +23,21 @@ server {
         try_files $uri =404;
     }
 
+    location = /sitemap.xml {
+        proxy_intercept_errors on;
+        error_page 500 502 503 504 = /sitemap-fallback.xml;
+        proxy_pass ${BACKEND_INTERNAL_URL}/api/sitemap.xml;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+    }
+
+    location = /sitemap-fallback.xml {
+        root /usr/share/nginx/html;
+        try_files $uri =404;
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+    }
+
     location ~* \.(?:js|css|svg|png|jpg|jpeg|gif|webp|ico|woff2?)$ {
         root /usr/share/nginx/html;
         expires 7d;

@@ -14,6 +14,7 @@ import org.jakub.backendapi.repositories.IngredientRepository;
 import org.jakub.backendapi.repositories.RecipeIngredientRepository;
 import org.jakub.backendapi.repositories.RecipeRepository;
 import org.jakub.backendapi.repositories.UserRepository;
+import org.jakub.backendapi.repositories.projections.RecipeSitemapEntry;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -214,6 +215,11 @@ public class RecipeService {
 
         Page<Long> recipeIds = recipeRepository.searchRecipeIds(normalizedSearchTerm, pageable);
         return mapRecipeIdPage(recipeIds, pageable);
+    }
+
+    @Transactional
+    public List<RecipeSitemapEntry> getPublicRecipeSitemapEntries() {
+        return recipeRepository.findAllSitemapEntries();
     }
 
     private Page<RecipeDto> mapRecipeIdPage(Page<Long> recipeIds, Pageable pageable) {
