@@ -67,6 +67,13 @@ const HomePage = () => {
             className="animate-fadeIn rounded-3xl border border-primary/10 bg-background/80 p-5 text-center shadow-[0_25px_65px_rgba(0,0,0,0.06)] backdrop-blur-sm md:p-8"
             style={{ animationDelay: "80ms" }}
           >
+            <div className="mb-5 flex justify-center">
+              <img
+                src="/dish-genie-homepage-icon.png"
+                alt="Dish Genie app icon with a chef hat, steam, and a cooking pot"
+                className="h-28 w-28 object-contain drop-shadow-[0_18px_30px_rgba(0,0,0,0.08)] md:h-36 md:w-36"
+              />
+            </div>
             <h1 className="flex-col p-3 text-text">
               Dish Genie turns ingredients into recipes &#127869; &#129302;
             </h1>

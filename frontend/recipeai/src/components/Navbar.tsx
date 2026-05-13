@@ -55,8 +55,17 @@ const Navbar = () => {
         <ul className="flex w-full text-background justify-between items-center">
           {/* --- Left Side: Logo --- */}
           <li className="list-none text-lg font-bold transition-colors hover:text-accent">
-            <Link to="/" onClick={handleLogoClick}>
-              DishGenie
+            <Link
+              to="/"
+              onClick={handleLogoClick}
+              className="flex items-center gap-2"
+            >
+              <img
+                src="/favicon.png"
+                alt="Dish Genie logo"
+                className="h-9 w-9 shrink-0 object-contain"
+              />
+              <span>DishGenie</span>
             </Link>
           </li>
 

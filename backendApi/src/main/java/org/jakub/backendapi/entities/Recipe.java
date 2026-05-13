@@ -3,6 +3,7 @@ package org.jakub.backendapi.entities;
 import jakarta.persistence.*;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -39,7 +40,8 @@ public class Recipe {
     private String timeToPrepare;
 
     @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
+    @ColumnDefault("CURRENT_TIMESTAMP")
+    @Column(name = "updated_at")
     private Instant updatedAt;
 
     public Recipe() {
