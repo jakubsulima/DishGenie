@@ -61,7 +61,7 @@ const Navbar = () => {
               className="flex items-center gap-2"
             >
               <img
-                src="/favicon.png"
+                src="/favicon.png?v=5"
                 alt="Dish Genie logo"
                 className="h-9 w-9 shrink-0 object-contain"
               />
