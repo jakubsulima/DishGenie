@@ -7,8 +7,9 @@ A full-stack web application that helps users discover and manage recipes using 
 ### Core Functionality
 
 - **AI Recipe Generation**: Generate custom recipes using Google's Gemini AI based on available ingredients and preferences
-- **Virtual Fridge Management**: Track your ingredients with expiration dates, quantities, and categories
+- **Virtual Fridge Management**: Track your ingredients with expiration dates and quantities, with duplicate ingredients merged automatically when name, unit, and expiration date match
 - **Smart Recipe Search**: Find recipes by name, ingredients, cuisine type, meal type, and preparation time
+- **Guest Recipe Preview**: Let non-logged-in visitors browse the 10 latest public recipes before signing up
 - **Dietary Preferences**: Set dietary restrictions (Vegan, Vegetarian, Gluten-Free, etc.) and ingredient dislikes
 - **Recipe Management**: Create, view, edit, and delete your own recipes
 - **Admin Panel**: Administrative dashboard for user and recipe management
@@ -16,12 +17,13 @@ A full-stack web application that helps users discover and manage recipes using 
 ### User Features
 
 - Browse and search through recipe database
+- Browse the 10 latest public recipes without an account
 - Generate recipes based on fridge contents
 - Filter by cuisine (Italian, Mexican, Indian, Chinese)
 - Filter by meal type (Breakfast, Lunch, Dinner, Snack)
 - Filter by preparation time (Quick, Moderate, Slow)
 - Save favorite recipes to your personal collection
-- Track ingredient expiration dates
+- Track ingredient expiration dates and avoid duplicate fridge entries
 
 ## 🛠️ Technology Stack
 
@@ -306,21 +308,21 @@ The frontend will be available at http://localhost:5173
 
 ### Recipes
 
-- `GET /recipes/getAllRecipes` - Get all recipes (paginated)
-- `GET /recipes/getRecipe/{id}` - Get recipe by ID
-- `GET /recipes/searchRecipes/{searchTerm}` - Search recipes
-- `POST /recipes/addRecipe` - Create new recipe
-- `POST /recipes/generateRecipe` - AI-generate recipe
-- `POST /recipes/updateRecipe/{id}` - Update recipe
-- `POST /recipes/deleteRecipe/{id}` - Delete recipe
-- `GET /recipes/getUserRecipes/{userId}` - Get user's recipes
+- `GET /getAllRecipes` - Get recipes (guests receive the 10 latest public recipes)
+- `GET /getRecipe/{id}` - Get recipe by ID
+- `GET /searchRecipes/{searchTerm}` - Search recipes
+- `POST /addRecipe` - Create new recipe
+- `POST /generateRecipe` - AI-generate recipe
+- `POST /updateRecipe/{id}` - Update recipe
+- `DELETE /deleteRecipe/{id}` - Delete recipe
+- `GET /getUserRecipes/{userId}` - Get a user's recipes; only the owner or an admin can access this collection
 
 ### Fridge Management
 
-- `GET /fridge/getFridgeIngredients` - Get user's fridge items
-- `POST /fridge/addFridgeIngredient` - Add ingredient to fridge
-- `POST /fridge/updateFridgeIngredient/{id}` - Update ingredient
-- `POST /fridge/deleteFridgeIngredient/{id}` - Remove ingredient
+- `GET /getFridgeIngredients` - Get user's fridge items
+- `POST /addFridgeIngredient` - Add ingredient to fridge; duplicates with the same normalized name, unit, and expiration date are merged
+- `POST /updateFridgeIngredient/{id}` - Update ingredient amount
+- `DELETE /deleteFridgeIngredient/{id}` - Remove ingredient
 
 ### User Preferences
 

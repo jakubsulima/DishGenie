@@ -1,6 +1,8 @@
 package org.jakub.backendapi.services;
 
 import org.jakub.backendapi.dto.UserDto;
+import org.jakub.backendapi.dto.FridgeIngredientDto;
+import org.jakub.backendapi.entities.Enums.Unit;
 import org.jakub.backendapi.entities.FridgeIngredient;
 import org.jakub.backendapi.entities.User;
 import org.jakub.backendapi.exceptions.AppException;
@@ -14,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -110,5 +114,57 @@ class FridgeServiceTest {
         assertEquals("Amount must be positive", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getCode());
         verify(fridgeIngredientRepository, never()).findById(4L);
+    }
+
+    @Test
+    void addFridgeIngredient_shouldMergeDuplicateWithSameNameUnitAndExpirationDate() {
+        LocalDate expirationDate = LocalDate.of(2026, 5, 20);
+        FridgeIngredientDto dto = new FridgeIngredientDto(null, " Tomatoes ", expirationDate, 3d, "GRAMS");
+
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("owner@example.com");
+
+        FridgeIngredient existingIngredient = new FridgeIngredient();
+        existingIngredient.setId(10L);
+        existingIngredient.setName("tomatoes");
+        existingIngredient.setExpirationDate(expirationDate);
+        existingIngredient.setAmount(2d);
+        existingIngredient.setUnit(Unit.GRAMS);
+        existingIngredient.setUser(user);
+
+        when(userRepository.findByEmail("owner@example.com")).thenReturn(Optional.of(user));
+        when(fridgeIngredientRepository.findMergeCandidates(1L, "Tomatoes", expirationDate, Unit.GRAMS))
+                .thenReturn(List.of(existingIngredient));
+        when(fridgeIngredientRepository.save(existingIngredient)).thenReturn(existingIngredient);
+
+        FridgeIngredient result = fridgeService.addFridgeIngredient(dto, "owner@example.com");
+
+        assertEquals(5d, result.getAmount());
+        verify(fridgeIngredientRepository).save(existingIngredient);
+        verify(fridgeIngredientMapper, never()).toFridgeIngredientWithUser(dto, user);
+    }
+
+    @Test
+    void addFridgeIngredient_shouldCreateNewItemWhenNoDuplicateExists() {
+        FridgeIngredientDto dto = new FridgeIngredientDto(null, "Milk", null, null, null);
+
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("owner@example.com");
+
+        FridgeIngredient mappedIngredient = new FridgeIngredient();
+        mappedIngredient.setName("Milk");
+        mappedIngredient.setUser(user);
+
+        when(userRepository.findByEmail("owner@example.com")).thenReturn(Optional.of(user));
+        when(fridgeIngredientRepository.findMergeCandidates(1L, "Milk", null, null)).thenReturn(List.of());
+        when(fridgeIngredientMapper.toFridgeIngredientWithUser(dto, user)).thenReturn(mappedIngredient);
+        when(fridgeIngredientRepository.save(mappedIngredient)).thenReturn(mappedIngredient);
+
+        FridgeIngredient result = fridgeService.addFridgeIngredient(dto, "owner@example.com");
+
+        assertEquals("Milk", result.getName());
+        verify(fridgeIngredientRepository).save(mappedIngredient);
     }
 }

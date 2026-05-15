@@ -84,9 +84,19 @@ public class RecipeService {
         return recipeRepository.save(recipe);
     }
 
-    public Page<RecipeDto> findRecipesByUserId(long userId, Pageable pageable) {
-        User user = userRepository.findById(userId)
+    public Page<RecipeDto> findRecipesByUserId(long userId, Pageable pageable, String requesterEmail) {
+        User requester = userRepository.findByEmail(requesterEmail)
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
+
+        boolean canReadRecipes = Objects.equals(requester.getId(), userId) || requester.getRole() == Role.ADMIN;
+        if (!canReadRecipes) {
+            throw new AppException("You do not have permission to view this user's recipes", HttpStatus.FORBIDDEN);
+        }
+
+        User user = Objects.equals(requester.getId(), userId)
+                ? requester
+                : userRepository.findById(userId)
+                        .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
         Page<Long> recipeIds = recipeRepository.findRecipeIdsByUser(user, pageable);
         return mapRecipeIdPage(recipeIds, pageable);
     }

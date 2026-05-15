@@ -12,8 +12,10 @@ import org.jakub.backendapi.repositories.FridgeIngredientRepository;
 import org.jakub.backendapi.repositories.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,6 +40,9 @@ public class FridgeService {
 
     @Transactional
     public FridgeIngredient addFridgeIngredient(FridgeIngredientDto fridgeIngredientDto, String email) {
+        String ingredientName = requireIngredientName(fridgeIngredientDto.getName());
+        fridgeIngredientDto.setName(ingredientName);
+
         if (fridgeIngredientDto.getUnit() != null) {
             validateUnit(fridgeIngredientDto.getUnit());
         }
@@ -46,6 +51,18 @@ public class FridgeService {
             throw new AppException("Amount must be positive", HttpStatus.BAD_REQUEST);
         }
         User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException("User not found", HttpStatus.NOT_FOUND));
+
+        List<FridgeIngredient> mergeCandidates = fridgeIngredientRepository.findMergeCandidates(
+                user.getId(),
+                ingredientName,
+                fridgeIngredientDto.getExpirationDate(),
+                fridgeIngredientDto.getUnit() != null ? Unit.valueOf(fridgeIngredientDto.getUnit().toUpperCase(Locale.ROOT)) : null
+        );
+        if (!mergeCandidates.isEmpty()) {
+            FridgeIngredient existingIngredient = mergeCandidates.get(0);
+            existingIngredient.setAmount(mergeAmounts(existingIngredient.getAmount(), fridgeIngredientDto.getAmount()));
+            return fridgeIngredientRepository.save(existingIngredient);
+        }
 
         FridgeIngredient fridgeIngredient = fridgeIngredientMapper.toFridgeIngredientWithUser(fridgeIngredientDto, user);
         return fridgeIngredientRepository.save(fridgeIngredient);
@@ -85,10 +102,29 @@ public class FridgeService {
 
     private void validateUnit(String unit) {
         try {
-            Unit.valueOf(unit.toUpperCase());
+            Unit.valueOf(unit.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
             throw new AppException("Invalid unit value provided: " + unit, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    private String requireIngredientName(String ingredientName) {
+        if (!StringUtils.hasText(ingredientName)) {
+            throw new AppException("Ingredient name cannot be empty", HttpStatus.BAD_REQUEST);
+        }
+        return ingredientName.trim();
+    }
+
+    private Double mergeAmounts(Double existingAmount, Double incomingAmount) {
+        if (existingAmount == null) {
+            return incomingAmount;
+        }
+
+        if (incomingAmount == null) {
+            return existingAmount;
+        }
+
+        return existingAmount + incomingAmount;
     }
 
 }
