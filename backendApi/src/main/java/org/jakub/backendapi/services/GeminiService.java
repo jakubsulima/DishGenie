@@ -2,6 +2,7 @@ package org.jakub.backendapi.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jakub.backendapi.dto.ShoppingListGenerationItemDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.jakub.backendapi.dto.FridgeIngredientDto;
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -171,6 +173,25 @@ public class GeminiService {
         return parseReceiptItems(rawJsonText);
     }
 
+    public Set<String> resolveStillMissingIngredientNames(
+            List<ShoppingListGenerationItemDto> candidateMissingIngredients,
+            List<FridgeIngredientDto> fridgeItems
+    ) {
+        if (candidateMissingIngredients == null || candidateMissingIngredients.isEmpty()) {
+            return Set.of();
+        }
+
+        if (!StringUtils.hasText(geminiApiKey)) {
+            throw new AppException("Gemini API key is not configured on the server.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        String prompt = buildShoppingListReviewPrompt(candidateMissingIngredients, fridgeItems);
+        Map<String, Object> payload = buildTextPromptPayload(prompt);
+        JsonNode responseBody = invokeGemini(payload, "Error reviewing shopping list ingredients");
+        String textResponse = cleanJsonPayload(extractTextFromGeminiResponse(responseBody));
+        return parseStillMissingIngredientNames(textResponse, candidateMissingIngredients);
+    }
+
     private Map<String, Object> buildTextPromptPayload(String prompt) {
         List<Object> parts = new ArrayList<>();
         parts.add(Map.of("text", prompt));
@@ -185,6 +206,43 @@ public class GeminiService {
         generationConfig.put("responseMimeType", "application/json");
         payload.put("generationConfig", generationConfig);
         return payload;
+    }
+
+    private String buildShoppingListReviewPrompt(
+            List<ShoppingListGenerationItemDto> candidateMissingIngredients,
+            List<FridgeIngredientDto> fridgeItems
+    ) {
+        String candidateJson;
+        String fridgeJson;
+
+        try {
+            candidateJson = objectMapper.writeValueAsString(candidateMissingIngredients);
+            fridgeJson = objectMapper.writeValueAsString(fridgeItems == null ? List.of() : fridgeItems);
+        } catch (IOException e) {
+            throw new AppException("Could not prepare shopping list review payload.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return """
+                You are reviewing a cooking app shopping list.
+                Decide which candidate missing recipe ingredients are still actually missing after considering fridge item synonyms or close ingredient equivalents.
+
+                Return ONLY strict JSON in this exact format:
+                {"missingIngredientNames":["name1","name2"]}
+
+                Rules:
+                - Only include ingredient names that already appear in the candidateMissingIngredients list.
+                - Never add new ingredients.
+                - Never change quantities or units.
+                - Use the fridge items only to recognize naming variants or close equivalents, such as scallion vs green onion.
+                - If a fridge item reasonably covers a candidate ingredient, omit that candidate from the result.
+                - If unsure, keep the ingredient in the result.
+
+                candidateMissingIngredients:
+                %s
+
+                fridgeItems:
+                %s
+                """.formatted(candidateJson, fridgeJson);
     }
 
     private JsonNode invokeGemini(Map<String, Object> payload, String operationLabel) {
@@ -492,6 +550,43 @@ public class GeminiService {
         if (fieldNode == null || !fieldNode.isNumber()) {
             throw new AppException(INVALID_RECIPE_JSON_MESSAGE, HttpStatus.BAD_GATEWAY);
         }
+    }
+
+    private Set<String> parseStillMissingIngredientNames(
+            String payload,
+            List<ShoppingListGenerationItemDto> candidateMissingIngredients
+    ) {
+        JsonNode root;
+        try {
+            root = objectMapper.readTree(payload);
+        } catch (IOException e) {
+            throw new AppException("Could not parse shopping list review response from Gemini.", HttpStatus.BAD_GATEWAY);
+        }
+
+        JsonNode namesNode = root.path("missingIngredientNames");
+        if (!namesNode.isArray()) {
+            throw new AppException("Gemini shopping list review response missing 'missingIngredientNames' array.", HttpStatus.BAD_GATEWAY);
+        }
+
+        Set<String> allowedNames = candidateMissingIngredients.stream()
+                .map(ShoppingListGenerationItemDto::getName)
+                .filter(StringUtils::hasText)
+                .map(value -> value.trim().toLowerCase(Locale.ROOT))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        Set<String> parsedNames = new LinkedHashSet<>();
+        for (JsonNode node : namesNode) {
+            if (!node.isTextual()) {
+                continue;
+            }
+
+            String normalizedName = node.asText("").trim().toLowerCase(Locale.ROOT);
+            if (allowedNames.contains(normalizedName)) {
+                parsedNames.add(normalizedName);
+            }
+        }
+
+        return parsedNames;
     }
 
     private List<FridgeIngredientDto> parseReceiptItems(String payload) {
