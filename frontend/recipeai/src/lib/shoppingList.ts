@@ -15,6 +15,12 @@ interface ShoppingItemInput {
   unit?: string | null;
 }
 
+export interface ShoppingListGenerationItem {
+  name: string;
+  amount?: string | number | null;
+  unit?: string | null;
+}
+
 type RawShoppingListItem = Partial<ShoppingListItem> & {
   id?: string;
   name?: string;
@@ -158,6 +164,40 @@ const toSyncPayloadItem = (item: ShoppingListItem) => ({
   createdAt: item.createdAt,
 });
 
+const normalizeShoppingListGenerationItems = (
+  items: unknown,
+): ShoppingListGenerationItem[] => {
+  if (!Array.isArray(items)) {
+    return [];
+  }
+
+  return items
+    .map(toRawShoppingListItem)
+    .filter((item): item is RawShoppingListItem => item !== null)
+    .map((item) => {
+      const name = typeof item.name === "string" ? item.name.trim() : "";
+      if (!name) {
+        return null;
+      }
+
+      const normalizedItem: ShoppingListGenerationItem = {
+        name,
+        amount: toNumberOrNull(item.amount),
+        unit:
+          typeof item.unit === "string" && item.unit.trim()
+            ? item.unit.trim()
+            : null,
+      };
+
+      return normalizedItem;
+    })
+    .filter(
+      (
+        item: ShoppingListGenerationItem | null,
+      ): item is ShoppingListGenerationItem => item !== null,
+    );
+};
+
 export const readShoppingList = (): ShoppingListItem[] => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -261,6 +301,20 @@ export const fetchShoppingList = async (): Promise<ShoppingListItem[]> => {
   const response = await apiClient("shoppingList");
 
   return normalizeShoppingListItems(response);
+};
+
+export const generateShoppingListFromRecipe = async (
+  ingredients: ShoppingItemInput[],
+): Promise<ShoppingListGenerationItem[]> => {
+  const response = await apiClient("shoppingList/generate-from-recipe", true, {
+    ingredients: ingredients.map((ingredient) => ({
+      name: ingredient.name,
+      amount: toNumberOrNull(ingredient.amount),
+      unit: ingredient.unit ?? null,
+    })),
+  });
+
+  return normalizeShoppingListGenerationItems(response);
 };
 
 export const syncShoppingList = async (

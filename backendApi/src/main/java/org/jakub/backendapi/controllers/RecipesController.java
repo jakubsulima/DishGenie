@@ -96,7 +96,7 @@ public class RecipesController {
 
     @GetMapping("/getUserRecipes/{userId}")
     public ResponseEntity<Page<RecipeDto>> getUserRecipes(@PathVariable long userId, Pageable p) {
-        Page<RecipeDto> recipes = recipeService.findRecipesByUserId(userId, p);
+        Page<RecipeDto> recipes = recipeService.findRecipesByUserId(userId, p, getAuthenticatedUserEmail());
         return ResponseEntity.ok(recipes);
     }
 

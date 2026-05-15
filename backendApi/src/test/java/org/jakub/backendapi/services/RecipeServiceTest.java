@@ -1,6 +1,7 @@
 package org.jakub.backendapi.services;
 
 import org.jakub.backendapi.dto.RecipeDto;
+import org.jakub.backendapi.entities.Enums.Role;
 import org.jakub.backendapi.entities.Recipe;
 import org.jakub.backendapi.entities.User;
 import org.jakub.backendapi.exceptions.AppException;
@@ -127,16 +128,36 @@ class RecipeServiceTest {
         recipeDto.setId(11L);
         recipeDto.setName("Soup");
 
-        when(userRepository.findById(7L)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
         when(recipeRepository.findRecipeIdsByUser(user, pageable))
                 .thenReturn(new PageImpl<>(List.of(11L), pageable, 1));
         when(recipeRepository.findAllWithIngredientsByIdIn(List.of(11L))).thenReturn(List.of(recipe));
         when(recipeMapper.toRecipeDto(recipe)).thenReturn(recipeDto);
 
-        Page<RecipeDto> result = recipeService.findRecipesByUserId(7L, pageable);
+        Page<RecipeDto> result = recipeService.findRecipesByUserId(7L, pageable, "test@example.com");
 
         assertEquals(1, result.getContent().size());
         assertEquals("Soup", result.getContent().get(0).getName());
+    }
+
+    @Test
+    void findRecipesByUserId_shouldRejectNonOwnerNonAdminRequester() {
+        PageRequest pageable = PageRequest.of(0, 10);
+        User requester = new User();
+        requester.setId(3L);
+        requester.setEmail("requester@example.com");
+        requester.setRole(Role.USER);
+
+        when(userRepository.findByEmail("requester@example.com")).thenReturn(Optional.of(requester));
+
+        AppException exception = assertThrows(
+                AppException.class,
+                () -> recipeService.findRecipesByUserId(7L, pageable, "requester@example.com")
+        );
+
+        assertEquals("You do not have permission to view this user's recipes", exception.getMessage());
+        assertEquals(HttpStatus.FORBIDDEN, exception.getCode());
+        verifyNoInteractions(recipeRepository);
     }
 
     @Test

@@ -10,7 +10,11 @@ import { useFridge } from "../context/fridgeContext.tsx";
 import { useUser } from "../context/context";
 import FoodLoadingScreen from "../components/FoodLoadingScreen";
 import { RecipePageSkeleton } from "../components/Skeleton";
-import { addShoppingItems } from "../lib/shoppingList";
+import {
+  addShoppingItems,
+  generateShoppingListFromRecipe,
+  ShoppingListGenerationItem,
+} from "../lib/shoppingList";
 import ErrorAlert from "../components/ErrorAlert";
 import { getMissingIngredients } from "../lib/ingredientMatching";
 import { applySeo } from "../lib/seo";
@@ -486,34 +490,45 @@ const RecipePage = () => {
     }
   };
 
-  const handleGenerateShoppingList = () => {
+  const handleGenerateShoppingList = async () => {
     if (!recipeData?.ingredients?.length) {
       setError("No ingredients available to generate shopping list.");
       return;
     }
 
-    const missingIngredients = getMissingIngredients(
-      recipeData.ingredients,
-      fridgeItems,
-    );
+    setError("");
 
-    const sourceIngredients =
-      missingIngredients.length > 0
-        ? missingIngredients
-        : recipeData.ingredients;
+    const recipeIngredientsPayload = recipeData.ingredients.map((ingredient) => ({
+      name: ingredient.name,
+      amount: ingredient.amount,
+      unit: ingredient.unit,
+    }));
 
-    const updated = addShoppingItems(
+    let sourceIngredients: ShoppingListGenerationItem[];
+
+    try {
+      if (user?.id) {
+        sourceIngredients =
+          await generateShoppingListFromRecipe(recipeIngredientsPayload);
+      } else {
+        throw new Error("Smart shopping list generation requires login.");
+      }
+    } catch {
+      const missingIngredients = getMissingIngredients(
+        recipeData.ingredients,
+        fridgeItems,
+      );
+
+      sourceIngredients = missingIngredients;
+    }
+
+    addShoppingItems(
       sourceIngredients.map((ingredient) => ({
         name: ingredient.name,
         amount: ingredient.amount,
         unit: ingredient.unit,
       })),
     );
-
-    if (updated.length === 0) {
-      setError("Could not add items to the shopping list. Please try again.");
-      return;
-    }
 
     navigate("/ShoppingList");
   };
