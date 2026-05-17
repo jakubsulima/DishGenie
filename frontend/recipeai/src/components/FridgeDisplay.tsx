@@ -1,29 +1,20 @@
 import React, { useMemo } from "react";
-import { FridgeIngredient } from "../context/fridgeContext";
+import {
+  FridgeIngredient,
+  UpdateFridgeIngredientInput,
+} from "../context/fridgeContext";
 import FridgeIngredientContainer from "./FridgeIngredientContainer";
 
 interface FridgeDisplayProps {
   fridgeItems: FridgeIngredient[];
   removeItem: (id: number) => void;
-  updateAmount: (id: number, newAmount: string) => Promise<void>;
+  updateItem: (id: number, item: UpdateFridgeIngredientInput) => Promise<void>;
 }
-
-const formatShortDate = (dateString: string | null): string => {
-  if (!dateString) {
-    return "";
-  }
-  const parts = dateString.split("-");
-  if (parts.length === 3 && parts[2].length === 4) {
-    const shortYear = parts[2].slice(-2);
-    return `${parts[0]}-${parts[1]}-${shortYear}`;
-  }
-  return dateString;
-};
 
 const FridgeDisplay: React.FC<FridgeDisplayProps> = ({
   fridgeItems,
   removeItem,
-  updateAmount,
+  updateItem,
 }) => {
   const sortedItems = useMemo(
     () =>
@@ -61,11 +52,11 @@ const FridgeDisplay: React.FC<FridgeDisplayProps> = ({
             <FridgeIngredientContainer
               id={item.id}
               name={item.name}
-              expirationDate={formatShortDate(item.expirationDate)}
+              expirationDate={item.expirationDate}
               amount={item.amount || ""}
               unit={item.unit}
               remove={() => removeItem(item.id)}
-              onUpdateAmount={updateAmount}
+              onUpdateItem={updateItem}
             />
           </li>
         ))}

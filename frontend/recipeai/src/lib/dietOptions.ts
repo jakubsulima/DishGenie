@@ -109,7 +109,7 @@ export const getDietLabel = (value: string): string => {
   return DIET_METADATA[normalized]?.label ?? toTitleCase(normalized);
 };
 
-export const getDietDescription = (value: string): string => {
+const getDietDescription = (value: string): string => {
   const normalized = normalizeDietValue(value);
   return (
     DIET_METADATA[normalized]?.description ??
@@ -117,12 +117,12 @@ export const getDietDescription = (value: string): string => {
   );
 };
 
-export const getDietGroup = (value: string): DietGroupId => {
+const getDietGroup = (value: string): DietGroupId => {
   const normalized = normalizeDietValue(value);
   return DIET_METADATA[normalized]?.group ?? "general";
 };
 
-export const getDietOptionDescriptors = (
+const getDietOptionDescriptors = (
   values: string[],
 ): DietOptionDescriptor[] => {
   const unique = values.filter(

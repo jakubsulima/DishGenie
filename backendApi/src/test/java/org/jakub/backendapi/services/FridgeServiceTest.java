@@ -167,4 +167,143 @@ class FridgeServiceTest {
         assertEquals("Milk", result.getName());
         verify(fridgeIngredientRepository).save(mappedIngredient);
     }
+
+    @Test
+    void updateFridgeIngredient_shouldUpdateDisplayedFields() {
+        currentUser = new UserDto();
+        currentUser.setId(1L);
+        currentUser.setEmail("owner@example.com");
+
+        User owner = new User();
+        owner.setId(1L);
+
+        FridgeIngredient ingredient = new FridgeIngredient();
+        ingredient.setId(5L);
+        ingredient.setName("Milk");
+        ingredient.setAmount(1d);
+        ingredient.setUnit(Unit.LITERS);
+        ingredient.setUser(owner);
+
+        LocalDate expirationDate = LocalDate.of(2026, 5, 20);
+        FridgeIngredientDto dto = new FridgeIngredientDto(null, " Oat milk ", expirationDate, 2d, "MILLILITERS");
+
+        when(fridgeIngredientRepository.findById(5L)).thenReturn(Optional.of(ingredient));
+        when(fridgeIngredientRepository.findMergeCandidates(1L, "Oat milk", expirationDate, Unit.MILLILITERS))
+                .thenReturn(List.of(ingredient));
+        when(fridgeIngredientRepository.save(ingredient)).thenReturn(ingredient);
+
+        FridgeIngredient result = fridgeService.updateFridgeIngredient(5L, dto, "owner@example.com");
+
+        assertEquals("Oat milk", result.getName());
+        assertEquals(expirationDate, result.getExpirationDate());
+        assertEquals(2d, result.getAmount());
+        assertEquals(Unit.MILLILITERS, result.getUnit());
+        verify(fridgeIngredientRepository).save(ingredient);
+    }
+
+    @Test
+    void updateFridgeIngredient_shouldAcceptUnitAbbreviations() {
+        currentUser = new UserDto();
+        currentUser.setId(1L);
+        currentUser.setEmail("owner@example.com");
+
+        User owner = new User();
+        owner.setId(1L);
+
+        FridgeIngredient ingredient = new FridgeIngredient();
+        ingredient.setId(5L);
+        ingredient.setName("Milk");
+        ingredient.setUser(owner);
+
+        FridgeIngredientDto dto = new FridgeIngredientDto(null, "Milk", null, 2d, "ml");
+
+        when(fridgeIngredientRepository.findById(5L)).thenReturn(Optional.of(ingredient));
+        when(fridgeIngredientRepository.findMergeCandidates(1L, "Milk", null, Unit.MILLILITERS))
+                .thenReturn(List.of(ingredient));
+        when(fridgeIngredientRepository.save(ingredient)).thenReturn(ingredient);
+
+        FridgeIngredient result = fridgeService.updateFridgeIngredient(5L, dto, "owner@example.com");
+
+        assertEquals(Unit.MILLILITERS, result.getUnit());
+        verify(fridgeIngredientRepository).save(ingredient);
+    }
+
+    @Test
+    void updateFridgeIngredient_shouldMergeDuplicateAndDeleteEditedItem() {
+        currentUser = new UserDto();
+        currentUser.setId(1L);
+        currentUser.setEmail("owner@example.com");
+
+        User owner = new User();
+        owner.setId(1L);
+
+        LocalDate expirationDate = LocalDate.of(2026, 5, 20);
+
+        FridgeIngredient editedIngredient = new FridgeIngredient();
+        editedIngredient.setId(5L);
+        editedIngredient.setName("Oat milk");
+        editedIngredient.setAmount(2d);
+        editedIngredient.setUnit(Unit.LITERS);
+        editedIngredient.setUser(owner);
+
+        FridgeIngredient mergeTarget = new FridgeIngredient();
+        mergeTarget.setId(8L);
+        mergeTarget.setName("Milk");
+        mergeTarget.setExpirationDate(expirationDate);
+        mergeTarget.setAmount(1d);
+        mergeTarget.setUnit(Unit.LITERS);
+        mergeTarget.setUser(owner);
+
+        FridgeIngredientDto dto = new FridgeIngredientDto(null, "Milk", expirationDate, 2d, "LITERS");
+
+        when(fridgeIngredientRepository.findById(5L)).thenReturn(Optional.of(editedIngredient));
+        when(fridgeIngredientRepository.findMergeCandidates(1L, "Milk", expirationDate, Unit.LITERS))
+                .thenReturn(List.of(mergeTarget, editedIngredient));
+        when(fridgeIngredientRepository.save(mergeTarget)).thenReturn(mergeTarget);
+
+        FridgeIngredient result = fridgeService.updateFridgeIngredient(5L, dto, "owner@example.com");
+
+        assertEquals(3d, result.getAmount());
+        verify(fridgeIngredientRepository).deleteById(5L);
+        verify(fridgeIngredientRepository).save(mergeTarget);
+    }
+
+    @Test
+    void updateFridgeIngredient_shouldDeleteWhenAmountIsZero() {
+        currentUser = new UserDto();
+        currentUser.setId(1L);
+        currentUser.setEmail("owner@example.com");
+
+        User owner = new User();
+        owner.setId(1L);
+
+        FridgeIngredient ingredient = new FridgeIngredient();
+        ingredient.setId(5L);
+        ingredient.setName("Milk");
+        ingredient.setUser(owner);
+
+        FridgeIngredientDto dto = new FridgeIngredientDto(null, "Milk", null, 0d, null);
+
+        when(fridgeIngredientRepository.findById(5L)).thenReturn(Optional.of(ingredient));
+
+        FridgeIngredient result = fridgeService.updateFridgeIngredient(5L, dto, "owner@example.com");
+
+        assertEquals(null, result);
+        verify(fridgeIngredientRepository).deleteById(5L);
+        verify(fridgeIngredientRepository, never()).save(ingredient);
+    }
+
+    @Test
+    void updateFridgeIngredient_shouldRejectEmptyName() {
+        FridgeIngredientDto dto = new FridgeIngredientDto(null, " ", null, 1d, null);
+
+        AppException exception = assertThrows(
+                AppException.class,
+                () -> fridgeService.updateFridgeIngredient(5L, dto, "owner@example.com")
+        );
+
+        assertEquals("Ingredient name cannot be empty", exception.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getCode());
+        verify(fridgeIngredientRepository, never()).findById(5L);
+    }
 }

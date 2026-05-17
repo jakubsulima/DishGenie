@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AddFridgeIngredientInput,
+  UpdateFridgeIngredientInput,
   unitType,
   useFridge,
 } from "../context/fridgeContext";
@@ -183,12 +184,12 @@ export const Fridge = () => {
     }
   };
 
-  const updateAmount = async (id: number, newAmount: string) => {
+  const updateItem = async (id: number, item: UpdateFridgeIngredientInput) => {
     setError("");
     try {
-      await updateFridgeItem(id, newAmount);
+      await updateFridgeItem(id, item);
     } catch (err: unknown) {
-      setError(getErrorMessage(err, "Failed to update item amount"));
+      setError(getErrorMessage(err, "Failed to update item"));
       throw err;
     }
   };
@@ -388,7 +389,7 @@ export const Fridge = () => {
         <FridgeDisplay
           fridgeItems={fridgeItems}
           removeItem={removeItem}
-          updateAmount={updateAmount}
+          updateItem={updateItem}
         />
       </div>
 

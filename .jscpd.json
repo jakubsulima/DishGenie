@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/kucherenko/jscpd/master/schemas/jscpd-schema.json",
+  "threshold": 3,
+  "minLines": 8,
+  "minTokens": 80,
+  "maxLines": 1000,
+  "maxSize": "150kb",
+  "gitignore": true,
+  "reporters": ["console", "html"],
+  "format": ["typescript", "tsx", "javascript", "jsx", "java"],
+  "ignore": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.gradle/**",
+    "**/coverage/**",
+    "**/reports/**",
+    "**/public/**",
+    "**/gradle/wrapper/**",
+    "**/package-lock.json",
+    "**/*.min.*",
+    "**/db/migration/**"
+  ]
+}

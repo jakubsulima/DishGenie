@@ -1,4 +1,4 @@
-export interface SeoConfig {
+interface SeoConfig {
 	title: string;
 	description: string;
 	canonicalPath: string;

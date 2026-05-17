@@ -1,10 +1,10 @@
-export interface IngredientQuantity {
+interface IngredientQuantity {
   name: string;
   amount: string | number | null | undefined;
   unit: string | null | undefined;
 }
 
-export interface FridgeItemQuantity {
+interface FridgeItemQuantity {
   name: string;
   amount?: string | number | null;
   unit?: string | null;

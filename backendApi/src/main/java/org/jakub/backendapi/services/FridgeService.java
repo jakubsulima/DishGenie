@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,9 +42,7 @@ public class FridgeService {
         String ingredientName = requireIngredientName(fridgeIngredientDto.getName());
         fridgeIngredientDto.setName(ingredientName);
 
-        if (fridgeIngredientDto.getUnit() != null) {
-            validateUnit(fridgeIngredientDto.getUnit());
-        }
+        Unit unit = parseUnit(fridgeIngredientDto.getUnit());
 
         if (fridgeIngredientDto.getAmount() != null && fridgeIngredientDto.getAmount() <= 0) {
             throw new AppException("Amount must be positive", HttpStatus.BAD_REQUEST);
@@ -56,7 +53,7 @@ public class FridgeService {
                 user.getId(),
                 ingredientName,
                 fridgeIngredientDto.getExpirationDate(),
-                fridgeIngredientDto.getUnit() != null ? Unit.valueOf(fridgeIngredientDto.getUnit().toUpperCase(Locale.ROOT)) : null
+                unit
         );
         if (!mergeCandidates.isEmpty()) {
             FridgeIngredient existingIngredient = mergeCandidates.get(0);
@@ -100,12 +97,74 @@ public class FridgeService {
         fridgeIngredientRepository.save(fridgeIngredient);
     }
 
-    private void validateUnit(String unit) {
-        try {
-            Unit.valueOf(unit.toUpperCase(Locale.ROOT));
-        } catch (IllegalArgumentException e) {
-            throw new AppException("Invalid unit value provided: " + unit, HttpStatus.BAD_REQUEST);
+    @Transactional
+    public FridgeIngredient updateFridgeIngredient(Long id, FridgeIngredientDto fridgeIngredientDto, String email) {
+        String ingredientName = requireIngredientName(fridgeIngredientDto.getName());
+        fridgeIngredientDto.setName(ingredientName);
+
+        Unit unit = parseUnit(fridgeIngredientDto.getUnit());
+
+        Double amount = fridgeIngredientDto.getAmount();
+        if (amount != null && amount < 0) {
+            throw new AppException("Amount must be positive", HttpStatus.BAD_REQUEST);
         }
+
+        UserDto userDto = userService.findByEmail(email);
+        FridgeIngredient fridgeIngredient = fridgeIngredientRepository.findById(id).orElseThrow(() -> new AppException("Fridge ingredient not found", HttpStatus.NOT_FOUND));
+
+        if (!fridgeIngredient.getUser().getId().equals(userDto.getId())) {
+            throw new AppException("You do not have permission to change this fridge ingredient", HttpStatus.FORBIDDEN);
+        }
+
+        if (amount != null && amount == 0) {
+            fridgeIngredientRepository.deleteById(id);
+            return null;
+        }
+
+        List<FridgeIngredient> mergeCandidates = fridgeIngredientRepository.findMergeCandidates(
+                userDto.getId(),
+                ingredientName,
+                fridgeIngredientDto.getExpirationDate(),
+                unit
+        );
+
+        FridgeIngredient mergeTarget = mergeCandidates.stream()
+                .filter(candidate -> !candidate.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+
+        if (mergeTarget != null) {
+            mergeTarget.setAmount(mergeAmounts(mergeTarget.getAmount(), amount));
+            fridgeIngredientRepository.deleteById(id);
+            return fridgeIngredientRepository.save(mergeTarget);
+        }
+
+        fridgeIngredient.setName(ingredientName);
+        fridgeIngredient.setExpirationDate(fridgeIngredientDto.getExpirationDate());
+        fridgeIngredient.setAmount(amount);
+        fridgeIngredient.setUnit(unit);
+
+        return fridgeIngredientRepository.save(fridgeIngredient);
+    }
+
+    private Unit parseUnit(String unit) {
+        if (unit == null) {
+            return null;
+        }
+
+        String normalizedUnit = unit.trim();
+        if (normalizedUnit.isEmpty()) {
+            return null;
+        }
+
+        for (Unit value : Unit.values()) {
+            if (value.name().equalsIgnoreCase(normalizedUnit)
+                    || value.getAbbreviation().equalsIgnoreCase(normalizedUnit)) {
+                return value;
+            }
+        }
+
+        throw new AppException("Invalid unit value provided: " + unit, HttpStatus.BAD_REQUEST);
     }
 
     private String requireIngredientName(String ingredientName) {

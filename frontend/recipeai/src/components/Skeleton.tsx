@@ -5,7 +5,7 @@ interface SkeletonProps {
   style?: React.CSSProperties;
 }
 
-export const Skeleton = ({ className = "", style }: SkeletonProps) => (
+const Skeleton = ({ className = "", style }: SkeletonProps) => (
   <div
     aria-hidden="true"
     className={`animate-pulse rounded-md bg-primary/10 ${className}`}
@@ -13,15 +13,15 @@ export const Skeleton = ({ className = "", style }: SkeletonProps) => (
   />
 );
 
-export const SkeletonText = ({ className = "" }: SkeletonProps) => (
+const SkeletonText = ({ className = "" }: SkeletonProps) => (
   <Skeleton className={`h-4 w-full ${className}`} />
 );
 
-export const SkeletonCircle = ({ className = "" }: SkeletonProps) => (
+const SkeletonCircle = ({ className = "" }: SkeletonProps) => (
   <Skeleton className={`rounded-full ${className}`} />
 );
 
-export const RecipeContainerSkeleton = () => (
+const RecipeContainerSkeleton = () => (
   <div className="group flex flex-col rounded-2xl border border-primary/10 bg-secondary p-5 transition-all duration-300 sm:flex-row sm:items-center sm:justify-between">
     <div className="flex-1 mb-3 sm:mb-0">
       <SkeletonText className="mb-2 h-7 w-3/4 rounded-lg" />
@@ -385,7 +385,7 @@ export const AdminDashboardSkeleton = ({
   </div>
 );
 
-export const ProfileSkeleton = () => (
+const ProfileSkeleton = () => (
   <div className="ambient-gradient-card mb-8 overflow-hidden rounded-3xl border border-accent/35 bg-secondary p-6 sm:p-8">
     <SkeletonText className="h-10 w-44 rounded-xl" />
     <SkeletonText className="mt-3 h-4 w-72 rounded-full" />

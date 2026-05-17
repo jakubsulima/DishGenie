@@ -479,7 +479,7 @@ export const formatDateForBackend = (dateString: string): string => {
   return `${day}-${month}-${year}`;
 };
 
-export const isValidNumber = (value: string): boolean => {
+const isValidNumber = (value: string): boolean => {
   if (value.trim() === "") return false;
 
   const numberRegex = /^[0-9]*\.?[0-9]+$/;

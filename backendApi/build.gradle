@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.11'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'pmd'
 }
 
 group = 'org.jakub' // use all lowercase to match folder structure
@@ -46,4 +47,23 @@ springBoot {
 
 test {
     useJUnitPlatform()
+}
+
+pmd {
+    consoleOutput = true
+    ruleSets = []
+    ruleSetFiles = files("${rootDir}/config/pmd/unused-code.xml")
+}
+
+tasks.withType(Pmd).configureEach {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+tasks.register('unusedJava') {
+    group = 'verification'
+    description = 'Runs PMD rules that flag unused Java code in src/main.'
+    dependsOn tasks.named('pmdMain')
 }
