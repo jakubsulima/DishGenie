@@ -26,6 +26,13 @@ export interface AddFridgeIngredientInput {
   unit: unitType;
 }
 
+export interface UpdateFridgeIngredientInput {
+  name: string;
+  expirationDate: string | null;
+  amount?: string | number;
+  unit: unitType;
+}
+
 export interface FridgeContextType {
   fridgeItems: FridgeIngredient[];
   setFridgeItems: React.Dispatch<React.SetStateAction<FridgeIngredient[]>>;
@@ -34,7 +41,10 @@ export interface FridgeContextType {
   addFridgeItem: (item: AddFridgeIngredientInput) => Promise<void>;
   addFridgeItemsBatch: (items: AddFridgeIngredientInput[]) => Promise<void>;
   removeFridgeItem: (id: number) => Promise<void>;
-  updateFridgeItem: (id: number, newAmount: string) => Promise<void>;
+  updateFridgeItem: (
+    id: number,
+    item: UpdateFridgeIngredientInput,
+  ) => Promise<void>;
   refreshFridgeItems: () => Promise<void>;
   getFridgeItemNames: () => string[];
 }
@@ -51,7 +61,6 @@ export const UNITS = {
 export type unitType = keyof typeof UNITS;
 
 export const UNIT_OPTIONS: unitType[] = Object.keys(UNITS) as unitType[];
-export const UNIT_VALUES = Object.values(UNITS);
 const BATCH_ADD_CONCURRENCY = 4;
 
 const getErrorMessage = (error: unknown, fallback: string) => {
@@ -150,21 +159,21 @@ export const FridgeProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const updateFridgeItem = useCallback(
-    async (id: number, newAmount: string) => {
+    async (id: number, item: UpdateFridgeIngredientInput) => {
       try {
         await apiClient(`updateFridgeIngredient/${id}`, true, {
-          amount: newAmount,
+          name: item.name,
+          expirationDate: item.expirationDate,
+          amount: item.amount,
+          unit: UNITS[item.unit],
         });
-        setFridgeItems((prev) =>
-          prev.map((item) =>
-            item.id === id ? { ...item, amount: newAmount } : item,
-          ),
-        );
+
+        await refreshFridgeItems();
       } catch {
         throw new Error("Failed to update fridge item");
       }
     },
-    [],
+    [refreshFridgeItems],
   );
 
   const getFridgeItemNames = useCallback(() => {

@@ -11,7 +11,6 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.http.MediaType;
 
-import javax.naming.AuthenticationException;
 import java.io.IOException;
 
 @Component

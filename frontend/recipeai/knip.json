@@ -1,0 +1,9 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignore": [
+    "public/runtime-config.js"
+  ],
+  "ignoreBinaries": [
+    "open"
+  ]
+}

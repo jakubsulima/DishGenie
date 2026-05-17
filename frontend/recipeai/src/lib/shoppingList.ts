@@ -129,7 +129,7 @@ const normalizeRemoteItem = (
   };
 };
 
-export const normalizeShoppingListItems = (
+const normalizeShoppingListItems = (
   items: unknown,
 ): ShoppingListItem[] => {
   if (!Array.isArray(items)) {

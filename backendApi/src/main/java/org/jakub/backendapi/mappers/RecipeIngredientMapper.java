@@ -1,8 +1,6 @@
 package org.jakub.backendapi.mappers;
 
-import org.jakub.backendapi.dto.RecipeDto;
 import org.jakub.backendapi.dto.RecipeIngredientDto;
-import org.jakub.backendapi.entities.Recipe;
 import org.jakub.backendapi.entities.RecipeIngredient;
 import org.mapstruct.Mapper;
 

@@ -321,7 +321,7 @@ The frontend will be available at http://localhost:5173
 
 - `GET /getFridgeIngredients` - Get user's fridge items
 - `POST /addFridgeIngredient` - Add ingredient to fridge; duplicates with the same normalized name, unit, and expiration date are merged
-- `POST /updateFridgeIngredient/{id}` - Update ingredient amount
+- `POST /updateFridgeIngredient/{id}` - Update a fridge item's displayed fields; duplicates with the same normalized name, unit, and expiration date are merged
 - `DELETE /deleteFridgeIngredient/{id}` - Remove ingredient
 
 ### User Preferences

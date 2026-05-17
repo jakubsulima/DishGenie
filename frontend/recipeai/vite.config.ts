@@ -29,7 +29,7 @@ export default defineConfig({
             return "forms";
           }
 
-          if (id.includes("axios") || id.includes("jwt-decode")) {
+          if (id.includes("axios")) {
             return "network";
           }
         },

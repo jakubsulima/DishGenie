@@ -1,6 +1,6 @@
 import type { Page, Route } from "@playwright/test";
 
-export const mockUser = {
+const mockUser = {
   id: 7,
   email: "chef@example.com",
   role: "USER",
@@ -72,6 +72,47 @@ type FridgeItem = {
   expirationDate: string | null;
   amount?: string | number;
   unit: string;
+};
+
+const UNIT_ABBREVIATIONS: Record<string, string> = {
+  GRAMS: "g",
+  KILOGRAMS: "kg",
+  MILLILITERS: "ml",
+  LITERS: "l",
+  PIECES: "pcs",
+};
+
+const normalizeFridgeUnit = (unit: unknown) => {
+  const unitValue = String(unit ?? "").trim();
+  return UNIT_ABBREVIATIONS[unitValue] ?? unitValue;
+};
+
+const parseFridgeAmount = (amount: string | number | undefined) => {
+  if (amount === undefined || amount === "") {
+    return null;
+  }
+
+  const parsedAmount =
+    typeof amount === "number" ? amount : Number.parseFloat(amount);
+  return Number.isFinite(parsedAmount) ? parsedAmount : null;
+};
+
+const mergeFridgeAmounts = (
+  firstAmount: string | number | undefined,
+  secondAmount: string | number | undefined,
+) => {
+  const firstParsedAmount = parseFridgeAmount(firstAmount);
+  const secondParsedAmount = parseFridgeAmount(secondAmount);
+
+  if (firstParsedAmount === null) {
+    return secondAmount;
+  }
+
+  if (secondParsedAmount === null) {
+    return firstAmount;
+  }
+
+  return String(firstParsedAmount + secondParsedAmount);
 };
 
 const fulfillJson = async (
@@ -276,14 +317,17 @@ export const mockAuthenticatedRecipesApi = async (page: Page) => {
   });
 };
 
-export const mockAuthenticatedFridgeApi = async (page: Page) => {
-  const fridgeItems: FridgeItem[] = [
+export const mockAuthenticatedFridgeApi = async (
+  page: Page,
+  initialFridgeItems?: FridgeItem[],
+) => {
+  let fridgeItems: FridgeItem[] = initialFridgeItems ?? [
     {
       id: 1,
       name: "Eggs",
       expirationDate: "31-12-2099",
       amount: "6",
-      unit: "PIECES",
+      unit: "pcs",
     },
   ];
 
@@ -305,16 +349,73 @@ export const mockAuthenticatedFridgeApi = async (page: Page) => {
     if (method === "POST" && endpoint === "addFridgeIngredient") {
       const payload = route.request().postDataJSON() as Partial<FridgeItem>;
       fridgeItems.push({
-        id: fridgeItems.length + 1,
+        id: Math.max(0, ...fridgeItems.map((item) => item.id)) + 1,
         name: String(payload.name ?? "Unknown ingredient"),
         expirationDate:
           typeof payload.expirationDate === "string"
             ? payload.expirationDate
             : null,
         amount: payload.amount,
-        unit: String(payload.unit ?? ""),
+        unit: normalizeFridgeUnit(payload.unit),
       });
       await fulfillJson(route, { message: "Ingredient added" });
+      return;
+    }
+
+    if (method === "POST" && endpoint.startsWith("updateFridgeIngredient/")) {
+      const id = Number(endpoint.replace("updateFridgeIngredient/", ""));
+      const payload = route.request().postDataJSON() as Partial<FridgeItem>;
+      const itemIndex = fridgeItems.findIndex((item) => item.id === id);
+
+      if (itemIndex === -1) {
+        await fulfillJson(route, { message: "Fridge ingredient not found" }, 404);
+        return;
+      }
+
+      const updatedItem: FridgeItem = {
+        ...fridgeItems[itemIndex],
+        name: String(payload.name ?? fridgeItems[itemIndex].name).trim(),
+        expirationDate:
+          typeof payload.expirationDate === "string"
+            ? payload.expirationDate
+            : null,
+        amount: payload.amount,
+        unit: normalizeFridgeUnit(payload.unit),
+      };
+
+      if (parseFridgeAmount(updatedItem.amount) === 0) {
+        fridgeItems = fridgeItems.filter((item) => item.id !== id);
+        await fulfillJson(route, {});
+        return;
+      }
+
+      const mergeTarget = fridgeItems.find(
+        (item) =>
+          item.id !== id &&
+          item.name.toLowerCase() === updatedItem.name.toLowerCase() &&
+          item.expirationDate === updatedItem.expirationDate &&
+          item.unit === updatedItem.unit,
+      );
+
+      if (mergeTarget) {
+        mergeTarget.amount = mergeFridgeAmounts(
+          mergeTarget.amount,
+          updatedItem.amount,
+        );
+        fridgeItems = fridgeItems.filter((item) => item.id !== id);
+        await fulfillJson(route, mergeTarget);
+        return;
+      }
+
+      fridgeItems[itemIndex] = updatedItem;
+      await fulfillJson(route, updatedItem);
+      return;
+    }
+
+    if (method === "DELETE" && endpoint.startsWith("deleteFridgeIngredient/")) {
+      const id = Number(endpoint.replace("deleteFridgeIngredient/", ""));
+      fridgeItems = fridgeItems.filter((item) => item.id !== id);
+      await fulfillJson(route, {});
       return;
     }
 

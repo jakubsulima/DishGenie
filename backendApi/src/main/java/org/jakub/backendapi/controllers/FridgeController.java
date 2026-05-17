@@ -1,9 +1,10 @@
 package org.jakub.backendapi.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.jakub.backendapi.dto.AmountDto;
 import org.jakub.backendapi.dto.FridgeIngredientDto;
 import org.jakub.backendapi.dto.UserDto;
+import org.jakub.backendapi.entities.FridgeIngredient;
+import org.jakub.backendapi.mappers.FridgeIngredientMapper;
 import org.jakub.backendapi.services.FridgeService;
 import org.jakub.backendapi.services.GeminiService;
 import org.jakub.backendapi.services.RateLimitService;
@@ -28,14 +29,16 @@ public class FridgeController {
     private static final int RECEIPT_SCAN_LIMIT_PER_MINUTE = 10;
 
     private final FridgeService fridgeService;
+    private final FridgeIngredientMapper fridgeIngredientMapper;
     private final GeminiService geminiService;
     private final RateLimitService rateLimitService;
 
     @Value("${security.trusted-proxy-ips:}")
     private String trustedProxyIps;
 
-    public FridgeController(FridgeService fridgeService, GeminiService geminiService, RateLimitService rateLimitService) {
+    public FridgeController(FridgeService fridgeService, FridgeIngredientMapper fridgeIngredientMapper, GeminiService geminiService, RateLimitService rateLimitService) {
         this.fridgeService = fridgeService;
+        this.fridgeIngredientMapper = fridgeIngredientMapper;
         this.geminiService = geminiService;
         this.rateLimitService = rateLimitService;
     }
@@ -59,9 +62,13 @@ public class FridgeController {
     }
 
     @PostMapping("/updateFridgeIngredient/{ingredientId}")
-    public ResponseEntity<FridgeIngredientDto> updateFridgeIngredient(@PathVariable Long ingredientId, @RequestBody AmountDto amountDto, HttpServletRequest request) {
-        fridgeService.changeFridgeIngredientAmount(ingredientId, amountDto.getAmount(), getLoginFromToken(request));
-        return ResponseEntity.status(200).build();
+    public ResponseEntity<FridgeIngredientDto> updateFridgeIngredient(@PathVariable Long ingredientId, @RequestBody FridgeIngredientDto fridgeIngredientDto, HttpServletRequest request) {
+        FridgeIngredient updatedIngredient = fridgeService.updateFridgeIngredient(ingredientId, fridgeIngredientDto, getLoginFromToken(request));
+        if (updatedIngredient == null) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(fridgeIngredientMapper.toFridgeIngredientDto(updatedIngredient));
     }
 
     @PostMapping(value = "/scanFridgeReceipt", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
