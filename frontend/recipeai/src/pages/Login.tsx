@@ -10,6 +10,7 @@ import { captureEvent } from "../lib/posthog";
 import {
   clearPendingRecipeSearch,
   consumePendingRecipeRedirect,
+  readPendingRecipeSearch,
 } from "../lib/pendingRecipeIntent";
 import { getGoogleClientId } from "../lib/runtimeConfig";
 import {
@@ -78,6 +79,7 @@ const Login = () => {
   const location = useLocation();
   const googleBtnRef = useRef<HTMLDivElement>(null);
   const isHandlingAuthSuccessRef = useRef(false);
+  const pendingRecipeSearch = readPendingRecipeSearch(location.state);
 
   // Redirect already-logged-in users
   useEffect(() => {
@@ -272,6 +274,20 @@ const Login = () => {
 
         {/* Card */}
         <div className="mobile-card-enter relative z-10 w-full rounded-3xl border border-primary/10 bg-background/90 p-6 shadow-[0_24px_70px_rgba(0,0,0,0.08)] backdrop-blur-sm sm:p-8">
+          {pendingRecipeSearch && (
+            <div className="mb-5 rounded-2xl border border-accent/40 bg-accent/10 p-4 text-left">
+              <p className="text-sm font-bold text-text">
+                Your dinner idea is saved.
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-text/65">
+                Sign in and Dish Genie will generate it without asking you to
+                type or choose everything again.
+              </p>
+              <p className="mt-2 line-clamp-2 text-xs font-semibold text-text/60">
+                {pendingRecipeSearch}
+              </p>
+            </div>
+          )}
           <ErrorAlert
             message={error}
             className="mb-6"

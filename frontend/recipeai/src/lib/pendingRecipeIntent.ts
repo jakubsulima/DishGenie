@@ -22,6 +22,23 @@ export const consumePendingRecipeRedirect = () => {
   };
 };
 
+export const readPendingRecipeSearch = (authState?: unknown) => {
+  if (authState && typeof authState === "object") {
+    const from = (authState as { from?: unknown }).from;
+    if (from && typeof from === "object") {
+      const state = (from as { state?: unknown }).state;
+      if (state && typeof state === "object") {
+        const search = (state as { search?: unknown }).search;
+        if (typeof search === "string" && search.trim() !== "") {
+          return search;
+        }
+      }
+    }
+  }
+
+  return sessionStorage.getItem(PENDING_RECIPE_SEARCH_KEY);
+};
+
 export const clearPendingRecipeSearch = () => {
   sessionStorage.removeItem(PENDING_RECIPE_SEARCH_KEY);
 };

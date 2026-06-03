@@ -60,6 +60,78 @@ const detailedRecipe = {
   },
 };
 
+const generatedDinnerIdea = {
+  name: "Saved Dinner Idea Bowl",
+  description: "A practical dinner generated from the guest's saved homepage choices.",
+  ingredients: [
+    { name: "Eggs", amount: 2, unit: "pcs" },
+    { name: "Rice", amount: 180, unit: "g" },
+    { name: "Spinach", amount: 80, unit: "g" },
+  ],
+  instructions: [
+    "Cook the rice until tender.",
+    "Wilt spinach in a hot pan.",
+    "Add eggs and fold everything together.",
+  ],
+  timeToPrepare: "20 min",
+  nutrition: {
+    calories: 520,
+    protein: 24,
+    carbs: 68,
+    fats: 16,
+  },
+};
+
+const generatedDinnerOptions = {
+  recipes: [
+    generatedDinnerIdea,
+    {
+      name: "Roasted Rice Skillet",
+      description: "A slower, crisp-edged dinner with deeper roasted flavor.",
+      ingredients: [
+        { name: "Rice", amount: 180, unit: "g" },
+        { name: "Eggs", amount: 2, unit: "pcs" },
+        { name: "Onion", amount: 1, unit: "pcs" },
+        { name: "Paprika", amount: 5, unit: "g" },
+      ],
+      instructions: [
+        "Warm rice in a skillet until lightly crisp.",
+        "Add onion and paprika.",
+        "Fold in eggs and finish until set.",
+      ],
+      timeToPrepare: "30 min",
+      nutrition: {
+        calories: 640,
+        protein: 28,
+        carbs: 82,
+        fats: 20,
+      },
+    },
+    {
+      name: "Protein Spinach Egg Rice",
+      description: "A higher-protein bowl that keeps the same ingredients filling.",
+      ingredients: [
+        { name: "Eggs", amount: 4, unit: "pcs" },
+        { name: "Rice", amount: 160, unit: "g" },
+        { name: "Spinach", amount: 100, unit: "g" },
+        { name: "Yogurt", amount: 80, unit: "g" },
+      ],
+      instructions: [
+        "Cook eggs until softly set.",
+        "Fold spinach into warm rice.",
+        "Top with yogurt and serve hot.",
+      ],
+      timeToPrepare: "25 min",
+      nutrition: {
+        calories: 590,
+        protein: 38,
+        carbs: 62,
+        fats: 18,
+      },
+    },
+  ],
+};
+
 let preferences = {
   diet: "NONE",
   diets: ["NONE"],
@@ -132,10 +204,27 @@ const getEndpoint = (route: Route) => {
   return requestUrl.pathname.replace(/^\/api\/?/, "");
 };
 
+const fulfillCsrfEndpoint = async (route: Route, endpoint: string) => {
+  if (endpoint !== "csrf") {
+    return false;
+  }
+
+  await fulfillJson(route, {
+    headerName: "X-XSRF-TOKEN",
+    parameterName: "_csrf",
+    token: "test-csrf-token",
+  });
+  return true;
+};
+
 export const mockGuestApi = async (page: Page) => {
   await page.route("**/api/**", async (route) => {
     const endpoint = getEndpoint(route);
     const method = route.request().method();
+
+    if (await fulfillCsrfEndpoint(route, endpoint)) {
+      return;
+    }
 
     if (endpoint === "me" || endpoint === "refresh") {
       await fulfillJson(route, { message: "Unauthorized" }, 401);
@@ -164,6 +253,10 @@ const fulfillAuthenticatedCommonEndpoint = async (
   endpoint: string,
   method: string,
 ): Promise<boolean> => {
+  if (await fulfillCsrfEndpoint(route, endpoint)) {
+    return true;
+  }
+
   if (endpoint === "me") {
     await fulfillJson(route, { ...mockUser, preferences });
     return true;
@@ -219,9 +312,19 @@ export const mockLoginApi = async (page: Page) => {
     const endpoint = getEndpoint(route);
     const method = route.request().method();
 
+    if (await fulfillCsrfEndpoint(route, endpoint)) {
+      return;
+    }
+
     if (method === "POST" && endpoint === "login") {
       authenticated = true;
       await fulfillJson(route, mockUser);
+      return;
+    }
+
+    if (method === "POST" && endpoint === "logout") {
+      authenticated = false;
+      await fulfillJson(route, {});
       return;
     }
 
@@ -237,6 +340,18 @@ export const mockLoginApi = async (page: Page) => {
     if (endpoint === "refresh") {
       await fulfillJson(route, { message: "Unauthorized" }, 401);
       return;
+    }
+
+    if (authenticated) {
+      if (method === "GET" && endpoint === "getFridgeIngredients") {
+        await fulfillJson(route, []);
+        return;
+      }
+
+      if (method === "POST" && endpoint === "generateRecipe") {
+        await fulfillJson(route, generatedDinnerOptions);
+        return;
+      }
     }
 
     await fulfillJson(route, { message: `Unhandled endpoint: ${endpoint}` }, 404);
@@ -255,6 +370,10 @@ export const mockRegisterApi = async (page: Page) => {
     const endpoint = getEndpoint(route);
     const method = route.request().method();
 
+    if (await fulfillCsrfEndpoint(route, endpoint)) {
+      return;
+    }
+
     if (method === "POST" && endpoint === "register") {
       authenticated = true;
       await fulfillJson(route, { ...mockUser, preferences });
@@ -268,6 +387,16 @@ export const mockRegisterApi = async (page: Page) => {
         method,
       );
       if (handled) {
+        return;
+      }
+
+      if (method === "GET" && endpoint === "getFridgeIngredients") {
+        await fulfillJson(route, []);
+        return;
+      }
+
+      if (method === "POST" && endpoint === "generateRecipe") {
+        await fulfillJson(route, generatedDinnerOptions);
         return;
       }
     }

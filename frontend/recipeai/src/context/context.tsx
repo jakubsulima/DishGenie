@@ -7,6 +7,7 @@ import {
   useMemo,
 } from "react";
 import { apiClient, ensureCsrfToken } from "../lib/hooks";
+import { clearPendingRecipeSearch } from "../lib/pendingRecipeIntent";
 
 /* eslint-disable react-refresh/only-export-components */
 
@@ -125,6 +126,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       await ensureCsrfToken(true).catch(() => {
         // Keep logout resilient even if the CSRF bootstrap request fails.
       });
+      clearPendingRecipeSearch();
       clearAuthState();
     }
   }, [clearAuthState]);

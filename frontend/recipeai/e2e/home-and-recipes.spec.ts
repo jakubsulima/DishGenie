@@ -12,22 +12,22 @@ test("guest can land on the homepage and open login from recipe generation", asy
 
   await expect(
     page.getByRole("heading", {
-      name: /decide what to cook tonight in seconds/i,
+      name: /turn what's in your kitchen into dinner/i,
     }),
   ).toBeVisible();
-  await expect(page.getByRole("button", { name: "Get my 3 dinner ideas" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Tell me what to cook" })).toBeVisible();
 
   await page
-    .getByPlaceholder("What sounds good?")
+    .getByPlaceholder("eggs, rice, spinach, chicken")
     .fill("extra lemon");
   await page.getByRole("button", { name: "Comfort" }).click();
   await page.getByRole("button", { name: "Quick" }).click();
   await page.getByRole("button", { name: "Dinner", exact: true }).click();
   await expect(
-    page.getByPlaceholder("What sounds good?"),
+    page.getByPlaceholder("eggs, rice, spinach, chicken"),
   ).toHaveValue("extra lemon");
 
-  await page.getByRole("button", { name: "Get my 3 dinner ideas" }).click();
+  await page.getByRole("button", { name: "Tell me what to cook" }).click();
 
   await expect(page).toHaveURL(/\/login$/);
   await expect(

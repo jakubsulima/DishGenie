@@ -148,9 +148,9 @@ export const getSeoConfig = (pathname: string): SeoConfig => {
 
 	if (decodedPath === "/") {
 		return {
-			title: "Dish Genie | Decide what to cook tonight in seconds",
+			title: "Dish Genie | What can I cook with these ingredients?",
 			description:
-				"Pick a dinner direction and Dish Genie gives you 3 realistic recipe ideas without another endless feed.",
+				"Type a few ingredients and Dish Genie gives you 3 realistic dinner ideas without inventory setup or an endless recipe feed.",
 			canonicalPath: "/",
 			structuredData: {
 				"@context": "https://schema.org",
@@ -158,7 +158,7 @@ export const getSeoConfig = (pathname: string): SeoConfig => {
 				name: SITE_NAME,
 				url: toAbsoluteUrl("/"),
 				description:
-					"Dish Genie helps you decide what to cook tonight with 3 realistic recipe ideas instead of another endless feed.",
+					"Dish Genie turns available ingredients into 3 realistic dinner ideas instead of another endless recipe feed.",
 			},
 		};
 	}

@@ -56,11 +56,11 @@ const generatePromoRecipe = async (
 ) => {
   await page.goto("/");
   await page
-    .getByPlaceholder("What sounds good?")
+    .getByPlaceholder("eggs, rice, spinach, chicken")
     .fill("quick creamy dinner");
   await page.getByRole("button", { name: "Dinner" }).click();
   await page.getByRole("button", { name: "Quick" }).click();
-  await page.getByRole("button", { name: "Show me 3 ideas" }).click();
+  await page.getByRole("button", { name: "Tell me what to cook" }).click();
   await expect(page.getByText(recipeTitle)).toBeVisible();
 };
 
@@ -69,7 +69,7 @@ const captureHomepageCreateState = async (
 ) => {
   await page.goto("/");
   await page
-    .getByPlaceholder("What sounds good?")
+    .getByPlaceholder("eggs, rice, spinach, chicken")
     .fill("quick creamy dinner");
   await page.getByRole("button", { name: "Dinner" }).click();
   await page.getByRole("button", { name: "Quick" }).click();
