@@ -2,6 +2,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { ReactNode } from "react";
 import { renderRouteShell } from "../lib/routeShell";
 import { useUser } from "../context/context";
+import { readPendingRecipeSearch } from "../lib/pendingRecipeIntent";
 
 interface RouteGuardProps {
   children: ReactNode;
@@ -48,6 +49,17 @@ export const GuestRoute = ({ children }: RouteGuardProps) => {
   }
 
   if (user) {
+    const pendingRecipeSearch = readPendingRecipeSearch(location.state);
+    if (pendingRecipeSearch) {
+      return (
+        <Navigate
+          to="/Recipe"
+          replace
+          state={{ search: pendingRecipeSearch }}
+        />
+      );
+    }
+
     return <Navigate to="/" replace />;
   }
 

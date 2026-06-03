@@ -18,7 +18,6 @@ const ButtonsForm = ({
         {title}
       </h2>
       <article className="relative flex w-full flex-row justify-between overflow-hidden rounded-[2rem] border border-primary/5 bg-secondary/50 p-1.5 shadow-inner backdrop-blur-sm">
-        {/* Sliding Background */}
         <div className="absolute inset-y-1.5 left-1.5 right-1.5 pointer-events-none z-0">
           <div
             className="absolute bottom-0 top-0 transition-transform duration-300 ease-out"
@@ -32,10 +31,10 @@ const ButtonsForm = ({
           </div>
         </div>
 
-        {/* Buttons */}
         {options.map((button) => (
           <button
             key={button}
+            aria-pressed={selectedButton === button}
             className={`relative z-10 flex min-w-0 flex-1 basis-0 items-center justify-center rounded-[1.75rem] px-0 py-3 text-[10px] font-semibold sm:px-1 sm:text-sm transition-colors duration-[250ms] ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 hover:text-text active:scale-[0.97] ${
               selectedButton === button
                 ? "text-text"

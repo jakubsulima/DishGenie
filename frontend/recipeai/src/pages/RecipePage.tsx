@@ -17,6 +17,7 @@ import {
 import ErrorAlert from "../components/ErrorAlert";
 import { captureEvent } from "../lib/posthog";
 import { applySeo } from "../lib/seo";
+import { clearPendingRecipeSearch } from "../lib/pendingRecipeIntent";
 
 export interface RecipeIngredient {
   name: string;
@@ -104,6 +105,78 @@ const formatMacro = (value: string | number | undefined, suffix: string) => {
 
   const trimmed = value.trim();
   return trimmed ? `${trimmed}${suffix}` : "-";
+};
+
+const parseNumericValue = (value: string | number | undefined) => {
+  if (value === undefined || value === null || value === "") {
+    return null;
+  }
+
+  const parsedValue =
+    typeof value === "number" ? value : Number.parseFloat(value);
+  return Number.isFinite(parsedValue) ? parsedValue : null;
+};
+
+const parsePreparationMinutes = (timeToPrepare: string) => {
+  const parsedValue = Number.parseFloat(timeToPrepare);
+  return Number.isFinite(parsedValue) ? parsedValue : null;
+};
+
+const getRecipeOptionHighlights = (
+  option: RecipeData,
+  options: RecipeData[],
+) => {
+  const highlights: string[] = [];
+  const preparationMinutes = parsePreparationMinutes(option.timeToPrepare);
+  const allPreparationTimes = options
+    .map((recipe) => parsePreparationMinutes(recipe.timeToPrepare))
+    .filter((value): value is number => value !== null);
+  const ingredientCounts = options.map((recipe) => recipe.ingredients.length);
+  const proteinValue = parseNumericValue(option.nutrition?.protein);
+  const allProteinValues = options
+    .map((recipe) => parseNumericValue(recipe.nutrition?.protein))
+    .filter((value): value is number => value !== null);
+  const calorieValue = parseNumericValue(option.nutrition?.calories);
+  const allCalorieValues = options
+    .map((recipe) => parseNumericValue(recipe.nutrition?.calories))
+    .filter((value): value is number => value !== null);
+
+  if (
+    preparationMinutes !== null &&
+    allPreparationTimes.length > 1 &&
+    preparationMinutes === Math.min(...allPreparationTimes)
+  ) {
+    highlights.push("Fastest option");
+  }
+
+  if (
+    option.ingredients.length === Math.min(...ingredientCounts) &&
+    new Set(ingredientCounts).size > 1
+  ) {
+    highlights.push("Fewest ingredients");
+  }
+
+  if (
+    proteinValue !== null &&
+    allProteinValues.length > 1 &&
+    proteinValue === Math.max(...allProteinValues)
+  ) {
+    highlights.push("Most protein");
+  }
+
+  if (
+    calorieValue !== null &&
+    allCalorieValues.length > 1 &&
+    calorieValue === Math.min(...allCalorieValues)
+  ) {
+    highlights.push("Lightest plate");
+  }
+
+  if (!highlights.length) {
+    highlights.push("Balanced pick");
+  }
+
+  return highlights.slice(0, 2);
 };
 
 const normalizeGeneratedRecipes = (raw: unknown): RecipeData[] => {
@@ -372,6 +445,7 @@ const RecipePage = () => {
       }
 
       if (search) {
+        clearPendingRecipeSearch();
         if (!fridgeLoading) {
           if (currentRecipeIdentifierRef.current !== search) {
             try {
@@ -738,28 +812,52 @@ const RecipePage = () => {
               technique, and core ingredients.
             </p>
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
-              {recipeOptions.map((option, index) => (
-                <button
-                  key={`${option.name}-${index}`}
-                  onClick={() => handleSelectRecipe(index)}
-                  className={`rounded-xl border px-3 py-3 text-left transition-colors ${
-                    selectedRecipeIndex === index
-                      ? "border-accent bg-accent/15"
-                      : "border-primary/15 bg-background hover:border-accent/45"
-                  }`}
-                >
-                  <p className="text-xs font-semibold uppercase tracking-wide text-text/60">
-                    Option {index + 1}
-                  </p>
-                  <p className="mt-1 line-clamp-2 font-semibold text-text">
-                    {option.name}
-                  </p>
-                  <p className="mt-1 text-xs text-text/60">
-                    {option.ingredients.length} ingredients
-                    {option.timeToPrepare ? ` • ${option.timeToPrepare}` : ""}
-                  </p>
-                </button>
-              ))}
+              {recipeOptions.map((option, index) => {
+                const highlights = getRecipeOptionHighlights(
+                  option,
+                  recipeOptions,
+                );
+
+                return (
+                  <button
+                    key={`${option.name}-${index}`}
+                    onClick={() => handleSelectRecipe(index)}
+                    className={`rounded-xl border px-3 py-3 text-left transition-colors ${
+                      selectedRecipeIndex === index
+                        ? "border-accent bg-accent/15"
+                        : "border-primary/15 bg-background hover:border-accent/45"
+                    }`}
+                  >
+                    <p className="text-xs font-semibold uppercase tracking-wide text-text/60">
+                      Option {index + 1}
+                    </p>
+                    <p className="mt-1 line-clamp-2 font-semibold text-text">
+                      {option.name}
+                    </p>
+                    {highlights.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {highlights.map((highlight) => (
+                          <span
+                            key={highlight}
+                            className="rounded-full border border-accent/35 bg-accent/10 px-2 py-1 text-[11px] font-semibold leading-tight text-text/70"
+                          >
+                            {highlight}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {option.description && (
+                      <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-text/60">
+                        {option.description}
+                      </p>
+                    )}
+                    <p className="mt-2 text-xs text-text/60">
+                      {option.ingredients.length} ingredients
+                      {option.timeToPrepare ? ` • ${option.timeToPrepare}` : ""}
+                    </p>
+                  </button>
+                );
+              })}
             </div>
           </section>
         )}
