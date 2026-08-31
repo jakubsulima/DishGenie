@@ -692,6 +692,7 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build image with cache export
+        id: build_image_with_cache
         if: ((matrix.image_name == 'backend' && needs.changes.outputs.docker_backend == 'true') || (matrix.image_name == 'frontend' && needs.changes.outputs.docker_frontend == 'true')) && github.event_name == 'push' && github.ref_name == github.event.repository.default_branch
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8
         with:
@@ -709,6 +710,7 @@ jobs:
           cache-to: type=gha,scope=${{ matrix.image_name }},mode=max
 
       - name: Build image with read-only cache
+        id: build_image_read_only_cache
         if: ((matrix.image_name == 'backend' && needs.changes.outputs.docker_backend == 'true') || (matrix.image_name == 'frontend' && needs.changes.outputs.docker_frontend == 'true')) && (github.event_name != 'push' || github.ref_name != github.event.repository.default_branch)
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8
         with:
@@ -725,7 +727,7 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.image_name }}
 
       - name: Trivy CRITICAL gate
-        if: (matrix.image_name == 'backend' && needs.changes.outputs.docker_backend == 'true') || (matrix.image_name == 'frontend' && needs.changes.outputs.docker_frontend == 'true')
+        if: ((matrix.image_name == 'backend' && needs.changes.outputs.docker_backend == 'true') || (matrix.image_name == 'frontend' && needs.changes.outputs.docker_frontend == 'true')) && (steps.build_image_with_cache.outcome == 'success' || steps.build_image_read_only_cache.outcome == 'success')
         uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
         with:
           image-ref: recipeai-scan:${{ matrix.image_name }}
@@ -737,7 +739,7 @@ jobs:
           exit-code: "1"
 
       - name: Trivy HIGH+CRITICAL report
-        if: always() && ((matrix.image_name == 'backend' && needs.changes.outputs.docker_backend == 'true') || (matrix.image_name == 'frontend' && needs.changes.outputs.docker_frontend == 'true'))
+        if: always() && ((matrix.image_name == 'backend' && needs.changes.outputs.docker_backend == 'true') || (matrix.image_name == 'frontend' && needs.changes.outputs.docker_frontend == 'true')) && (steps.build_image_with_cache.outcome == 'success' || steps.build_image_read_only_cache.outcome == 'success')
         uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
         with:
           image-ref: recipeai-scan:${{ matrix.image_name }}
@@ -750,7 +752,7 @@ jobs:
           exit-code: "0"
 
       - name: Upload security report
-        if: always() && ((matrix.image_name == 'backend' && needs.changes.outputs.docker_backend == 'true') || (matrix.image_name == 'frontend' && needs.changes.outputs.docker_frontend == 'true'))
+        if: always() && ((matrix.image_name == 'backend' && needs.changes.outputs.docker_backend == 'true') || (matrix.image_name == 'frontend' && needs.changes.outputs.docker_frontend == 'true')) && (steps.build_image_with_cache.outcome == 'success' || steps.build_image_read_only_cache.outcome == 'success')
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: trivy-${{ matrix.image_name }}
