@@ -68,6 +68,10 @@ test("guest dinner choices continue after registration", async ({ page }) => {
   await expect(page).toHaveURL(/\/register$/);
   await expect(page.getByText("Your dinner idea is saved.")).toBeVisible();
   await expect(page.getByText(/eggs and rice$/i)).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Create account" }),
+  ).toBeVisible();
+  await expect(page.locator("form")).toBeVisible();
 
   await fillRegisterForm(page);
   await page.getByRole("button", { name: "Create account" }).click();
