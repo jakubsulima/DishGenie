@@ -1,0 +1,14 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Known non-secret JWT test fixture in historical commit"
+commits = ["504b25699480d94ee1b47533f8ccc7ab2501139b"]
+paths = [
+    "backendApi/src/test/java/org/jakub/backendapi/SecurityRoutesIntegrationTest.java",
+    "backendApi/src/test/java/org/jakub/backendapi/DatabaseMigrationIT.java",
+]
+regexTarget = "line"
+regexes = [
+    "security\\.jwt\\.token\\.secret-key=.*",
+]
