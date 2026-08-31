@@ -19,6 +19,7 @@ import {
   type GoogleCredentialResponse,
 } from "../lib/googleIdentity";
 import homepageIcon160 from "../assets/dish-genie-homepage-icon-160.webp";
+import { useLanguage } from "../context/languageContext";
 
 const schema = yup.object({
   email: yup
@@ -95,6 +96,8 @@ const Register = () => {
   const googleBtnRef = useRef<HTMLDivElement>(null);
   const isHandlingAuthSuccessRef = useRef(false);
   const pendingRecipeSearch = readPendingRecipeSearch(location.state);
+  const isGoogleConfigured = getGoogleClientId() !== "";
+  const { t, locale } = useLanguage();
 
   const {
     register,
@@ -187,15 +190,15 @@ const Register = () => {
 
   // Initialize Google Sign-In button
   useEffect(() => {
+    if (!isGoogleConfigured) {
+      return;
+    }
+
     let isMounted = true;
 
     const initGoogle = () => {
       if (isMounted && window.google?.accounts?.id && googleBtnRef.current) {
         const clientId = getGoogleClientId();
-        if (!clientId) {
-          setIsGoogleButtonReady(true);
-          return;
-        }
 
         const gsiState = getGsiState();
         gsiState.callback = handleGoogleCallback;
@@ -233,7 +236,7 @@ const Register = () => {
           shape: "pill",
           logo_alignment: "left",
           width: buttonWidth,
-          locale: "en",
+          locale,
         });
 
         window.requestAnimationFrame(() => {
@@ -255,7 +258,7 @@ const Register = () => {
     return () => {
       isMounted = false;
     };
-  }, [handleGoogleCallback]);
+  }, [handleGoogleCallback, isGoogleConfigured, locale]);
 
   const onSubmit = async (data: RegisterProps) => {
     setIsSubmitting(true);
@@ -289,9 +292,11 @@ const Register = () => {
             aria-hidden="true"
             className="mx-auto mb-3 h-16 w-16 object-contain drop-shadow-[0_14px_24px_rgba(0,0,0,0.08)]"
           />
-          <h1 className="text-3xl font-bold text-text">Create account</h1>
+          <h1 className="text-3xl font-bold text-text">
+            {t("Create account")}
+          </h1>
           <p className="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-text/55">
-            Save recipes, build your fridge, and get better dinner ideas.
+            {t("Save recipes, build your fridge, and get better dinner ideas.")}
           </p>
         </div>
 
@@ -300,11 +305,10 @@ const Register = () => {
           {pendingRecipeSearch && (
             <div className="mb-5 rounded-2xl border border-accent/40 bg-accent/10 p-4 text-left">
               <p className="text-sm font-bold text-text">
-                Your dinner idea is saved.
+                {t("Your dinner idea is saved.")}
               </p>
               <p className="mt-1 text-xs leading-relaxed text-text/65">
-                Create your account and Dish Genie will generate it without
-                asking you to type or choose everything again.
+                {t("Create your account and Dish Genie will generate it without asking you to type or choose everything again.")}
               </p>
               <p className="mt-2 line-clamp-2 text-xs font-semibold text-text/60">
                 {pendingRecipeSearch}
@@ -312,37 +316,42 @@ const Register = () => {
             </div>
           )}
           <ErrorAlert
-            message={error}
+            message={error ? t(error) : ""}
             className="mb-6"
             onAutoHide={() => setError("")}
           />
 
-          {/* Google Sign-Up (rendered by Google SDK) */}
-          <div className="mb-6 w-full">
-            <div className="relative mx-auto h-11 w-full max-w-[400px]">
-              {!isGoogleButtonReady ? (
-                <div className="absolute inset-0 flex animate-pulse items-center justify-center gap-3 rounded-full border border-primary/10 bg-secondary/70 text-sm font-semibold text-text/60 shadow-sm">
-                  <span className="grid h-5 w-5 place-items-center rounded-full bg-background text-sm font-bold text-[#4285f4] shadow-sm">
-                    G
-                  </span>
-                  <span>Continue with Google</span>
+          {isGoogleConfigured && (
+            <>
+              {/* Google Sign-Up (rendered by Google SDK) */}
+              <div className="mb-6 w-full">
+                <div className="relative mx-auto h-11 w-full max-w-[400px]">
+                  {!isGoogleButtonReady ? (
+                    <div className="absolute inset-0 flex animate-pulse items-center justify-center gap-3 rounded-full border border-primary/10 bg-secondary/70 text-sm font-semibold text-text/60 shadow-sm">
+                      <span className="grid h-5 w-5 place-items-center rounded-full bg-background text-sm font-bold text-[#4285f4] shadow-sm">
+                        G
+                      </span>
+                      <span>{t("Continue with Google")}</span>
+                    </div>
+                  ) : null}
+                  <div
+                    ref={googleBtnRef}
+                    className={`absolute inset-0 flex h-11 w-full justify-center transition-opacity duration-200 [&>div]:!mx-auto [&_iframe]:!rounded-full ${
+                      isGoogleButtonReady ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
                 </div>
-              ) : null}
-              <div
-                ref={googleBtnRef}
-                className={`absolute inset-0 flex h-11 w-full justify-center transition-opacity duration-200 [&>div]:!mx-auto [&_iframe]:!rounded-full ${
-                  isGoogleButtonReady ? "opacity-100" : "opacity-0"
-                }`}
-              />
-            </div>
-          </div>
+              </div>
 
-          {/* Divider */}
-          <div className="flex items-center gap-4 mb-6">
-            <div className="flex-1 h-px bg-primary/10" />
-            <span className="text-text/40 text-sm font-medium">or</span>
-            <div className="flex-1 h-px bg-primary/10" />
-          </div>
+              <div className="mb-6 flex items-center gap-4">
+                <div className="h-px flex-1 bg-primary/10" />
+                <span className="text-sm font-medium text-text/40">
+                  {t("or")}
+                </span>
+                <div className="h-px flex-1 bg-primary/10" />
+              </div>
+            </>
+          )}
 
           {/* Email/Password Form */}
           <form
@@ -354,7 +363,7 @@ const Register = () => {
                 htmlFor="email"
                 className="text-text text-sm font-medium block mb-1.5"
               >
-                Email
+                {t("Email")}
               </label>
               <input
                 id="email"
@@ -365,7 +374,7 @@ const Register = () => {
               />
               {errors.email && (
                 <p className="text-red-500 text-xs mt-1">
-                  {errors.email.message}
+                  {t(errors.email.message || "")}
                 </p>
               )}
             </div>
@@ -374,7 +383,7 @@ const Register = () => {
                 htmlFor="password"
                 className="text-text text-sm font-medium block mb-1.5"
               >
-                Password
+                {t("Password")}
               </label>
               <input
                 type="password"
@@ -385,7 +394,7 @@ const Register = () => {
               />
               {errors.password && (
                 <p className="text-red-500 text-xs mt-1">
-                  {errors.password.message}
+                  {t(errors.password.message || "")}
                 </p>
               )}
             </div>
@@ -394,7 +403,7 @@ const Register = () => {
                 htmlFor="confirmPassword"
                 className="text-text text-sm font-medium block mb-1.5"
               >
-                Confirm Password
+                {t("Confirm Password")}
               </label>
               <input
                 type="password"
@@ -405,7 +414,7 @@ const Register = () => {
               />
               {errors.confirmPassword && (
                 <p className="text-red-500 text-xs mt-1">
-                  {errors.confirmPassword.message}
+                  {t(errors.confirmPassword.message || "")}
                 </p>
               )}
             </div>
@@ -414,26 +423,26 @@ const Register = () => {
               disabled={isSubmitting}
               className="mobile-soft-press mt-2 cursor-pointer rounded-full bg-accent py-3 font-semibold text-primary shadow-[0_14px_28px_color-mix(in_srgb,var(--color-accent)_36%,transparent)] transition-colors hover:bg-accent/90 disabled:opacity-50"
             >
-              {isSubmitting ? "Creating account..." : "Create account"}
+              {t(isSubmitting ? "Creating account..." : "Create account")}
             </button>
             <p className="text-center text-xs leading-5 text-text/50">
-              By creating an account or continuing with Google, you agree to the{" "}
+              {t("By creating an account or continuing with Google, you agree to the")} {" "}
               <Link
                 to="/terms"
                 target="_blank"
                 rel="noreferrer"
                 className="font-semibold text-text hover:text-accent"
               >
-                Terms of Service
+                {t("Terms of Service")}
               </Link>{" "}
-              and acknowledge the{" "}
+              {t("and acknowledge the")} {" "}
               <Link
                 to="/privacy"
                 target="_blank"
                 rel="noreferrer"
                 className="font-semibold text-text hover:text-accent"
               >
-                Privacy Policy
+                {t("Privacy Policy")}
               </Link>
               .
             </p>
@@ -442,12 +451,12 @@ const Register = () => {
 
         {/* Footer Link */}
         <p className="relative z-10 mt-6 text-sm text-text/50">
-          Already have an account?{" "}
+          {t("Already have an account?")}{" "}
           <button
             onClick={() => navigate("/login", { state: location.state })}
             className="mobile-soft-press text-accent font-semibold hover:underline cursor-pointer"
           >
-            Sign in
+            {t("Sign in")}
           </button>
         </p>
       </div>

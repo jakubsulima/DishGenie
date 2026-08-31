@@ -47,7 +47,7 @@ test("new user is signed in after registration", async ({ page }) => {
   await page.getByRole("button", { name: "Create account" }).click();
 
   await expect(page).toHaveURL("/");
-  await expect(page.getByRole("button", { name: "Tell me what to cook" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Show me 3 ideas" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Logout" })).toBeVisible();
 });
 
@@ -58,15 +58,20 @@ test("guest dinner choices continue after registration", async ({ page }) => {
   await page
     .getByPlaceholder("eggs, rice, spinach, chicken")
     .fill("eggs and rice");
-  await page.getByRole("button", { name: "Quick" }).click();
+  await page.getByRole("button", { name: "Tired weeknight" }).click();
+  await page.getByRole("button", { name: "Tune details" }).click();
   await page.getByRole("button", { name: "Dinner", exact: true }).click();
-  await page.getByRole("button", { name: "Tell me what to cook" }).click();
+  await page.getByRole("button", { name: "Get my 3 dinner ideas" }).click();
 
   await expect(page).toHaveURL(/\/login$/);
   await page.getByRole("button", { name: "Create one" }).click();
   await expect(page).toHaveURL(/\/register$/);
   await expect(page.getByText("Your dinner idea is saved.")).toBeVisible();
-  await expect(page.getByText("quick dinner recipe with eggs and rice")).toBeVisible();
+  await expect(page.getByText(/eggs and rice$/i)).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Create account" }),
+  ).toBeVisible();
+  await expect(page.locator("form")).toBeVisible();
 
   await fillRegisterForm(page);
   await page.getByRole("button", { name: "Create account" }).click();

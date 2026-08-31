@@ -90,6 +90,17 @@ describe("HomePage chooser", () => {
   });
 
   test("turns presets, sliders, chips, and meal choice into a recipe prompt", () => {
+    mockFridge({
+      fridgeItems: [
+        {
+          id: 1,
+          name: "pickles",
+          expirationDate: null,
+          amount: 1,
+          unit: "pcs",
+        },
+      ],
+    });
     renderHomePage();
 
     fireEvent.change(
@@ -123,7 +134,7 @@ describe("HomePage chooser", () => {
     fireEvent.click(screen.getByRole("button", { name: "High protein" }));
     fireEvent.click(screen.getByRole("button", { name: "Dinner" }));
     fireEvent.click(
-      screen.getAllByRole("button", { name: "Tell me what to cook" }).at(-1)!,
+      screen.getAllByRole("button", { name: "Show me 3 ideas" }).at(-1)!,
     );
 
     const prompt = screen.getByText(/^Recipe Prompt::/).textContent ?? "";
@@ -135,6 +146,8 @@ describe("HomePage chooser", () => {
     expect(prompt).toContain("low cleanup");
     expect(prompt).toContain("high protein");
     expect(prompt).toContain("dinner recipe with eggs");
+    expect(prompt).not.toContain("pickles");
+    expect(prompt).not.toContain("try to use those ingredients");
     expect(captureEvent).toHaveBeenCalledWith(
       "marketing_cta_click",
       expect.objectContaining({
@@ -191,7 +204,7 @@ describe("HomePage chooser", () => {
 
     expect(
       screen.getByRole("heading", {
-        name: "Turn what's in your kitchen into dinner",
+        name: "What can I cook with these ingredients?",
       }),
     ).toBeInTheDocument();
     expect(screen.getByText("Browse latest public recipes")).toBeInTheDocument();

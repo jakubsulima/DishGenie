@@ -29,6 +29,8 @@ public interface UserMapper {
     @Mapping(target = "privacyAcceptedAt", ignore = true)
     @Mapping(target = "termsVersion", ignore = true)
     @Mapping(target = "privacyVersion", ignore = true)
+    @Mapping(target = "passwordResetTokenHash", ignore = true)
+    @Mapping(target = "passwordResetExpiresAt", ignore = true)
     User signUpToUser(SignUpDto userDto);
 
 }

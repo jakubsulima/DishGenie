@@ -1,7 +1,9 @@
 package org.jakub.backendapi.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.jakub.backendapi.dto.RecipeDto;
+import org.jakub.backendapi.dto.RecipeGenerationRequestDto;
 import org.jakub.backendapi.dto.RecipeResponseDto;
 import org.jakub.backendapi.dto.UserDto;
 import org.jakub.backendapi.dto.UserPreferencesDto;
@@ -28,6 +30,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 
 
 @RestController
@@ -40,6 +44,7 @@ public class RecipesController {
     private final GeminiService geminiService;
     private final PostHogService postHogService;
     private final RateLimitService rateLimitService;
+    private final MeterRegistry meterRegistry;
 
     @Value("${app.limits.generate-recipe-requests-per-minute:${GENERATE_RECIPE_LIMIT_PER_MINUTE:15}}")
     private int generateRecipeLimitPerMinute;
@@ -47,17 +52,18 @@ public class RecipesController {
     @Value("${security.trusted-proxy-ips:}")
     private String trustedProxyIps;
 
-    public RecipesController(RecipeService recipeService, UserService userService, UserPreferencesService userPreferencesService, GeminiService geminiService, PostHogService postHogService, RateLimitService rateLimitService) {
+    public RecipesController(RecipeService recipeService, UserService userService, UserPreferencesService userPreferencesService, GeminiService geminiService, PostHogService postHogService, RateLimitService rateLimitService, MeterRegistry meterRegistry) {
         this.recipeService = recipeService;
         this.userService = userService;
         this.userPreferencesService = userPreferencesService;
         this.geminiService = geminiService;
         this.postHogService = postHogService;
         this.rateLimitService = rateLimitService;
+        this.meterRegistry = meterRegistry;
     }
 
     @PostMapping("/addRecipe")
-    public ResponseEntity<RecipeDto> addRecipe(@RequestBody RecipeDto recipeDto) {
+    public ResponseEntity<RecipeDto> addRecipe(@Valid @RequestBody RecipeDto recipeDto) {
         String userEmail = getAuthenticatedUserEmail();
         recipeService.saveRecipe(recipeDto, userEmail);
         captureUserEvent(userEmail, "recipe_saved", Map.of(
@@ -110,14 +116,14 @@ public class RecipesController {
     }
 
     @PostMapping("/updateRecipe/{id}")
-    public ResponseEntity<RecipeDto> updateRecipe(@PathVariable Long id, @RequestBody RecipeDto recipeDto) {
+    public ResponseEntity<RecipeDto> updateRecipe(@PathVariable Long id, @Valid @RequestBody RecipeDto recipeDto) {
         RecipeDto updatedRecipe = recipeService.updateRecipe(id, recipeDto, getAuthenticatedUserEmail());
         return ResponseEntity.ok(updatedRecipe);
     }
 
     // Admin Recipe Endpoints
     @PutMapping("/admin/recipes/{id}")
-    public ResponseEntity<RecipeDto> adminUpdateRecipe(@PathVariable Long id, @RequestBody RecipeDto recipeDto) {
+    public ResponseEntity<RecipeDto> adminUpdateRecipe(@PathVariable Long id, @Valid @RequestBody RecipeDto recipeDto) {
         RecipeDto updatedRecipe = recipeService.adminUpdateRecipe(id, recipeDto);
         return ResponseEntity.ok(updatedRecipe);
     }
@@ -128,19 +134,14 @@ public class RecipesController {
         return ResponseEntity.ok(recipeResponseDto);
     }
 
-    public record GenerateRecipeRequest(String fullPrompt, String prompt, Integer count) {
-    }
-
     @PostMapping("/generateRecipe")
-    public ResponseEntity<String> createRecipe(@RequestBody GenerateRecipeRequest recipeRequest, HttpServletRequest request) {
-        String recipePrompt = recipeRequest != null && StringUtils.hasText(recipeRequest.fullPrompt())
-                ? recipeRequest.fullPrompt()
-            : (recipeRequest != null ? recipeRequest.prompt() : null);
+    public ResponseEntity<String> createRecipe(@Valid @RequestBody RecipeGenerationRequestDto recipeRequest, HttpServletRequest request) {
+        String recipePrompt = recipeRequest != null ? recipeRequest.prompt() : null;
         String userEmail = getAuthenticatedUserEmail();
         int recipeCount = recipeRequest != null && recipeRequest.count() != null ? recipeRequest.count() : 1;
 
         if (!StringUtils.hasText(recipePrompt)) {
-            return ResponseEntity.badRequest().body("Missing prompt. Provide 'fullPrompt' in request body.");
+            return ResponseEntity.badRequest().body("Missing prompt. Provide 'prompt' in request body.");
         }
 
         String clientKey = resolveClientKey(request);
@@ -151,17 +152,43 @@ public class RecipesController {
             "Too many recipe generation requests. Please try again in a minute."
         );
 
-        if (StringUtils.hasText(userEmail)) {
-            userService.assertCanCreateRecipe(userEmail);
+        boolean generationReserved = StringUtils.hasText(userEmail);
+        if (generationReserved) {
+            userService.reserveRecipeGeneration(userEmail);
         }
 
         UserPreferencesDto preferences = resolvePromptPreferences(userEmail);
-        recipePrompt = appendPreferencesToPrompt(recipePrompt, preferences);
 
-        String generatedRecipe = geminiService.generateRecipes(recipePrompt, recipeCount);
+        String generatedRecipe;
+        Timer.Sample generationTimer = Timer.start(meterRegistry);
+        String generationOutcome = "success";
+        try {
+            if (recipeRequest.isLegacyPayload()) {
+                generatedRecipe = geminiService.generateRecipes(
+                        appendPreferencesToPrompt(recipePrompt, preferences),
+                        recipeRequest.legacyFridgeItemNames(),
+                        recipeRequest.locale(),
+                        recipeCount
+                );
+            } else {
+                generatedRecipe = geminiService.generateRecipes(recipeRequest, preferences);
+            }
+        } catch (RuntimeException exception) {
+            generationOutcome = "failure";
+            meterRegistry.counter("dish_genie.recipe.generation.failures").increment();
+            if (generationReserved) {
+                userService.releaseRecipeGeneration(userEmail);
+            }
+            throw exception;
+        } finally {
+            generationTimer.stop(meterRegistry.timer(
+                    "dish_genie.recipe.generation.duration",
+                    "outcome",
+                    generationOutcome
+            ));
+        }
 
         if (StringUtils.hasText(userEmail)) {
-            userService.incrementDailyRecipeCount(userEmail);
             captureUserEvent(userEmail, "recipe_generation_succeeded", Map.of(
                     "generatedRecipeCount", recipeCount,
                     "hasDietPreferences", preferences != null && preferences.getDiets() != null && preferences.getDiets().length > 0,

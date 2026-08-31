@@ -1,4 +1,6 @@
-import { blogPosts, getBlogPost } from "./blogPosts";
+import { getBlogPost, getBlogPosts } from "./blogPosts";
+import { getFeaturedRecipe } from "./featuredRecipes";
+import { landingFaqs } from "./landingContent";
 
 interface SeoConfig {
 	title: string;
@@ -120,6 +122,11 @@ export const applySeo = (config: SeoConfig) => {
 		content: config.ogType ?? "website",
 	});
 
+	ensureMetaTag('meta[property="og:url"]', {
+		property: "og:url",
+		content: toAbsoluteUrl(config.canonicalPath),
+	});
+
 	ensureMetaTag('meta[name="twitter:card"]', {
 		name: "twitter:card",
 		content: "summary_large_image",
@@ -143,67 +150,143 @@ export const applySeo = (config: SeoConfig) => {
 	ensureJsonLdScript(config.structuredData);
 };
 
-export const getSeoConfig = (pathname: string): SeoConfig => {
+export const getSeoConfig = (pathname: string, locale: "en" | "pl" = "en"): SeoConfig => {
 	const decodedPath = safeDecodePath(pathname).replace(/\/+$/, "") || "/";
+	const isPolish = locale === "pl";
 
 	if (decodedPath === "/") {
 		return {
-			title: "Dish Genie | What can I cook with these ingredients?",
-			description:
-				"Type a few ingredients and Dish Genie gives you 3 realistic dinner ideas without inventory setup or an endless recipe feed.",
+			title: isPolish ? "Co ugotować z tych składników? | Dish Genie" : "What Can I Cook With These Ingredients? | Dish Genie",
+			description: isPolish
+				? "Wpisz składniki, które masz w domu, i otrzymaj 3 realistyczne pomysły: najlepszy, najszybszy i wykorzystujący zapasy."
+				: "Type ingredients you have at home and get 3 realistic dinner ideas: best overall, fastest, and use-it-up. No inventory setup or endless recipe feed.",
 			canonicalPath: "/",
 			structuredData: {
 				"@context": "https://schema.org",
-				"@type": "WebSite",
-				name: SITE_NAME,
-				url: toAbsoluteUrl("/"),
-				description:
-					"Dish Genie turns available ingredients into 3 realistic dinner ideas instead of another endless recipe feed.",
+				"@graph": [
+					{
+						"@type": "WebSite",
+						name: SITE_NAME,
+						url: toAbsoluteUrl("/"),
+						description:
+							"Dish Genie turns available ingredients into 3 realistic dinner ideas instead of another endless recipe feed.",
+						potentialAction: {
+							"@type": "SearchAction",
+							target: `${toAbsoluteUrl("/")}?ingredients={ingredients}`,
+							"query-input": "required name=ingredients",
+						},
+					},
+					{
+						"@type": "SoftwareApplication",
+						name: SITE_NAME,
+						applicationCategory: "LifestyleApplication",
+						operatingSystem: "Web",
+						description:
+							"An AI dinner decision tool for finding practical recipe ideas from ingredients you already have.",
+						offers: {
+							"@type": "Offer",
+							price: "0",
+							priceCurrency: "USD",
+						},
+					},
+					{
+						"@type": "FAQPage",
+						mainEntity: landingFaqs.map((item) => ({
+							"@type": "Question",
+							name: item.question,
+							acceptedAnswer: {
+								"@type": "Answer",
+								text: item.answer,
+							},
+						})),
+					},
+				],
 			},
 		};
 	}
 
 	if (decodedPath === "/Recipes") {
 		return {
-			title: "Browse public recipes | Dish Genie",
-			description:
-				"Discover the latest public recipes on Dish Genie and open any recipe for ingredients, steps, and cooking time.",
+			title: isPolish ? "Przeglądaj publiczne przepisy | Dish Genie" : "Browse public recipes | Dish Genie",
+			description: isPolish
+				? "Odkrywaj najnowsze publiczne przepisy Dish Genie wraz ze składnikami, instrukcjami i czasem przygotowania."
+				: "Discover the latest public recipes on Dish Genie and open any recipe for ingredients, steps, and cooking time.",
 			canonicalPath: "/Recipes",
 		};
 	}
 
 	if (decodedPath.startsWith("/Recipe/") && decodedPath !== "/Recipe") {
 		return {
-			title: "Recipe details | Dish Genie",
-			description:
-				"Open a public recipe on Dish Genie to view its ingredients, steps, and cooking time.",
+			title: isPolish ? "Szczegóły przepisu | Dish Genie" : "Recipe details | Dish Genie",
+			description: isPolish
+				? "Otwórz publiczny przepis Dish Genie i zobacz składniki, instrukcje oraz czas przygotowania."
+				: "Open a public recipe on Dish Genie to view its ingredients, steps, and cooking time.",
 			canonicalPath: decodedPath,
 		};
 	}
 
+	if (decodedPath.startsWith("/featured-recipes/")) {
+		const slug = decodedPath.replace("/featured-recipes/", "");
+		const recipe = getFeaturedRecipe(slug);
+
+		if (recipe) {
+			return {
+				title: `${recipe.name} | Dish Genie Recipe`,
+				description: recipe.description,
+				canonicalPath: `/featured-recipes/${recipe.slug}`,
+				structuredData: {
+					"@context": "https://schema.org",
+					"@type": "Recipe",
+					name: recipe.name,
+					description: recipe.description,
+					totalTime: `PT${Number.parseInt(recipe.timeToPrepare, 10)}M`,
+					recipeYield: "2 servings",
+					recipeIngredient: recipe.ingredients.map(
+						(ingredient) =>
+							`${ingredient.amount} ${ingredient.unit} ${ingredient.name}`,
+					),
+					recipeInstructions: recipe.instructions.map((instruction) => ({
+						"@type": "HowToStep",
+						text: instruction,
+					})),
+					nutrition: {
+						"@type": "NutritionInformation",
+						calories: `${recipe.nutrition.calories} calories`,
+						proteinContent: `${recipe.nutrition.protein} g`,
+						carbohydrateContent: `${recipe.nutrition.carbs} g`,
+						fatContent: `${recipe.nutrition.fats} g`,
+					},
+				},
+			};
+		}
+	}
+
 	if (decodedPath === "/privacy") {
 		return {
-			title: "Privacy Policy | Dish Genie",
-			description:
-				"Read the Dish Genie Privacy Policy to understand what information the app collects, how it is used, and how analytics choices work.",
+			title: isPolish ? "Polityka prywatności | Dish Genie" : "Privacy Policy | Dish Genie",
+			description: isPolish
+				? "Dowiedz się, jakie dane zbiera Dish Genie, jak je wykorzystuje i jak działają ustawienia analityki."
+				: "Read the Dish Genie Privacy Policy to understand what information the app collects, how it is used, and how analytics choices work.",
 			canonicalPath: "/privacy",
 		};
 	}
 
 	if (decodedPath === "/terms") {
 		return {
-			title: "Terms of Service | Dish Genie",
-			description:
-				"Read the Dish Genie Terms of Service, including acceptable use, AI recipe output guidance, and service rules.",
+			title: isPolish ? "Regulamin | Dish Genie" : "Terms of Service | Dish Genie",
+			description: isPolish
+				? "Przeczytaj zasady korzystania z Dish Genie i informacje o odpowiedzialnym używaniu przepisów AI."
+				: "Read the Dish Genie Terms of Service, including acceptable use, AI recipe output guidance, and service rules.",
 			canonicalPath: "/terms",
 		};
 	}
 
 	if (decodedPath === "/blog") {
 		return {
-			title: "Dish Genie Blog | Practical cooking and AI recipe tips",
-			description:
-				"Read practical Dish Genie guides on meal planning, fridge organization, AI recipe generation, and cooking from ingredients you already have.",
+			title: isPolish ? "Blog Dish Genie | Praktyczne gotowanie i przepisy AI" : "Dish Genie Blog | Practical cooking and AI recipe tips",
+			description: isPolish
+				? "Praktyczne poradniki Dish Genie o planowaniu posiłków, organizacji lodówki i gotowaniu ze składników, które już masz."
+				: "Read practical Dish Genie guides on meal planning, fridge organization, AI recipe generation, and cooking from ingredients you already have.",
 			canonicalPath: "/blog",
 			structuredData: {
 				"@context": "https://schema.org",
@@ -212,7 +295,7 @@ export const getSeoConfig = (pathname: string): SeoConfig => {
 				url: toAbsoluteUrl("/blog"),
 				description:
 					"Practical guides on meal planning, fridge organization, and AI recipe generation.",
-				blogPost: blogPosts.map((post) => ({
+				blogPost: getBlogPosts(locale).map((post) => ({
 					"@type": "BlogPosting",
 					headline: post.title,
 					description: post.description,
@@ -225,7 +308,7 @@ export const getSeoConfig = (pathname: string): SeoConfig => {
 
 	if (decodedPath.startsWith("/blog/")) {
 		const slug = decodedPath.replace("/blog/", "");
-		const post = getBlogPost(slug);
+		const post = getBlogPost(slug, locale);
 
 		if (post) {
 			return {

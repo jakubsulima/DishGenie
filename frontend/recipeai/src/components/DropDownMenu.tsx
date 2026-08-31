@@ -1,4 +1,5 @@
 import DropDownItem from "./DropDownItem";
+import { useLanguage } from "../context/languageContext";
 interface Props {
   dropdownItems: string[];
   className: string;
@@ -12,6 +13,7 @@ const DropDownMenu = ({
   handleLogout,
   onItemClick,
 }: Props) => {
+  const { t } = useLanguage();
   const getItemHref = (item: string) => {
     if (item === "Home") {
       return "/";
@@ -22,40 +24,40 @@ const DropDownMenu = ({
 
   return (
     <div className={className}>
-      <div className="flex flex-col py-2">
+      <ul className="flex flex-col py-2">
         {dropdownItems.map((item, index) => {
           const isLogout = item === "Logout";
 
           if (isLogout) {
             return (
-              <button
-                key={index}
-                type="button"
-                className="mt-4 block w-full px-6 py-4 text-center text-[1.1rem] font-bold text-[#fefefe] transition-all duration-200 hover:bg-white/5 hover:text-accent focus:bg-white/5 focus:outline-none active:scale-[0.98]"
-                onClick={() => {
-                  handleLogout();
-                  onItemClick?.();
-                }}
-              >
-                {item}
-              </button>
+              <li key={item}>
+                <button
+                  type="button"
+                  className="mt-4 block w-full px-6 py-4 text-center text-[1.1rem] font-bold text-[#fefefe] transition-all duration-200 hover:bg-white/5 hover:text-accent focus:bg-white/5 focus:outline-none active:scale-[0.98]"
+                  onClick={() => {
+                    handleLogout();
+                    onItemClick?.();
+                  }}
+                >
+                  {t(item)}
+                </button>
+              </li>
             );
           }
 
           return (
-            <DropDownItem
-              to={getItemHref(item)}
-              key={index}
-              className={`block w-full py-4 px-6 text-center text-[1.1rem] transition-all duration-200 focus:outline-none focus:bg-white/5 active:scale-[0.98] ${
-                "font-medium text-[#fefefe] hover:text-accent hover:bg-white/5"
-              }`}
-              onClick={onItemClick}
-            >
-              {item}
-            </DropDownItem>
+            <li key={`${item}-${index}`}>
+              <DropDownItem
+                to={getItemHref(item)}
+                className="block w-full px-6 py-4 text-center text-[1.1rem] font-medium text-[#fefefe] transition-all duration-200 hover:bg-white/5 hover:text-accent focus:bg-white/5 focus:outline-none active:scale-[0.98]"
+                onClick={onItemClick}
+              >
+                {t(item)}
+              </DropDownItem>
+            </li>
           );
         })}
-      </div>
+      </ul>
     </div>
   );
 };

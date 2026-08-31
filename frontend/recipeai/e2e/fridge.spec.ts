@@ -61,7 +61,7 @@ test("user can edit fridge item fields inline on mobile", async ({ page }) => {
   await expirationInput.fill("2026-05-21");
   await page.getByRole("button", { name: "Save" }).click();
 
-  await expect(page.getByText("Greek yogurt")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Greek yogurt" })).toBeVisible();
   await expect(page.getByText("750 ml")).toBeVisible();
   await expect(page.getByText("Exp: 21-05-26")).toBeVisible();
 });

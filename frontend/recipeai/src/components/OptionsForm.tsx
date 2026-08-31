@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useLanguage } from "../context/languageContext";
 
 interface OptionItem {
   value: string;
@@ -46,6 +47,7 @@ const OptionsForm = ({
   buttonText = "Save",
   label,
 }: OptionsFormProps) => {
+  const { t } = useLanguage();
   const [selectedOption, setSelectedOption] = useState(currentOptions);
   const [showAllCardOptions, setShowAllCardOptions] = useState(false);
   const [cardPage, setCardPage] = useState(0);
@@ -145,7 +147,7 @@ const OptionsForm = ({
       className={`flex flex-col gap-2 ${classname || ""}`}
     >
       {label && (
-        <label className="block text-sm font-medium text-text">{label}</label>
+        <label className="block text-sm font-medium text-text">{t(label)}</label>
       )}
 
       {variant === "cards" ? (
@@ -153,7 +155,7 @@ const OptionsForm = ({
           <div
             className="grid gap-2 sm:grid-cols-2"
             role="radiogroup"
-            aria-label={label || name}
+            aria-label={t(label || name)}
           >
             {visibleOptionItems.map((option) => {
               const isSelected = selectedOption === option.value;
@@ -174,17 +176,17 @@ const OptionsForm = ({
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-semibold text-text">
-                          {option.label}
+                          {t(option.label)}
                         </p>
                         {showOkBadge && isSelected && (
                           <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">
-                            Selected
+                            {t("Selected")}
                           </span>
                         )}
                       </div>
                       {option.description && (
                         <p className="mt-1 text-xs text-text/70">
-                          {option.description}
+                          {t(option.description)}
                         </p>
                       )}
                     </div>
@@ -224,11 +226,14 @@ const OptionsForm = ({
                 disabled={cardPage === 0}
                 className="rounded-md border border-primary/20 bg-secondary px-3 py-1.5 text-sm font-semibold text-text transition-colors hover:border-accent/45 hover:bg-background disabled:cursor-not-allowed disabled:opacity-45"
               >
-                Previous
+                {t("Previous")}
               </button>
 
               <p className="text-xs font-medium uppercase tracking-wide text-text/60">
-                Page {cardPage + 1} of {totalPages}
+                {t("Page {current} of {total}", {
+                  current: cardPage + 1,
+                  total: totalPages,
+                })}
               </p>
 
               <button
@@ -239,7 +244,7 @@ const OptionsForm = ({
                 disabled={cardPage >= totalPages - 1}
                 className="rounded-md border border-primary/20 bg-secondary px-3 py-1.5 text-sm font-semibold text-text transition-colors hover:border-accent/45 hover:bg-background disabled:cursor-not-allowed disabled:opacity-45"
               >
-                Next
+                {t("Next")}
               </button>
             </div>
           )}
@@ -251,8 +256,10 @@ const OptionsForm = ({
               className="mt-1 w-fit self-start rounded-md px-1 py-1 text-sm font-semibold text-accent transition-colors hover:text-accent/80 focus:outline-none focus:ring-2 focus:ring-accent"
             >
               {showAllCardOptions
-                ? "Show fewer options"
-                : `Show ${optionItems.length - resolvedInitialVisibleCount} more options`}
+                ? t("Show fewer options")
+                : t("Show {count} more options", {
+                    count: optionItems.length - resolvedInitialVisibleCount,
+                  })}
             </button>
           )}
         </>
@@ -264,10 +271,10 @@ const OptionsForm = ({
             onChange={(e) => handleSelectChange(e.target.value)}
             className="w-full appearance-none rounded-lg border border-primary/20 bg-background px-3 py-2.5 pr-10 text-text shadow-sm transition-shadow focus:outline-none focus:ring-2 focus:ring-accent"
           >
-            <option value="">{currentOptions ? "None" : "Select..."}</option>
+            <option value="">{t(currentOptions ? "None" : "Select...")}</option>
             {optionItems.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {t(option.label)}
               </option>
             ))}
           </select>
@@ -295,7 +302,7 @@ const OptionsForm = ({
           disabled={selectedOption === currentOptions}
           className="mt-2 w-full rounded-lg bg-accent px-4 py-2.5 font-semibold text-text shadow-sm transition-colors hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {buttonText}
+          {t(buttonText)}
         </button>
       )}
     </form>

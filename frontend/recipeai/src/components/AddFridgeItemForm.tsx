@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { hasAmountError } from "../lib/hooks";
 import OptionsForm from "./OptionsForm";
 import { unitType } from "../context/fridgeContext";
+import { useLanguage } from "../context/languageContext";
 
 interface AddFridgeItemFormProps {
   newItem: string;
@@ -33,6 +34,7 @@ const AddFridgeItemForm: React.FC<AddFridgeItemFormProps> = ({
   displayLoading,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (
@@ -57,14 +59,14 @@ const AddFridgeItemForm: React.FC<AddFridgeItemFormProps> = ({
       >
         <div>
           <h2 className="text-xl font-bold text-text sm:text-2xl">
-            Add to Fridge
+            {t("Add to Fridge")}
           </h2>
           <p className="text-sm text-text/60">
-            Click to {isExpanded ? "hide" : "expand"} the quick add form
+            {t(isExpanded ? "Hide the quick add form" : "Open the quick add form")}
           </p>
         </div>
         <span className="rounded-full bg-accent/25 px-2.5 py-1 text-xs font-semibold text-text">
-          {isExpanded ? "Hide" : "Open"}
+          {t(isExpanded ? "Hide" : "Open")}
         </span>
       </button>
 
@@ -79,13 +81,13 @@ const AddFridgeItemForm: React.FC<AddFridgeItemFormProps> = ({
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
               <label className="block text-sm font-medium text-text">
-                Item name <span className="text-accent">*</span>
+                {t("Item name")} <span className="text-accent">*</span>
               </label>
               <input
                 type="text"
                 value={newItem}
                 onChange={(e) => setNewItem(e.target.value)}
-                placeholder="e.g., Tomatoes"
+                placeholder={t("e.g., Tomatoes")}
                 className={`w-full appearance-none rounded-lg border bg-background p-2.5 text-text shadow-sm transition-shadow focus:outline-none focus:ring-2 focus:ring-accent ${
                   showNameError && !newItem.trim()
                     ? "border-accent"
@@ -99,8 +101,8 @@ const AddFridgeItemForm: React.FC<AddFridgeItemFormProps> = ({
 
             <div className="flex flex-col gap-1">
               <label className="mt-1 block text-sm font-medium text-text">
-                Expiration date{" "}
-                <span className="font-normal text-text/50">(optional)</span>
+                {t("Expiration date")}{" "}
+                <span className="font-normal text-text/50">{t("(optional)")}</span>
               </label>
               <input
                 type="date"
@@ -137,8 +139,8 @@ const AddFridgeItemForm: React.FC<AddFridgeItemFormProps> = ({
             {unit && (
               <div className="amount-slide-in mt-1 flex flex-col gap-1">
                 <label className="block text-sm font-medium text-text">
-                  Amount{" "}
-                  <span className="font-normal text-text/50">(optional)</span>
+                  {t("Amount")}{" "}
+                  <span className="font-normal text-text/50">{t("(optional)")}</span>
                 </label>
                 <input
                   type="text"
@@ -156,7 +158,7 @@ const AddFridgeItemForm: React.FC<AddFridgeItemFormProps> = ({
                 />
                 {hasAmountError(amount) && (
                   <p className="mt-1 text-xs text-text/75">
-                    Please enter a valid positive number
+                    {t("Please enter a valid positive number")}
                   </p>
                 )}
               </div>
@@ -167,7 +169,7 @@ const AddFridgeItemForm: React.FC<AddFridgeItemFormProps> = ({
               disabled={displayLoading || hasAmountError(amount) || !!dateError}
               className="mobile-soft-press mt-4 cursor-pointer rounded-lg bg-accent px-4 py-3 font-semibold text-text shadow-[0_10px_24px_rgba(255,212,60,0.28)] transition-colors hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {displayLoading ? "Adding..." : "Add Item"}
+              {t(displayLoading ? "Adding..." : "Add Item")}
             </button>
           </div>
         </div>

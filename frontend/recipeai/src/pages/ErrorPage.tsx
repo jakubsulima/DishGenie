@@ -5,6 +5,7 @@ import {
   useRouteError,
 } from "react-router-dom";
 import { applySeo } from "../lib/seo";
+import { useLanguage } from "../context/languageContext";
 
 interface ErrorPageProps {
   title?: string;
@@ -17,6 +18,7 @@ const ErrorPage = ({
 }: ErrorPageProps) => {
   const routeError = useRouteError();
   const location = useLocation();
+  const { t } = useLanguage();
 
   const isNotFound =
     isRouteErrorResponse(routeError) && routeError.status === 404;
@@ -38,13 +40,13 @@ const ErrorPage = ({
   return (
     <div className="min-h-screen bg-background px-4 py-16">
       <div className="mx-auto max-w-xl rounded-2xl border border-primary/15 bg-secondary p-8 text-center shadow-sm">
-        <h1 className="text-3xl font-bold text-text">{finalTitle}</h1>
-        <p className="mt-3 text-sm text-text/65">{finalSubtitle}</p>
+        <h1 className="text-3xl font-bold text-text">{t(finalTitle)}</h1>
+        <p className="mt-3 text-sm text-text/65">{t(finalSubtitle)}</p>
         <a
           href="/"
           className="mt-6 inline-flex rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-text transition-colors hover:bg-accent/90"
         >
-          Back to home
+          {t("Back to home")}
         </a>
       </div>
     </div>

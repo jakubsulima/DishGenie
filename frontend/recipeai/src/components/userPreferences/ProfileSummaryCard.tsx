@@ -11,25 +11,30 @@ const ProfileSummaryCard = ({
   recipeUsageLabel,
   dislikedIngredientsCount,
 }: ProfileSummaryCardProps) => {
+  const { t } = useLanguage();
   return (
     <div className="mobile-card-enter ambient-gradient-card mb-8 overflow-hidden rounded-3xl border border-accent/35 bg-secondary p-6 sm:p-8">
-      <h1 className="text-3xl font-bold text-text sm:text-4xl">My Profile</h1>
+      <h1 className="text-3xl font-bold text-text sm:text-4xl">{t("My Profile")}</h1>
       <p className="mt-2 max-w-2xl text-text/70">
-        One place to tune your diet and ingredient dislikes.
+        {t("One place to tune your diet and ingredient dislikes.")}
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
         <span className="rounded-full bg-primary px-3 py-1.5 text-sm font-semibold text-background">
-          Plan: {accountPlan}
+          {t("Plan:")} {accountPlan}
         </span>
         <span className="rounded-full bg-accent px-3 py-1.5 text-sm font-semibold text-text">
-          Diet: {activeDiet}
+          {t("Diet:")} {t(activeDiet)}
         </span>
         <span className="rounded-full border border-accent/35 bg-background px-3 py-1.5 text-sm text-text/75">
-          Requests: {recipeUsageLabel}
+          {t("Requests:")} {recipeUsageLabel}
         </span>
         <span className="rounded-full border border-accent/35 bg-background px-3 py-1.5 text-sm text-text/75">
-          {dislikedIngredientsCount} disliked ingredient
-          {dislikedIngredientsCount === 1 ? "" : "s"}
+          {t(
+            dislikedIngredientsCount === 1
+              ? "{count} disliked ingredient"
+              : "{count} disliked ingredients",
+            { count: dislikedIngredientsCount },
+          )}
         </span>
       </div>
     </div>
@@ -37,3 +42,4 @@ const ProfileSummaryCard = ({
 };
 
 export default ProfileSummaryCard;
+import { useLanguage } from "../../context/languageContext";

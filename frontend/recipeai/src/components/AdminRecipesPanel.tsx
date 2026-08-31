@@ -12,6 +12,7 @@ import { TableSkeleton } from "./Skeleton";
 import ErrorAlert from "./ErrorAlert";
 import PaginationControls from "./PaginationControls";
 import type { PageResponse, UserRecipeFilter } from "../lib/adminTypes";
+import { useLanguage } from "../context/languageContext";
 
 interface RecipeIngredient {
   name: string;
@@ -34,6 +35,7 @@ interface Recipe {
   ingredients?: RecipeIngredient[];
   instructions?: string[];
   nutrition?: RecipeNutrition | null;
+  servings?: number;
 }
 
 interface AdminRecipesPanelProps {
@@ -59,6 +61,7 @@ const AdminRecipesPanel: React.FC<AdminRecipesPanelProps> = ({
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
   const [savingRecipe, setSavingRecipe] = useState(false);
   const authContext = useContext(AuthContext);
+  const { t } = useLanguage();
 
   const endpoint = useMemo(() => {
     const pageQuery = `page=${page}&size=${PAGE_SIZE}`;
@@ -140,7 +143,7 @@ const AdminRecipesPanel: React.FC<AdminRecipesPanelProps> = ({
   };
 
   const handleDeleteRecipe = async (recipe: Recipe) => {
-    if (!window.confirm(`Delete recipe "${recipe.name}"?`)) {
+    if (!window.confirm(t('Delete recipe "{name}"?', { name: recipe.name }))) {
       return;
     }
 
@@ -178,15 +181,16 @@ const AdminRecipesPanel: React.FC<AdminRecipesPanelProps> = ({
       timeToPrepare: String(form.get("timeToPrepare") || "").trim(),
       ingredients: parseIngredients(String(form.get("ingredients") || "")),
       instructions: parseInstructions(String(form.get("instructions") || "")),
+      servings: editingRecipe.servings || 2,
     };
 
     if (!nextRecipe.name) {
-      setError("Recipe name is required.");
+      setError(t("Recipe name is required."));
       return;
     }
 
     if (!nextRecipe.ingredients || nextRecipe.ingredients.length === 0) {
-      setError("At least one ingredient is required.");
+      setError(t("At least one ingredient is required."));
       return;
     }
 
@@ -224,19 +228,18 @@ const AdminRecipesPanel: React.FC<AdminRecipesPanelProps> = ({
     <section>
       <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
-          <h2 className="text-2xl font-semibold">Recipe Management</h2>
+          <h2 className="text-2xl font-semibold">{t("Recipe Management")}</h2>
           <p className="mt-1 text-sm text-text/70">
-            Search, inspect, edit, or remove recipes. Fridge and shopping list
-            data stay outside this admin view.
+            {t("Search, inspect, edit, or remove recipes. Fridge and shopping list data stay outside this admin view.")}
           </p>
         </div>
         <div className="text-sm text-text/70">
-          {totalRecipes} recipe{totalRecipes === 1 ? "" : "s"} in this view
+          {t("{count} recipes in this view", { count: totalRecipes })}
         </div>
       </div>
 
       <ErrorAlert
-        message={error}
+        message={error ? t(error) : null}
         className="mb-4"
         compact
         onAutoHide={() => setError(null)}
@@ -248,14 +251,15 @@ const AdminRecipesPanel: React.FC<AdminRecipesPanelProps> = ({
             value={searchInput}
             onChange={(event) => setSearchInput(event.target.value)}
             className="min-h-10 rounded border border-primary/30 bg-secondary px-3 text-sm text-text focus:outline-none focus:ring-2 focus:ring-accent sm:w-80"
-            placeholder="Search recipes by name or ingredient"
+            placeholder={t("Search recipes by name or ingredient")}
+            aria-label={t("Search recipes by name or ingredient")}
           />
           <div className="flex gap-2">
             <button
               type="submit"
               className="mobile-soft-press rounded bg-accent px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-accent/80"
             >
-              Search
+              {t("Search")}
             </button>
             {(appliedSearch || searchInput) && (
               <button
@@ -263,7 +267,7 @@ const AdminRecipesPanel: React.FC<AdminRecipesPanelProps> = ({
                 onClick={clearSearch}
                 className="mobile-soft-press rounded bg-secondary px-4 py-2 text-sm font-semibold text-text transition-colors hover:bg-primary/10"
               >
-                Clear
+                {t("Clear")}
               </button>
             )}
           </div>
@@ -272,14 +276,14 @@ const AdminRecipesPanel: React.FC<AdminRecipesPanelProps> = ({
         {userFilter && (
           <div className="flex flex-wrap items-center gap-2 text-sm">
             <span className="rounded bg-primary/10 px-3 py-2 text-text">
-              Showing recipes for {userFilter.email}
+              {t("Showing recipes for {email}", { email: userFilter.email })}
             </span>
             <button
               type="button"
               onClick={onClearUserFilter}
               className="mobile-soft-press rounded bg-secondary px-3 py-2 font-semibold text-text transition-colors hover:bg-primary/10"
             >
-              Show all
+              {t("Show all")}
             </button>
           </div>
         )}
@@ -288,17 +292,17 @@ const AdminRecipesPanel: React.FC<AdminRecipesPanelProps> = ({
       {loading ? (
         <TableSkeleton rows={PAGE_SIZE} columns={5} />
       ) : recipes.length === 0 && !error ? (
-        <p className="text-text/70">No recipes found.</p>
+        <p className="text-text/70">{t("No recipes found.")}</p>
       ) : (
         <div className="overflow-x-auto rounded border border-primary/20">
           <table className="min-w-full bg-secondary">
             <thead className="bg-primary/10 text-sm text-text">
               <tr>
                 <th className="px-4 py-3 text-left">ID</th>
-                <th className="px-4 py-3 text-left">Title</th>
-                <th className="px-4 py-3 text-left">Time</th>
-                <th className="px-4 py-3 text-left">Contents</th>
-                <th className="px-4 py-3 text-left">Actions</th>
+                <th className="px-4 py-3 text-left">{t("Title")}</th>
+                <th className="px-4 py-3 text-left">{t("Time")}</th>
+                <th className="px-4 py-3 text-left">{t("Contents")}</th>
+                <th className="px-4 py-3 text-left">{t("Actions")}</th>
               </tr>
             </thead>
             <tbody className="text-sm text-text">
@@ -310,12 +314,12 @@ const AdminRecipesPanel: React.FC<AdminRecipesPanelProps> = ({
                   <td className="px-4 py-3">{recipe.id}</td>
                   <td className="px-4 py-3 font-medium">{recipe.name}</td>
                   <td className="px-4 py-3">
-                    {recipe.timeToPrepare || "Not set"}
+                    {recipe.timeToPrepare || t("Not set")}
                   </td>
                   <td className="px-4 py-3 text-text/70">
                     {(recipe.ingredients?.length || 0) > 0
-                      ? `${recipe.ingredients?.length} ingredients`
-                      : "Open details"}
+                      ? t("{count} ingredients", { count: recipe.ingredients?.length || 0 })
+                      : t("Open details")}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-2">
@@ -324,7 +328,7 @@ const AdminRecipesPanel: React.FC<AdminRecipesPanelProps> = ({
                         onClick={() => loadRecipeDetails(recipe.id)}
                         className="mobile-soft-press rounded bg-background px-3 py-2 text-sm font-semibold text-text transition-colors hover:bg-primary/10"
                       >
-                        View
+                        {t("View")}
                       </button>
                       <button
                         type="button"
@@ -334,14 +338,14 @@ const AdminRecipesPanel: React.FC<AdminRecipesPanelProps> = ({
                         }}
                         className="mobile-soft-press rounded bg-background px-3 py-2 text-sm font-semibold text-text transition-colors hover:bg-primary/10"
                       >
-                        Edit
+                        {t("Edit")}
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDeleteRecipe(recipe)}
                         className="mobile-soft-press rounded bg-accent px-3 py-2 text-sm font-semibold text-background transition-colors hover:bg-accent/80"
                       >
-                        Delete
+                        {t("Delete")}
                       </button>
                     </div>
                   </td>
@@ -386,13 +390,15 @@ const RecipeDetails = ({
 }: {
   recipe: Recipe;
   onEdit: () => void;
-}) => (
+}) => {
+  const { t } = useLanguage();
+  return (
   <div className="rounded border border-primary/20 bg-secondary p-4">
     <div className="mb-3 flex items-start justify-between gap-3">
       <div>
         <h3 className="text-xl font-semibold">{recipe.name}</h3>
         <p className="mt-1 text-sm text-text/70">
-          ID {recipe.id} · {recipe.timeToPrepare || "No time set"}
+          ID {recipe.id} · {recipe.timeToPrepare || t("No time set")}
         </p>
       </div>
       <button
@@ -400,7 +406,7 @@ const RecipeDetails = ({
         onClick={onEdit}
         className="mobile-soft-press rounded bg-background px-3 py-2 text-sm font-semibold text-text transition-colors hover:bg-primary/10"
       >
-        Edit
+        {t("Edit")}
       </button>
     </div>
 
@@ -410,7 +416,7 @@ const RecipeDetails = ({
 
     <div className="grid gap-4 md:grid-cols-2">
       <div>
-        <h4 className="mb-2 font-semibold">Ingredients</h4>
+        <h4 className="mb-2 font-semibold">{t("Ingredients")}</h4>
         <ul className="space-y-1 text-sm text-text/75">
           {(recipe.ingredients || []).map((ingredient, index) => (
             <li key={`${ingredient.name}-${index}`}>
@@ -420,7 +426,7 @@ const RecipeDetails = ({
         </ul>
       </div>
       <div>
-        <h4 className="mb-2 font-semibold">Instructions</h4>
+        <h4 className="mb-2 font-semibold">{t("Instructions")}</h4>
         <ol className="space-y-1 text-sm text-text/75">
           {(recipe.instructions || []).map((instruction, index) => (
             <li key={`${instruction}-${index}`}>
@@ -431,7 +437,8 @@ const RecipeDetails = ({
       </div>
     </div>
   </div>
-);
+  );
+};
 
 const RecipeEditor = ({
   recipe,
@@ -443,15 +450,17 @@ const RecipeEditor = ({
   saving: boolean;
   onCancel: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
-}) => (
+}) => {
+  const { t } = useLanguage();
+  return (
   <form
     onSubmit={onSubmit}
     className="rounded border border-primary/20 bg-secondary p-4"
   >
-    <h3 className="mb-4 text-xl font-semibold">Edit Recipe</h3>
+    <h3 className="mb-4 text-xl font-semibold">{t("Edit Recipe")}</h3>
     <div className="grid gap-3">
       <label className="text-sm font-semibold">
-        Name
+        {t("Name")}
         <input
           name="name"
           defaultValue={recipe.name}
@@ -459,7 +468,7 @@ const RecipeEditor = ({
         />
       </label>
       <label className="text-sm font-semibold">
-        Time to prepare
+        {t("Time to prepare")}
         <input
           name="timeToPrepare"
           defaultValue={recipe.timeToPrepare || ""}
@@ -467,7 +476,7 @@ const RecipeEditor = ({
         />
       </label>
       <label className="text-sm font-semibold">
-        Description
+        {t("Description")}
         <textarea
           name="description"
           defaultValue={recipe.description || ""}
@@ -476,7 +485,7 @@ const RecipeEditor = ({
         />
       </label>
       <label className="text-sm font-semibold">
-        Ingredients
+        {t("Ingredients")}
         <textarea
           name="ingredients"
           defaultValue={formatIngredients(recipe.ingredients || [])}
@@ -485,7 +494,7 @@ const RecipeEditor = ({
         />
       </label>
       <label className="text-sm font-semibold">
-        Instructions
+        {t("Instructions")}
         <textarea
           name="instructions"
           defaultValue={(recipe.instructions || []).join("\n")}
@@ -500,18 +509,19 @@ const RecipeEditor = ({
         disabled={saving}
         className="mobile-soft-press rounded bg-accent px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-accent/80 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {saving ? "Saving" : "Save"}
+        {t(saving ? "Saving" : "Save")}
       </button>
       <button
         type="button"
         onClick={onCancel}
         className="mobile-soft-press rounded bg-background px-4 py-2 text-sm font-semibold text-text transition-colors hover:bg-primary/10"
       >
-        Cancel
+        {t("Cancel")}
       </button>
     </div>
   </form>
-);
+  );
+};
 
 const formatIngredients = (ingredients: RecipeIngredient[]) =>
   ingredients

@@ -4,6 +4,7 @@ import {
   UpdateFridgeIngredientInput,
 } from "../context/fridgeContext";
 import FridgeIngredientContainer from "./FridgeIngredientContainer";
+import { useLanguage } from "../context/languageContext";
 
 interface FridgeDisplayProps {
   fridgeItems: FridgeIngredient[];
@@ -16,6 +17,7 @@ const FridgeDisplay: React.FC<FridgeDisplayProps> = ({
   removeItem,
   updateItem,
 }) => {
+  const { t } = useLanguage();
   const sortedItems = useMemo(
     () =>
       [...fridgeItems].sort((a, b) => {
@@ -41,9 +43,11 @@ const FridgeDisplay: React.FC<FridgeDisplayProps> = ({
   return (
     <div className="mobile-card-enter mobile-card-delay-1 ambient-gradient-card md:col-span-2 w-full rounded-xl border border-primary/5 bg-secondary p-5 shadow-sm sm:p-6 min-h-[320px] md:min-h-[380px] flex flex-col">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <h1 className="text-2xl font-bold text-text">My Fridge</h1>
+        <h1 className="text-2xl font-bold text-text">{t("My Fridge")}</h1>
         <span className="text-xs sm:text-sm px-3 py-1 rounded-full bg-accent/20 border border-accent/35 text-text">
-          {sortedItems.length} item{sortedItems.length === 1 ? "" : "s"}
+          {t(sortedItems.length === 1 ? "{count} item" : "{count} items", {
+            count: sortedItems.length,
+          })}
         </span>
       </div>
       <ul className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 mt-1">
@@ -77,10 +81,10 @@ const FridgeDisplay: React.FC<FridgeDisplayProps> = ({
             />
           </svg>
           <p className="text-text/70 font-medium text-lg">
-            No ingredients in your inventory
+            {t("No ingredients in your inventory")}
           </p>
           <p className="text-text/50 text-sm mt-2 max-w-[250px] mx-auto">
-            Add your first ingredient to start tracking what you have at home
+            {t("Add your first ingredient to start tracking what you have at home")}
           </p>
         </div>
       )}

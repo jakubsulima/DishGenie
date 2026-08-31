@@ -16,6 +16,16 @@ const Fridge = lazy(() =>
 const Login = lazy(() => import("./pages/Login"));
 const RecipePage = lazy(() => import("./pages/RecipePage"));
 const Register = lazy(() => import("./pages/Register"));
+const ForgotPasswordPage = lazy(() =>
+  import("./pages/PasswordRecoveryPage").then((module) => ({
+    default: module.ForgotPasswordPage,
+  })),
+);
+const ResetPasswordPage = lazy(() =>
+  import("./pages/PasswordRecoveryPage").then((module) => ({
+    default: module.ResetPasswordPage,
+  })),
+);
 const MePage = lazy(() => import("./pages/UserPreferencesPage.tsx"));
 const AdminPage = lazy(() => import("./pages/AdminPage"));
 const ShoppingList = lazy(() => import("./pages/ShoppingList"));
@@ -29,6 +39,7 @@ const BlogPostPage = lazy(() =>
     default: module.BlogPostPage,
   })),
 );
+const FeaturedRecipePage = lazy(() => import("./pages/FeaturedRecipePage"));
 const PrivacyPolicyPage = lazy(() =>
   import("./pages/LegalPage").then((module) => ({
     default: module.PrivacyPolicyPage,
@@ -83,6 +94,8 @@ function App() {
             </GuestRoute>,
           )}
         />
+        <Route path="/forgot-password" element={withSuspense(<ForgotPasswordPage />)} />
+        <Route path="/reset-password" element={withSuspense(<ResetPasswordPage />)} />
         <Route
           path="/My Profile"
           element={withSuspense(
@@ -117,6 +130,10 @@ function App() {
         <Route path="/terms" element={withSuspense(<TermsOfServicePage />)} />
         <Route path="/blog" element={withSuspense(<BlogIndexPage />)} />
         <Route path="/blog/:slug" element={withSuspense(<BlogPostPage />)} />
+        <Route
+          path="/featured-recipes/:slug"
+          element={withSuspense(<FeaturedRecipePage />)}
+        />
         <Route
           path="/admin"
           element={withSuspense(

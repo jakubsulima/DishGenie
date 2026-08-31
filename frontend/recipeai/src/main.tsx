@@ -4,11 +4,14 @@ import "./index.css";
 
 import App from "./App";
 import AppErrorBoundary from "./components/AppErrorBoundary";
+import { LanguageProvider } from "./context/languageContext";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <AppErrorBoundary>
-      <App />
-    </AppErrorBoundary>
+    <LanguageProvider>
+      <AppErrorBoundary>
+        <App />
+      </AppErrorBoundary>
+    </LanguageProvider>
   </StrictMode>,
 );

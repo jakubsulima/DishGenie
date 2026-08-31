@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @ControllerAdvice
 public class RestExceptionHandler {
@@ -29,6 +30,16 @@ public class RestExceptionHandler {
         String parameterName = e.getName() == null ? "request parameter" : e.getName();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorDto("Invalid value for '" + parameterName + "'."));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorDto> handleValidation(MethodArgumentNotValidException exception) {
+        String message = exception.getBindingResult().getFieldErrors().stream()
+                .findFirst()
+                .map(error -> error.getDefaultMessage() == null ? "Invalid request." : error.getDefaultMessage())
+                .orElse("Invalid request.");
+        return ResponseEntity.badRequest().body(new ErrorDto(message));
     }
 
     @ExceptionHandler(value = {Exception.class})

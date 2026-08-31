@@ -5,6 +5,7 @@ import {
   unitType,
 } from "../context/fridgeContext";
 import { formatDateForBackend } from "../lib/hooks";
+import { useLanguage } from "../context/languageContext";
 
 interface Props {
   id: number;
@@ -64,6 +65,7 @@ const FridgeIngredientContainer = ({
   remove,
   onUpdateItem,
 }: Props) => {
+  const { t } = useLanguage();
   const normalizedAmount = amount == null ? "" : String(amount);
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(name);
@@ -135,7 +137,7 @@ const FridgeIngredientContainer = ({
 
   const amountLabel = normalizedAmount.trim()
     ? `${normalizedAmount} ${unit || ""}`.trim()
-    : "No amount";
+    : t("No amount");
   const shortExpirationDate = formatShortDate(expirationDate || null);
   const amountWillDelete = editAmount.trim() === "0";
   const inputClassName =
@@ -156,7 +158,7 @@ const FridgeIngredientContainer = ({
               </span>
               {shortExpirationDate && (
                 <span className="px-2 py-0.5 rounded-full bg-secondary border border-primary/10">
-                  Exp: {shortExpirationDate}
+                  {t("Exp:")} {shortExpirationDate}
                 </span>
               )}
             </div>
@@ -166,8 +168,8 @@ const FridgeIngredientContainer = ({
             <button
               className="text-text/35 hover:text-accent transition-colors p-1.5 rounded-md hover:bg-accent/10"
               onClick={() => setIsEditing(true)}
-              aria-label={`Edit ${name}`}
-              title="Edit item"
+              aria-label={t("Edit {name}", { name })}
+              title={t("Edit item")}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -188,8 +190,8 @@ const FridgeIngredientContainer = ({
             <button
               className="text-text/30 hover:text-error text-lg leading-none transition-colors p-1.5 rounded-md hover:bg-error/10"
               onClick={remove}
-              aria-label={`Remove ${name}`}
-              title="Remove item"
+              aria-label={t("Remove {name}", { name })}
+              title={t("Remove item")}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -212,7 +214,7 @@ const FridgeIngredientContainer = ({
         <div className="flex flex-col gap-3">
           <div className="grid grid-cols-1 gap-3">
             <label className="flex flex-col gap-1 text-xs font-semibold text-text/70">
-              Name
+              {t("Name")}
               <input
                 type="text"
                 value={editName}
@@ -233,7 +235,7 @@ const FridgeIngredientContainer = ({
 
             <div className="grid grid-cols-[5rem_3.5rem_minmax(0,1fr)] items-end gap-2">
               <label className="flex flex-col gap-1 text-xs font-semibold text-text/70">
-                Amount
+                {t("Amount")}
                 <input
                   type="text"
                   inputMode="decimal"
@@ -249,12 +251,12 @@ const FridgeIngredientContainer = ({
                       ? invalidInputClassName
                       : "border-primary/20"
                   }`}
-                  placeholder="Optional"
+                  placeholder={t("Optional")}
                 />
               </label>
 
               <div className="relative flex flex-col gap-1 text-xs font-semibold text-text/70">
-                <span>Unit</span>
+                <span>{t("Unit")}</span>
                 <button
                   type="button"
                   onClick={() => setIsUnitPickerOpen((isOpen) => !isOpen)}
@@ -288,7 +290,7 @@ const FridgeIngredientContainer = ({
               </div>
 
               <label className="flex flex-col gap-1 text-xs font-semibold text-text/70">
-                Expiration
+                {t("Expiration")}
                 <input
                   type="date"
                   value={editExpirationDate}
@@ -303,13 +305,13 @@ const FridgeIngredientContainer = ({
 
           {amountWillDelete && (
             <p className="rounded-lg border border-error/25 bg-error/10 px-3 py-2 text-xs font-medium text-error">
-              Saving 0 will remove this item.
+              {t("Saving 0 will remove this item.")}
             </p>
           )}
 
           {validationError && (
             <p className="rounded-lg border border-error/25 bg-error/10 px-3 py-2 text-xs font-medium text-error">
-              {validationError}
+              {t(validationError)}
             </p>
           )}
 
@@ -318,8 +320,8 @@ const FridgeIngredientContainer = ({
               onClick={handleSave}
               disabled={isSaving}
               className="flex min-h-11 items-center justify-center rounded-lg bg-accent px-3 py-2 text-sm font-semibold text-text transition-colors hover:bg-accent/90 disabled:opacity-50"
-              aria-label="Save"
-              title="Save"
+              aria-label={t("Save")}
+              title={t("Save")}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -335,14 +337,14 @@ const FridgeIngredientContainer = ({
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-              <span className="ml-1.5">{isSaving ? "Saving" : "Save"}</span>
+              <span className="ml-1.5">{t(isSaving ? "Saving" : "Save")}</span>
             </button>
             <button
               onClick={handleCancel}
               disabled={isSaving}
               className="flex min-h-11 items-center justify-center rounded-lg bg-secondary px-3 py-2 text-sm font-semibold text-text/70 transition-colors hover:bg-error/10 hover:text-error disabled:opacity-50"
-              aria-label="Cancel"
-              title="Cancel"
+              aria-label={t("Cancel")}
+              title={t("Cancel")}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -358,7 +360,7 @@ const FridgeIngredientContainer = ({
                   d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
-              <span className="ml-1.5">Cancel</span>
+              <span className="ml-1.5">{t("Cancel")}</span>
             </button>
           </div>
         </div>

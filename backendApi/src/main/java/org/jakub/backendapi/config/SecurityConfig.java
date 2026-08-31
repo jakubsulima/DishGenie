@@ -48,7 +48,8 @@ public class SecurityConfig {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/csrf", "/actuator/health").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/login", "/register", "/refresh", "/oauth/google").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/actuator/metrics/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/login", "/register", "/refresh", "/oauth/google", "/forgot-password", "/reset-password").permitAll()
                         .requestMatchers(HttpMethod.GET, "/getAllRecipes", "/getRecipe/**", "/sitemap.xml").permitAll()
                         .requestMatchers(HttpMethod.POST, "/addRecipe").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")

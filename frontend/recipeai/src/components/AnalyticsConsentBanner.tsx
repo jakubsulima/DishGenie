@@ -1,4 +1,5 @@
 import { useAnalyticsConsent } from "../context/analyticsConsentContext";
+import { useLanguage } from "../context/languageContext";
 
 const AnalyticsConsentBanner = () => {
   const {
@@ -9,6 +10,7 @@ const AnalyticsConsentBanner = () => {
     closeConsentSettings,
     isConsentSettingsOpen,
   } = useAnalyticsConsent();
+  const { t } = useLanguage();
 
   const isFirstDecision = consentStatus === "unset";
   const isVisible = isFirstDecision || isConsentSettingsOpen;
@@ -21,11 +23,9 @@ const AnalyticsConsentBanner = () => {
     <div className="fixed inset-x-0 bottom-0 z-50 border-t border-primary/15 bg-background/95 px-4 py-4 shadow-[0_-12px_32px_rgba(0,0,0,0.08)] backdrop-blur-sm">
       <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-4 text-center">
         <div className="max-w-3xl">
-          <p className="text-sm font-semibold text-text">Analytics settings</p>
+          <p className="text-sm font-semibold text-text">{t("Analytics settings")}</p>
           <p className="mt-1 text-sm text-text/70">
-            Dish Genie uses PostHog analytics through a first-party proxy domain
-            to measure product usage and improve key flows. Analytics stays off
-            until you opt in.
+            {t("Dish Genie uses PostHog analytics through a first-party proxy domain to measure product usage and improve key flows. Analytics stays off until you opt in.")}
           </p>
         </div>
 
@@ -36,7 +36,7 @@ const AnalyticsConsentBanner = () => {
               onClick={closeConsentSettings}
               className="rounded-full border border-primary/20 px-4 py-2 text-sm font-medium text-text/70 transition-colors hover:bg-secondary"
             >
-              Close
+              {t("Close")}
             </button>
           )}
           <button
@@ -44,14 +44,14 @@ const AnalyticsConsentBanner = () => {
             onClick={denyConsent}
             className="rounded-full border border-primary/20 px-4 py-2 text-sm font-medium text-text transition-colors hover:bg-secondary"
           >
-            Reject analytics
+            {t("Reject analytics")}
           </button>
           <button
             type="button"
             onClick={grantConsent}
             className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-text transition-colors hover:bg-accent/90"
           >
-            Accept analytics
+            {t("Accept analytics")}
           </button>
         </div>
       </div>

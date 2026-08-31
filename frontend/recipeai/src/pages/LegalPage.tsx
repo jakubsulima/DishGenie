@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { useLanguage } from "../context/languageContext";
 
 const policyUpdatedAt = "May 30, 2026";
 const contactEmail = "support@dishgenie.app";
@@ -34,7 +35,7 @@ const ContactEmailLink = () => (
   </a>
 );
 
-export const PrivacyPolicyPage = () => (
+const EnglishPrivacyPolicyPage = () => (
   <article className="mx-auto max-w-3xl px-5 py-12 md:px-8">
     <p className="text-sm font-semibold text-text/55">
       Last updated {policyUpdatedAt}
@@ -52,8 +53,7 @@ export const PrivacyPolicyPage = () => (
     <div className="mt-10 space-y-8">
       <Section title="Who We Are">
         <p>
-          Dish Genie, also referred to as AI Kitchen in parts of the app, is a
-          recipe planning and cooking assistant. For privacy questions or data
+          Dish Genie is a recipe planning and cooking assistant. For privacy questions or data
           requests, contact us at <ContactEmailLink />.
         </p>
       </Section>
@@ -231,7 +231,7 @@ export const PrivacyPolicyPage = () => (
   </article>
 );
 
-export const TermsOfServicePage = () => (
+const EnglishTermsOfServicePage = () => (
   <article className="mx-auto max-w-3xl px-5 py-12 md:px-8">
     <p className="text-sm font-semibold text-text/55">
       Last updated {policyUpdatedAt}
@@ -376,3 +376,222 @@ export const TermsOfServicePage = () => (
     </Link>
   </article>
 );
+
+const PolishPrivacyPolicyPage = () => (
+  <article className="mx-auto max-w-3xl px-5 py-12 md:px-8" lang="pl">
+    <p className="text-sm font-semibold text-text/55">
+      Ostatnia aktualizacja: 30 maja 2026 r.
+    </p>
+    <h1 className="mt-3 text-3xl font-bold text-text md:text-4xl">
+      Polityka prywatności
+    </h1>
+    <p className="mt-4 text-base leading-7 text-text/70">
+      Dish Genie przetwarza dane konta, przepisów, lodówki, list zakupów i
+      analityki, aby świadczyć usługę, rozwijać produkt i dbać o jego
+      niezawodność. Poniżej wyjaśniamy, jakie dane zbieramy i jakie masz prawa.
+    </p>
+
+    <div className="mt-10 space-y-8">
+      <Section title="Administrator i kontakt">
+        <p>
+          Administratorem danych związanych z usługą Dish Genie jest operator
+          aplikacji. W sprawach prywatności i żądań dotyczących danych napisz
+          na adres <ContactEmailLink />.
+        </p>
+      </Section>
+      <Section title="Jakie informacje zbieramy">
+        <BulletList
+          items={[
+            "Dane konta, identyfikatory logowania oraz dane uwierzytelniające.",
+            "Zapytania do generatora, wygenerowane i zapisane przepisy oraz aktywność dotyczącą przepisów publicznych.",
+            "Produkty w lodówce, listy zakupów i preferencje żywieniowe.",
+            "Za zgodą: zdarzenia analityczne, typ urządzenia i przeglądarki oraz odwiedzane podstrony.",
+            "Logi bezpieczeństwa, błędów i diagnostyki potrzebne do ochrony usługi.",
+          ]}
+        />
+      </Section>
+      <Section title="Cele i podstawy przetwarzania">
+        <p>
+          Dane wykorzystujemy do utworzenia i zabezpieczenia konta,
+          generowania przepisów, zapisywania ustawień i treści, obsługi
+          użytkownika, zapobiegania nadużyciom oraz poprawy produktu. Podstawą
+          jest wykonanie umowy, uzasadniony interes związany z bezpieczeństwem
+          i rozwojem usługi, obowiązek prawny albo — w przypadku opcjonalnej
+          analityki — Twoja zgoda.
+        </p>
+      </Section>
+      <Section title="Przetwarzanie przez AI">
+        <p>
+          Zapytania o przepisy, składniki i instrukcje kulinarne mogą być
+          przesyłane do dostawców modeli AI, w tym Google Gemini. Nie wpisuj
+          danych wrażliwych, medycznych ani prywatnych informacji, które nie są
+          potrzebne do uzyskania propozycji przepisu.
+        </p>
+      </Section>
+      <Section title="Pliki cookies, pamięć lokalna i analityka">
+        <p>
+          Używamy cookies, pamięci lokalnej lub podobnych technologii do
+          logowania, zapamiętania języka i zgód, ochrony usługi oraz — po
+          wyrażeniu zgody — analityki. Ustawienia analityki możesz zmienić z
+          poziomu stopki aplikacji.
+        </p>
+      </Section>
+      <Section title="Odbiorcy i przekazywanie danych">
+        <p>
+          Nie sprzedajemy danych osobowych. Dane mogą przetwarzać w naszym
+          imieniu dostawcy modeli AI, hostingu, baz danych, uwierzytelniania,
+          analityki, logów i obsługi technicznej. Niektórzy dostawcy mogą
+          przetwarzać dane poza Twoim krajem; tam, gdzie jest to wymagane,
+          stosujemy odpowiednie zabezpieczenia transferu.
+        </p>
+      </Section>
+      <Section title="Publiczne treści i dostęp administracyjny">
+        <p>
+          Przepisy zapisane lub opublikowane jako publiczne mogą być widoczne
+          dla innych osób. Administratorzy mogą uzyskać dostęp do danych konta
+          i zapisanych treści tylko w zakresie potrzebnym do wsparcia,
+          moderacji, bezpieczeństwa, utrzymania usługi lub realizacji obowiązków
+          prawnych.
+        </p>
+      </Section>
+      <Section title="Okres przechowywania i bezpieczeństwo">
+        <p>
+          Dane konta i zapisane treści przechowujemy, dopóki konto jest aktywne
+          lub jest to potrzebne do świadczenia usługi. Logi mogą być zachowane
+          przez ograniczony czas ze względów bezpieczeństwa i prawnych.
+          Stosujemy rozsądne środki techniczne i organizacyjne, ale żadna usługa
+          internetowa nie gwarantuje pełnego bezpieczeństwa.
+        </p>
+      </Section>
+      <Section title="Twoje prawa">
+        <BulletList
+          items={[
+            "Możesz poprosić o dostęp, sprostowanie, kopię, ograniczenie przetwarzania lub usunięcie danych.",
+            "Możesz wycofać zgodę na analitykę bez wpływu na wcześniejsze przetwarzanie.",
+            "Możesz wnieść sprzeciw lub skargę do właściwego organu ochrony danych.",
+            "Możesz przestać korzystać z usługi w dowolnym momencie.",
+          ]}
+        />
+      </Section>
+      <Section title="Dzieci i zmiany polityki">
+        <p>
+          Dish Genie nie jest przeznaczone dla dzieci poniżej 13 lat. Polityka
+          może się zmieniać wraz z rozwojem usługi; data u góry wskazuje jej
+          aktualną wersję.
+        </p>
+      </Section>
+    </div>
+    <Link
+      to="/terms"
+      className="mt-10 inline-flex rounded-full bg-accent px-4 py-2 text-sm font-semibold text-text transition-colors hover:bg-accent/90"
+    >
+      Zobacz regulamin
+    </Link>
+  </article>
+);
+
+const PolishTermsOfServicePage = () => (
+  <article className="mx-auto max-w-3xl px-5 py-12 md:px-8" lang="pl">
+    <p className="text-sm font-semibold text-text/55">
+      Ostatnia aktualizacja: 30 maja 2026 r.
+    </p>
+    <h1 className="mt-3 text-3xl font-bold text-text md:text-4xl">
+      Regulamin świadczenia usług
+    </h1>
+    <p className="mt-4 text-base leading-7 text-text/70">
+      Regulamin opisuje zasady korzystania z Dish Genie. Używając aplikacji,
+      zgadzasz się korzystać z niej odpowiedzialnie i samodzielnie oceniać
+      przepisy oraz treści wygenerowane przez AI.
+    </p>
+    <div className="mt-10 space-y-8">
+      <Section title="Korzystanie z Dish Genie">
+        <p>
+          Dish Genie pomaga generować, przeglądać, zapisywać i organizować
+          pomysły na przepisy. Odpowiadasz za aktywność na swoim koncie,
+          prawdziwość podanych informacji i ochronę danych logowania. Utworzenie
+          konta wymaga zaakceptowania regulaminu i potwierdzenia zapoznania się
+          z Polityką prywatności.
+        </p>
+      </Section>
+      <Section title="Przepisy i treści AI">
+        <p>
+          Wygenerowane przepisy mogą być niepełne, niedokładne lub
+          nieodpowiednie dla określonej diety, alergii, sprzętu albo stanu
+          zdrowia. Przed gotowaniem sprawdź składniki, alergeny, temperatury i
+          zasady bezpieczeństwa żywności. Dish Genie nie udziela porad
+          medycznych, dietetycznych ani dotyczących alergii.
+        </p>
+      </Section>
+      <Section title="Dozwolone korzystanie">
+        <BulletList
+          items={[
+            "Nie zakłócaj, nie przeciążaj, nie skanuj automatycznie i nie próbuj uszkodzić usługi.",
+            "Nie próbuj uzyskać dostępu do cudzych kont, danych lub niedostępnych funkcji.",
+            "Nie dodawaj treści bezprawnych, szkodliwych, obraźliwych, naruszających prawa lub zawierających złośliwy kod.",
+            "Nie obchodź zabezpieczeń ani ograniczeń usługi.",
+            "Nie używaj aplikacji do tworzenia niebezpiecznych instrukcji.",
+          ]}
+        />
+      </Section>
+      <Section title="Twoje treści i przepisy publiczne">
+        <p>
+          Zachowujesz prawa do dodawanych treści. Udzielasz nam ograniczonej
+          zgody na ich przechowywanie, wyświetlanie, przesyłanie i przetwarzanie
+          w zakresie potrzebnym do działania, ochrony i rozwoju usługi. Jeśli
+          opublikujesz przepis, inni użytkownicy mogą go zobaczyć i wykorzystać.
+          Odpowiadasz za legalność treści i prawo do ich udostępnienia.
+        </p>
+      </Section>
+      <Section title="Zmiany i zakończenie usługi">
+        <p>
+          Możemy rozwijać, zawieszać lub usuwać funkcje. Dostęp może zostać
+          ograniczony lub zakończony, jeśli konto narusza regulamin, stwarza
+          ryzyko albo szkodzi użytkownikom, usłudze lub osobom trzecim. Warunki
+          ewentualnych płatnych funkcji zostaną przedstawione przed zakupem.
+        </p>
+      </Section>
+      <Section title="Wyłączenia odpowiedzialności">
+        <p>
+          Usługa jest dostarczana w aktualnie dostępnej postaci. Nie
+          gwarantujemy nieprzerwanego działania ani kompletności, poprawności i
+          przydatności wygenerowanych przepisów. W najszerszym zakresie
+          dozwolonym prawem nie odpowiadamy za szkody pośrednie, utratę danych,
+          skutki przygotowania żywności, reakcje alergiczne ani decyzje podjęte
+          wyłącznie na podstawie treści AI. Ograniczenia te nie wyłączają praw,
+          których nie można wyłączyć na mocy obowiązującego prawa konsumenckiego.
+        </p>
+      </Section>
+      <Section title="Zmiany regulaminu i kontakt">
+        <p>
+          Regulamin może być aktualizowany wraz ze zmianami usługi. Data u góry
+          wskazuje bieżącą wersję. W sprawach dotyczących usługi napisz na adres{" "}
+          <ContactEmailLink />.
+        </p>
+      </Section>
+    </div>
+    <Link
+      to="/privacy"
+      className="mt-10 inline-flex rounded-full bg-accent px-4 py-2 text-sm font-semibold text-text transition-colors hover:bg-accent/90"
+    >
+      Zobacz politykę prywatności
+    </Link>
+  </article>
+);
+
+export const PrivacyPolicyPage = () => {
+  const { locale } = useLanguage();
+  return locale === "pl" ? (
+    <PolishPrivacyPolicyPage />
+  ) : (
+    <EnglishPrivacyPolicyPage />
+  );
+};
+
+export const TermsOfServicePage = () => {
+  const { locale } = useLanguage();
+  return locale === "pl" ? (
+    <PolishTermsOfServicePage />
+  ) : (
+    <EnglishTermsOfServicePage />
+  );
+};

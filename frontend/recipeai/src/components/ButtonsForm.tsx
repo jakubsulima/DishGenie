@@ -1,3 +1,5 @@
+import { useLanguage } from "../context/languageContext";
+
 interface ButtonsFormProps {
   options: string[];
   onButtonClick: (button: string) => void;
@@ -10,12 +12,13 @@ const ButtonsForm = ({
   selectedButton,
   title,
 }: ButtonsFormProps) => {
+  const { t } = useLanguage();
   const selectedIndex = selectedButton ? options.indexOf(selectedButton) : -1;
 
   return (
     <section className="flex w-full flex-col items-center">
       <h2 className="mb-2 text-sm font-medium text-text/60 md:text-base">
-        {title}
+        {t(title)}
       </h2>
       <article className="relative flex w-full flex-row justify-between overflow-hidden rounded-[2rem] border border-primary/5 bg-secondary/50 p-1.5 shadow-inner backdrop-blur-sm">
         <div className="absolute inset-y-1.5 left-1.5 right-1.5 pointer-events-none z-0">
@@ -42,7 +45,7 @@ const ButtonsForm = ({
             }`}
             onClick={() => onButtonClick(button)}
           >
-            <span className="whitespace-normal leading-tight">{button}</span>
+            <span className="whitespace-normal leading-tight">{t(button)}</span>
           </button>
         ))}
       </article>

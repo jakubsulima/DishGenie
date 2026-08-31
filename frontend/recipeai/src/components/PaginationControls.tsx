@@ -1,4 +1,5 @@
 import React from "react";
+import { useLanguage } from "../context/languageContext";
 
 interface PaginationControlsProps {
   currentPage: number;
@@ -11,6 +12,7 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
   totalPages,
   onPageChange,
 }) => {
+  const { t } = useLanguage();
   if (totalPages <= 1) {
     return null; // Don't render controls if there's only one page
   }
@@ -29,7 +31,7 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
         onClick={handlePrevious}
         disabled={currentPage === 0}
         className="flex items-center justify-center px-4 py-2 bg-secondary rounded-full transition-all duration-300 hover:bg-accent hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-secondary group"
-        aria-label="Previous page"
+        aria-label={t("Previous page")}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -45,12 +47,15 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
             d="M15 19l-7-7 7-7"
           />
         </svg>
-        <span className="ml-1 font-medium text-sm">Prev</span>
+        <span className="ml-1 text-sm font-medium">{t("Prev")}</span>
       </button>
 
       <div className="px-4 py-2 bg-secondary rounded-full">
         <span className="text-sm font-semibold text-text">
-          Page {currentPage + 1} of {totalPages}
+          {t("Page {current} of {total}", {
+            current: currentPage + 1,
+            total: totalPages,
+          })}
         </span>
       </div>
 
@@ -58,9 +63,9 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
         onClick={handleNext}
         disabled={currentPage + 1 >= totalPages}
         className="flex items-center justify-center px-4 py-2 bg-secondary rounded-full transition-all duration-300 hover:bg-accent hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-secondary group"
-        aria-label="Next page"
+        aria-label={t("Next page")}
       >
-        <span className="mr-1 font-medium text-sm">Next</span>
+        <span className="mr-1 text-sm font-medium">{t("Next")}</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-5 w-5"

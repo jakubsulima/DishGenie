@@ -93,6 +93,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const refreshSession = useCallback(async (): Promise<boolean> => {
+    if (localStorage.getItem("isLoggedIn") !== "true") {
+      clearAuthState();
+      return false;
+    }
+
     try {
       const userData = await apiClient<UserProps>("me");
       setUser(userData);

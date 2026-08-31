@@ -15,6 +15,13 @@ const mockUser = {
   },
 };
 
+const markBrowserAsAuthenticated = async (page: Page) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem("isLoggedIn", "true");
+    window.localStorage.setItem("dishGenie.locale", "en");
+  });
+};
+
 const sampleRecipes = [
   {
     id: "101",
@@ -411,6 +418,7 @@ export const mockRegisterApi = async (page: Page) => {
 };
 
 export const mockAuthenticatedRecipesApi = async (page: Page) => {
+  await markBrowserAsAuthenticated(page);
   let shoppingItems = [
     {
       id: "generated-1",
@@ -482,6 +490,7 @@ export const mockAuthenticatedFridgeApi = async (
   page: Page,
   initialFridgeItems?: FridgeItem[],
 ) => {
+  await markBrowserAsAuthenticated(page);
   let fridgeItems: FridgeItem[] = initialFridgeItems ?? [
     {
       id: 1,
@@ -585,6 +594,7 @@ export const mockAuthenticatedFridgeApi = async (
 };
 
 export const mockProfileApi = async (page: Page) => {
+  await markBrowserAsAuthenticated(page);
   preferences = {
     diet: "NONE",
     diets: ["NONE"],
@@ -606,6 +616,7 @@ export const mockProfileApi = async (page: Page) => {
 };
 
 export const mockPromoJourneyApi = async (page: Page) => {
+  await markBrowserAsAuthenticated(page);
   preferences = {
     diet: "NONE",
     diets: ["NONE"],
@@ -758,6 +769,7 @@ export const mockPromoJourneyApi = async (page: Page) => {
 };
 
 export const mockShoppingListApi = async (page: Page) => {
+  await markBrowserAsAuthenticated(page);
   let shoppingItems = [
     {
       id: "remote-1",

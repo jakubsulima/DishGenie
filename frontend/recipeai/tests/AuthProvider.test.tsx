@@ -22,11 +22,11 @@ const AuthProbe = () => {
 describe("AuthProvider", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorage.clear();
     vi.mocked(ensureCsrfToken).mockResolvedValue(undefined);
   });
 
-  test("probes the current session on mount even without the local storage hint", async () => {
-    localStorage.removeItem("isLoggedIn");
+  test("does not probe the current session without the local storage hint", async () => {
     vi.mocked(apiClient).mockResolvedValue({
       email: "session@example.com",
       id: 42,
@@ -43,13 +43,14 @@ describe("AuthProvider", () => {
       expect(ensureCsrfToken).toHaveBeenCalled();
     });
     await waitFor(() => {
-      expect(apiClient).toHaveBeenCalledWith("me");
+      expect(screen.getByText("loaded")).toBeInTheDocument();
     });
-    expect(await screen.findByText("session@example.com")).toBeInTheDocument();
-    expect(screen.getByText("loaded")).toBeInTheDocument();
+    expect(apiClient).not.toHaveBeenCalled();
+    expect(screen.getByText("anonymous")).toBeInTheDocument();
   });
 
   test("refreshes once after a 401 before restoring the session", async () => {
+    localStorage.setItem("isLoggedIn", "true");
     vi.mocked(apiClient).mockImplementation(
       async (url: string, uploadData?: boolean) => {
         if (url === "me" && !uploadData) {
