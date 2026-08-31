@@ -12,7 +12,7 @@ RUN npm run build
 FROM nginxinc/nginx-unprivileged:stable-alpine
 
 USER root
-RUN apk add --no-cache gettext && \
+RUN apk add --no-cache gettext=1.0-r0 && \
 	chown -R 101:101 /etc/nginx/conf.d /usr/share/nginx/html
 
 COPY --from=build --chown=101:101 /app/dist /usr/share/nginx/html
