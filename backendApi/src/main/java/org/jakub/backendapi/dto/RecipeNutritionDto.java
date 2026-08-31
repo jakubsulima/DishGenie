@@ -1,11 +1,17 @@
 package org.jakub.backendapi.dto;
 
+import jakarta.validation.constraints.PositiveOrZero;
+
 import java.util.Objects;
 
 public class RecipeNutritionDto {
+    @PositiveOrZero(message = "Calories must not be negative")
     private Double calories;
+    @PositiveOrZero(message = "Protein must not be negative")
     private Double protein;
+    @PositiveOrZero(message = "Carbs must not be negative")
     private Double carbs;
+    @PositiveOrZero(message = "Fats must not be negative")
     private Double fats;
 
     public RecipeNutritionDto() {

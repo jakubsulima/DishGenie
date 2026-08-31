@@ -7,6 +7,7 @@ import PaginationControls from "../components/PaginationControls";
 import { RecipesPageSkeleton } from "../components/Skeleton";
 import ErrorAlert from "../components/ErrorAlert";
 import { Link } from "react-router-dom";
+import { useLanguage } from "../context/languageContext";
 
 interface PagedRecipesResponse {
   content: RecipeData[];
@@ -22,6 +23,8 @@ const Recipes = () => {
   const [error, setError] = useState<string>("");
   const [draftSearchTerm, setDraftSearchTerm] = useState<string>("");
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState<string>("");
+  const [retryNonce, setRetryNonce] = useState(0);
+  const { t } = useLanguage();
 
   const RECIPES_PER_PAGE = 9;
   const GUEST_RECIPES_LIMIT = 10;
@@ -45,12 +48,12 @@ const Recipes = () => {
         typeof paged?.totalPages === "number" ? paged.totalPages : 1,
       );
     } catch (error) {
-      setError("Error fetching recipes");
+      setError(t("Error fetching recipes"));
       console.error("Error fetching recipes:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [GUEST_RECIPES_LIMIT, RECIPES_PER_PAGE, currentPage, isGuest]);
+  }, [GUEST_RECIPES_LIMIT, RECIPES_PER_PAGE, currentPage, isGuest, t]);
 
   const searchRecipes = useCallback(
     async (term: string) => {
@@ -76,13 +79,13 @@ const Recipes = () => {
           typeof paged?.totalPages === "number" ? paged.totalPages : 1,
         );
       } catch (error) {
-        setError("Error searching recipes");
+        setError(t("Error searching recipes"));
         console.error("Error searching recipes:", error);
       } finally {
         setIsLoading(false);
       }
     },
-    [RECIPES_PER_PAGE, currentPage],
+    [RECIPES_PER_PAGE, currentPage, t],
   );
 
   const handleSearch = () => {
@@ -124,7 +127,7 @@ const Recipes = () => {
           setRecipes(response.content);
           setTotalPages(response.totalPages);
         } catch (error) {
-          setError("Error fetching recipes");
+          setError(t("Error fetching recipes"));
           console.error("Error fetching recipes:", error);
         } finally {
           setIsLoading(false);
@@ -142,6 +145,8 @@ const Recipes = () => {
     submittedSearchTerm,
     fetchAllRecipes,
     searchRecipes,
+    retryNonce,
+    t,
   ]);
 
   if (userLoading || isLoading) {
@@ -176,13 +181,15 @@ const Recipes = () => {
                   />
                 </svg>
                 <h1 className="text-3xl md:text-4xl font-bold text-text tracking-tight">
-                  {user ? "My Recipes" : "Latest Recipes"}
+                  {t(user ? "My Recipes" : "Latest Recipes")}
                 </h1>
               </div>
               <p className="text-text/60 text-xs md:text-sm">
-                {user
-                  ? "Your personal recipe collection"
-                  : "Discover 10 newest community recipes and unlock full features after login"}
+                {t(
+                  user
+                    ? "Your personal recipe collection"
+                    : "Discover 10 newest community recipes and unlock full features after login",
+                )}
               </p>
             </div>
           </div>
@@ -201,14 +208,15 @@ const Recipes = () => {
                         handleSearch();
                       }
                     }}
-                    placeholder="Search recipes by name..."
+                    aria-label={t("Search recipes")}
+                    placeholder={t("Search recipes by name...")}
                     className="flex-1 min-w-0 px-4 py-3 bg-transparent text-text focus:outline-none placeholder:text-text/50"
                   />
                   {draftSearchTerm && (
                     <button
                       onClick={handleClearSearch}
                       className="shrink-0 px-2 text-text/70 hover:text-accent focus:outline-none transition-colors"
-                      aria-label="Clear search"
+                      aria-label={t("Clear search")}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -229,13 +237,13 @@ const Recipes = () => {
                     onClick={handleSearch}
                     className="mobile-soft-press shrink-0 bg-accent hover:bg-accent/90 text-primary px-4 py-2 m-1 rounded-full font-medium transition-colors"
                   >
-                    Search
+                    {t("Search")}
                   </button>
                 </div>
                 {isSearching && (
                   <div className="mt-2 text-center">
                     <span className="inline-block px-3 py-1 bg-accent/20 rounded-full text-text text-sm">
-                      Searching for: "{submittedSearchTerm}"
+                      {t('Searching for: "{term}"', { term: submittedSearchTerm })}
                     </span>
                   </div>
                 )}
@@ -246,31 +254,37 @@ const Recipes = () => {
           {isGuest && (
             <div className="mb-6 rounded-2xl border border-accent/35 bg-secondary p-4 text-center">
               <p className="text-sm text-text/75">
-                You are browsing as a guest. Create an account to generate AI
-                recipes, save favorites, and unlock your Virtual Fridge.
+                {t("You are browsing as a guest. Create an account to generate AI recipes, save favorites, and unlock your Virtual Fridge.")}
               </p>
               <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
                 <Link
                   to="/login"
                   className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-accent/90"
                 >
-                  Log In
+                  {t("Log In")}
                 </Link>
                 <Link
                   to="/register"
                   className="rounded-full border border-primary/20 bg-background px-4 py-2 text-sm font-semibold text-text transition-colors hover:text-accent"
                 >
-                  Sign Up Free
+                  {t("Sign Up Free")}
                 </Link>
               </div>
             </div>
           )}
 
-          <ErrorAlert
-            message={error}
-            className="mb-6"
-            onAutoHide={() => setError("")}
-          />
+          {error && (
+            <div className="mb-6 space-y-3">
+              <ErrorAlert message={error} autoHideMs={0} />
+              <button
+                type="button"
+                onClick={() => setRetryNonce((value) => value + 1)}
+                className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-background transition-colors hover:text-accent"
+              >
+                {t("Try again")}
+              </button>
+            </div>
+          )}
 
           {recipes && recipes.length > 0 ? (
             <div className="space-y-3 md:space-y-4">
@@ -316,24 +330,24 @@ const Recipes = () => {
                 </svg>
                 <p className="text-lg md:text-xl font-medium">
                   {isSearching
-                    ? `No recipes found for "${submittedSearchTerm}"`
+                    ? t('No recipes found for "{term}"', { term: submittedSearchTerm })
                     : isGuest
-                      ? "No public recipes available yet."
-                      : "No recipes found."}
+                      ? t("No public recipes available yet.")
+                      : t("No recipes found.")}
                 </p>
                 <p className="text-sm md:text-base mt-2">
                   {isSearching
-                    ? "Try searching with different keywords"
+                    ? t("Try searching with different keywords")
                     : isGuest
-                      ? "Sign in to generate your own recipes and start saving favorites."
-                      : "Start creating your first recipe!"}
+                      ? t("Sign in to generate your own recipes and start saving favorites.")
+                      : t("Start creating your first recipe!")}
                 </p>
                 {isSearching && (
                   <button
                     onClick={handleClearSearch}
                     className="mobile-soft-press mt-4 px-4 py-2 bg-secondary hover:bg-accent hover:text-primary rounded-full transition-colors font-medium"
                   >
-                    Clear Search
+                    {t("Clear Search")}
                   </button>
                 )}
               </div>

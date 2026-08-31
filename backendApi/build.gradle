@@ -7,7 +7,10 @@ plugins {
 
 group = 'org.jakub' // use all lowercase to match folder structure
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+}
 
 ext['spring-security.version'] = '6.5.9'
 ext['tomcat.version'] = '10.1.55'
@@ -25,6 +28,7 @@ dependencies {
     implementation 'com.google.api-client:google-api-client:2.2.0'
     implementation 'com.google.genai:google-genai:1.0.0'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-postgresql'
     runtimeOnly 'com.h2database:h2:2.2.224'
@@ -34,6 +38,8 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:postgresql'
 }
 
 tasks.withType(JavaCompile) {

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { DietGroupId, DietOptionGroup } from "../../lib/dietOptions";
+import { useLanguage } from "../../context/languageContext";
 
 interface DietaryPlanPanelProps {
   dietGroups: DietOptionGroup[];
@@ -19,6 +20,7 @@ const DietaryPlanPanel = ({
   const [activeDietGroup, setActiveDietGroup] =
     useState<DietGroupId>("general");
   const [activeDietSlide, setActiveDietSlide] = useState(0);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (dietGroups.length === 0) {
@@ -70,9 +72,9 @@ const DietaryPlanPanel = ({
 
   return (
     <div className="mobile-card-enter mobile-card-delay-1 mb-6 rounded-xl border border-primary/10 bg-background p-4">
-      <h2 className="mb-1 text-xl font-semibold text-text">Dietary Plan</h2>
+      <h2 className="mb-1 text-xl font-semibold text-text">{t("Dietary Plan")}</h2>
       <p className="mb-3 text-sm text-text/60">
-        Combine styles and restrictions. Your choices sync instantly.
+        {t("Combine styles and restrictions. Your choices sync instantly.")}
       </p>
 
       {dietGroups.length > 0 ? (
@@ -92,21 +94,21 @@ const DietaryPlanPanel = ({
                     : "border border-primary/20 bg-secondary text-text/75 hover:border-accent/45 hover:bg-background"
                 }`}
               >
-                {group.label}
+                {t(group.label)}
               </button>
             ))}
           </div>
 
           {currentGroup && (
             <p className="rounded-lg border border-primary/10 bg-secondary px-3 py-2 text-xs text-text/70">
-              {currentGroup.helperText}
+              {t(currentGroup.helperText)}
             </p>
           )}
 
           <div
             className="space-y-2"
             role="group"
-            aria-label="Dietary plan options"
+            aria-label={t("Dietary plan options")}
           >
             <div
               key={`diet-slide-${activeDietGroup}-${activeDietSlide}`}
@@ -132,10 +134,10 @@ const DietaryPlanPanel = ({
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-sm font-semibold text-text">
-                          {option.label}
+                          {t(option.label)}
                         </p>
                         <p className="mt-1 text-xs text-text/70">
-                          {option.description}
+                          {t(option.description)}
                         </p>
                       </div>
                       <span
@@ -192,7 +194,7 @@ const DietaryPlanPanel = ({
                         d="M15 19l-7-7 7-7"
                       />
                     </svg>
-                    <span className="ml-1">Prev</span>
+                    <span className="ml-1">{t("Prev")}</span>
                   </button>
 
                   <div className="flex items-center justify-center gap-1.5">
@@ -218,7 +220,7 @@ const DietaryPlanPanel = ({
                     disabled={activeDietSlide >= totalSlides - 1}
                     className="flex items-center justify-center rounded-full bg-secondary px-4 py-2 text-sm font-medium text-text transition-all duration-300 hover:bg-accent hover:text-primary disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-secondary"
                   >
-                    <span className="mr-1">Next</span>
+                    <span className="mr-1">{t("Next")}</span>
                     <svg
                       className="h-5 w-5"
                       fill="none"
@@ -239,7 +241,7 @@ const DietaryPlanPanel = ({
 
             {dietSaving && (
               <p className="text-xs font-medium text-text/60">
-                Saving diet preferences...
+                {t("Saving diet preferences...")}
               </p>
             )}
           </div>

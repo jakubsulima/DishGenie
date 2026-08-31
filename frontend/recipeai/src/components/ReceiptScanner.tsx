@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import {
   AddFridgeIngredientInput,
@@ -7,6 +7,7 @@ import {
 } from "../context/fridgeContext";
 import { API_URL } from "../lib/constants";
 import ErrorAlert from "./ErrorAlert";
+import { useLanguage } from "../context/languageContext";
 
 interface ReceiptScannerProps {
   isOpen: boolean;
@@ -61,10 +62,24 @@ const ReceiptScanner = ({
   onClose,
   onConfirm,
 }: ReceiptScannerProps) => {
+  const { t } = useLanguage();
   const [file, setFile] = useState<File | null>(null);
   const [items, setItems] = useState<EditableReceiptItem[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [isOpen, onClose]);
 
   if (!isOpen) {
     return null;
@@ -73,7 +88,7 @@ const ReceiptScanner = ({
   const scanReceipt = async () => {
     setError("");
     if (!file) {
-      setError("Select a receipt image first.");
+      setError(t("Select a receipt image first."));
       return;
     }
 
@@ -111,7 +126,7 @@ const ReceiptScanner = ({
 
       if (editableItems.length === 0) {
         setError(
-          "No food ingredients were detected on this receipt. Try another photo with better lighting.",
+          t("No food ingredients were detected on this receipt. Try another photo with better lighting."),
         );
       }
 
@@ -121,9 +136,9 @@ const ReceiptScanner = ({
         axios.isAxiosError(err) &&
         typeof err.response?.data?.message === "string"
       ) {
-        setError(err.response.data.message);
+        setError(t(err.response.data.message));
       } else {
-        setError(getErrorMessage(err, "Failed to scan receipt image."));
+        setError(getErrorMessage(err, t("Failed to scan receipt image.")));
       }
     } finally {
       setIsUploading(false);
@@ -156,7 +171,9 @@ const ReceiptScanner = ({
 
     if (invalidAmountItem) {
       setError(
-        `Invalid amount for "${invalidAmountItem.name}". Use a positive number.`,
+        t('Invalid amount for "{name}". Use a positive number.', {
+          name: invalidAmountItem.name,
+        }),
       );
       return;
     }
@@ -174,7 +191,7 @@ const ReceiptScanner = ({
       });
 
     if (selected.length === 0) {
-      setError("Select at least one valid item to add.");
+      setError(t("Select at least one valid item to add."));
       return;
     }
 
@@ -184,26 +201,33 @@ const ReceiptScanner = ({
       setItems([]);
       onClose();
     } catch (err: unknown) {
-      setError(getErrorMessage(err, "Could not add scanned items."));
+      setError(getErrorMessage(err, t("Could not add scanned items.")));
     }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm">
-      <div className="mobile-card-enter max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-primary/20 bg-secondary shadow-2xl">
+      <div
+        className="mobile-card-enter max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-primary/20 bg-secondary shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="receipt-scanner-title"
+      >
         <div className="border-b border-primary/10 bg-primary px-4 py-3 text-background sm:px-6">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h3 className="text-lg font-bold">Scan Receipt</h3>
+              <h3 id="receipt-scanner-title" className="text-lg font-bold">
+                {t("Scan Receipt")}
+              </h3>
               <p className="text-sm text-background/75">
-                Upload a photo and review detected ingredients before adding.
+                {t("Upload a photo and review detected ingredients before adding.")}
               </p>
             </div>
             <button
               onClick={onClose}
               className="mobile-soft-press rounded-md border border-background/20 px-2.5 py-1.5 text-sm font-medium text-background/80 transition-colors hover:bg-background/10 hover:text-background"
             >
-              Close
+              {t("Close")}
             </button>
           </div>
         </div>
@@ -211,7 +235,7 @@ const ReceiptScanner = ({
         <div className="space-y-4 p-4 sm:p-6">
           <div className="rounded-xl border border-primary/15 bg-background p-4">
             <label className="mb-2 block text-sm font-medium text-text">
-              Upload receipt image
+              {t("Upload receipt image")}
             </label>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <input
@@ -225,12 +249,12 @@ const ReceiptScanner = ({
                 disabled={isUploading}
                 className="mobile-soft-press rounded-lg bg-accent px-4 py-2.5 font-semibold text-text transition-colors hover:bg-accent/90 disabled:cursor-wait disabled:opacity-60"
               >
-                {isUploading ? "Scanning..." : "Scan Receipt"}
+                {t(isUploading ? "Scanning..." : "Scan Receipt")}
               </button>
             </div>
             {file && (
               <p className="mt-2 text-xs text-text/60">
-                Selected file: {file.name}
+                {t("Selected file: {name}", { name: file.name })}
               </p>
             )}
           </div>
@@ -241,7 +265,7 @@ const ReceiptScanner = ({
             <div className="overflow-hidden rounded-xl border border-primary/15 bg-background">
               <div className="border-b border-primary/10 px-4 py-3">
                 <h4 className="text-sm font-semibold text-text">
-                  Detected ingredients ({items.length})
+                  {t("Detected ingredients ({count})", { count: items.length })}
                 </h4>
               </div>
 
@@ -249,10 +273,10 @@ const ReceiptScanner = ({
                 <table className="w-full border-collapse text-sm">
                   <thead className="bg-secondary text-left text-text/80">
                     <tr>
-                      <th className="p-3">Add</th>
-                      <th className="p-3">Name</th>
-                      <th className="p-3">Amount</th>
-                      <th className="p-3">Unit</th>
+                      <th className="p-3">{t("Add")}</th>
+                      <th className="p-3">{t("Name")}</th>
+                      <th className="p-3">{t("Amount")}</th>
+                      <th className="p-3">{t("Unit")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -285,7 +309,7 @@ const ReceiptScanner = ({
                             onChange={(e) =>
                               updateItem(item.id, { amount: e.target.value })
                             }
-                            placeholder="optional"
+                            placeholder={t("optional")}
                             className="w-full rounded-md border border-primary/20 bg-background px-2.5 py-1.5 text-text placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-accent"
                           />
                         </td>
@@ -299,12 +323,12 @@ const ReceiptScanner = ({
                             }
                             className="w-full rounded-md border border-primary/20 bg-background px-2.5 py-1.5 text-text focus:outline-none focus:ring-2 focus:ring-accent"
                           >
-                            <option value="">none</option>
+                            <option value="">{t("none")}</option>
                             <option value="g">g</option>
                             <option value="kg">kg</option>
                             <option value="ml">ml</option>
                             <option value="l">l</option>
-                            <option value="pcs">pcs</option>
+                            <option value="pcs">{t("pcs")}</option>
                           </select>
                         </td>
                       </tr>
@@ -318,7 +342,7 @@ const ReceiptScanner = ({
                   onClick={addSelectedItems}
                   className="mobile-soft-press rounded-lg bg-primary px-4 py-2.5 font-semibold text-background transition-colors hover:bg-primary/90"
                 >
-                  Add Selected To Inventory
+                  {t("Add Selected To Inventory")}
                 </button>
               </div>
             </div>

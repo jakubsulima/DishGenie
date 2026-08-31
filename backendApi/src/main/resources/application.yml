@@ -8,6 +8,14 @@ server:
     include-exception: false
 
 spring:
+  mail:
+    host: ${SMTP_HOST:localhost}
+    port: ${SMTP_PORT:1025}
+    username: ${SMTP_USERNAME:no-reply@dishgenie.app}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail.smtp.auth: ${SMTP_AUTH:false}
+      mail.smtp.starttls.enable: ${SMTP_STARTTLS:false}
   datasource:
     url: jdbc:h2:mem:testdb
     driverClassName: org.h2.Driver
@@ -55,6 +63,7 @@ security:
       same-site: ${JWT_COOKIE_SAME_SITE:Lax}
 
 app:
+  frontend-url: ${FRONTEND_URL:http://localhost:5173}
   limits:
     generate-recipe-requests-per-minute: ${GENERATE_RECIPE_LIMIT_PER_MINUTE:15}
     recipe-requests-per-day:

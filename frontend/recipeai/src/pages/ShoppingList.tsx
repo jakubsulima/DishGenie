@@ -9,6 +9,7 @@ import {
   writeShoppingList,
 } from "../lib/shoppingList";
 import ErrorAlert from "../components/ErrorAlert";
+import { useLanguage } from "../context/languageContext";
 
 const areItemsEqual = (a: ShoppingListItem[], b: ShoppingListItem[]) =>
   getShoppingListFingerprint(a) === getShoppingListFingerprint(b);
@@ -57,6 +58,7 @@ const TrashIcon = ({ className = "h-4 w-4" }: { className?: string }) => (
 );
 
 const ShoppingList = () => {
+  const { t } = useLanguage();
   const [items, setItems] = useState<ShoppingListItem[]>(() =>
     readShoppingList(),
   );
@@ -255,26 +257,26 @@ const ShoppingList = () => {
     <div className="mx-auto min-h-screen w-full max-w-4xl bg-background px-4 py-6 sm:px-6">
       <div className="mb-6 overflow-hidden rounded-3xl border border-accent/35 bg-secondary p-6">
         <h1 className="text-3xl font-bold text-text sm:text-4xl">
-          Shopping List
+          {t("Shopping List")}
         </h1>
         <p className="mt-2 text-sm text-text/60 sm:text-base">
-          Keep your next recipe run organized and check items as you shop.
+          {t("Keep your next recipe run organized and check items as you shop.")}
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <span className="rounded-full bg-accent px-3 py-1.5 text-sm font-semibold text-text">
-            {remainingCount} left
+            {t("{count} left", { count: remainingCount })}
           </span>
           <span className="rounded-full border border-accent/35 bg-background px-3 py-1.5 text-sm text-text/75">
-            {completedCount} completed
+            {t("{count} completed", { count: completedCount })}
           </span>
           <span className="rounded-full border border-primary/20 bg-background px-3 py-1.5 text-sm text-text/75">
-            {isSyncing ? "Syncing..." : "Synced"}
+            {t(isSyncing ? "Syncing..." : "Synced")}
           </span>
         </div>
       </div>
 
       <ErrorAlert
-        message={syncError}
+        message={syncError ? t(syncError) : ""}
         compact
         className="mb-4"
         onAutoHide={() => setSyncError("")}
@@ -282,7 +284,7 @@ const ShoppingList = () => {
 
       <div className="mb-5 rounded-2xl border border-primary/10 bg-secondary p-4 sm:p-5">
         <label className="mb-2 block text-sm font-medium text-text">
-          Add item manually
+          {t("Add item manually")}
         </label>
         <div className="flex flex-col gap-2 sm:flex-row">
           <input
@@ -293,14 +295,14 @@ const ShoppingList = () => {
                 addManualItem();
               }
             }}
-            placeholder="e.g. Tomatoes"
+            placeholder={t("e.g. Tomatoes")}
             className="w-full rounded-lg border border-primary/20 bg-background px-3 py-2.5 text-text placeholder:text-text/50 focus:outline-none focus:ring-2 focus:ring-accent"
           />
           <button
             onClick={addManualItem}
             className="rounded-lg bg-accent px-4 py-2.5 font-semibold text-text shadow-[0_10px_22px_rgba(255,212,60,0.28)] transition-colors hover:bg-accent/90"
           >
-            Add
+            {t("Add")}
           </button>
         </div>
       </div>
@@ -309,10 +311,10 @@ const ShoppingList = () => {
         {items.length === 0 ? (
           <div className="rounded-xl border border-dashed border-accent/35 bg-background px-4 py-8 text-center">
             <p className="font-medium text-text/80">
-              Your shopping list is empty.
+              {t("Your shopping list is empty.")}
             </p>
             <p className="mt-1 text-sm text-text/60">
-              Add items above or generate a list from a recipe.
+              {t("Add items above or generate a list from a recipe.")}
             </p>
           </div>
         ) : (
@@ -324,10 +326,10 @@ const ShoppingList = () => {
                   checked={allChecked}
                   onChange={() => checkAll()}
                   disabled={allChecked}
-                  aria-label="Check all items"
+                  aria-label={t("Check all items")}
                   className="h-4 w-4 rounded border-primary/30 accent-accent focus:ring-2 focus:ring-accent/50 disabled:cursor-not-allowed disabled:opacity-45"
                 />
-                <span>Check all</span>
+                <span>{t("Check all")}</span>
               </label>
 
               <button
@@ -335,7 +337,7 @@ const ShoppingList = () => {
                 disabled={completedCount === 0}
                 className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-background transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-45"
               >
-                Clear Checked
+                {t("Clear Checked")}
                 <TrashIcon />
               </button>
             </div>
@@ -365,11 +367,11 @@ const ShoppingList = () => {
                   </div>
                   <button
                     onClick={() => removeItem(item.id)}
-                    aria-label={`Remove ${item.name}`}
-                    title="Remove item"
+                    aria-label={t("Remove {name}", { name: item.name })}
+                    title={t("Remove item")}
                     className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-sm font-medium text-text/60 transition-colors hover:bg-accent/15 hover:text-accent"
                   >
-                    Remove
+                    {t("Remove")}
                   </button>
                 </li>
               ))}

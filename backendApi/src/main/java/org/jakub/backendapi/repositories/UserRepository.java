@@ -15,6 +15,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email); // Renamed from findByLogin
 
+    Optional<User> findByPasswordResetTokenHash(String passwordResetTokenHash);
+
     long countByRole(Role role);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

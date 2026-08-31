@@ -18,6 +18,7 @@ import type {
   SubscriptionPlan,
   UserRecipeFilter,
 } from "../lib/adminTypes";
+import { useLanguage } from "../context/languageContext";
 
 const PAGE_SIZE = 20;
 
@@ -46,6 +47,7 @@ const AdminPage: React.FC = () => {
   const [selectedUserRecipes, setSelectedUserRecipes] =
     useState<UserRecipeFilter | null>(null);
   const authContext = useContext(AuthContext);
+  const { t } = useLanguage();
 
   const fetchUsers = useCallback(async (pageNum: number = currentPage) => {
     setLoading(true);
@@ -87,7 +89,7 @@ const AdminPage: React.FC = () => {
   const handleDeleteUser = async (user: AdminUser) => {
     if (
       !window.confirm(
-        `Delete ${user.email}? Their account and owned data will be removed.`,
+        t("Delete {email}? Their account and owned data will be removed.", { email: user.email }),
       )
     ) {
       return;
@@ -146,7 +148,7 @@ const AdminPage: React.FC = () => {
 
     if (
       role !== "ADMIN" &&
-      !window.confirm(`Remove admin permissions from ${user.email}?`)
+      !window.confirm(t("Remove admin permissions from {email}?", { email: user.email }))
     ) {
       return;
     }
@@ -186,7 +188,7 @@ const AdminPage: React.FC = () => {
   if (!authContext || authContext.user?.role !== "ADMIN") {
     return (
       <div className="min-h-screen bg-background p-4 text-accent">
-        Access denied. You must be an admin to view this page.
+        {t("Access denied. You must be an admin to view this page.")}
       </div>
     );
   }
@@ -196,13 +198,13 @@ const AdminPage: React.FC = () => {
       <div className="mx-auto max-w-7xl">
         <header className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+            <h1 className="text-3xl font-bold">{t("Admin Dashboard")}</h1>
             <p className="mt-1 text-sm text-text/70">
-              Manage users, permissions, plans, and recipes.
+              {t("Manage users, permissions, plans, and recipes.")}
             </p>
           </div>
           <div className="text-sm text-text/70">
-            Signed in as{" "}
+            {t("Signed in as")} {" "}
             <span className="font-semibold text-text">
               {authContext.user.email}
             </span>
@@ -210,25 +212,24 @@ const AdminPage: React.FC = () => {
         </header>
 
         <ErrorAlert
-          message={error}
+          message={error ? t(error) : null}
           className="mb-6"
           onAutoHide={() => setError(null)}
         />
 
         <section className="mb-8 grid gap-3 md:grid-cols-4">
-          <SummaryStat label="Total users" value={totalUsers} />
-          <SummaryStat label="Visible admins" value={visibleStats.admins} />
-          <SummaryStat label="Visible paid plans" value={visibleStats.paid} />
-          <SummaryStat label="Visible free plans" value={visibleStats.free} />
+          <SummaryStat label={t("Total users")} value={totalUsers} />
+          <SummaryStat label={t("Visible admins")} value={visibleStats.admins} />
+          <SummaryStat label={t("Visible paid plans")} value={visibleStats.paid} />
+          <SummaryStat label={t("Visible free plans")} value={visibleStats.free} />
         </section>
 
         <section className="mb-10">
           <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <h2 className="text-2xl font-semibold">Users & Permissions</h2>
+              <h2 className="text-2xl font-semibold">{t("Users & Permissions")}</h2>
               <p className="mt-1 text-sm text-text/70">
-                Roles are enforced by the backend. The API blocks deleting or
-                demoting the final admin.
+                {t("Roles are enforced by the backend. The API blocks deleting or demoting the final admin.")}
               </p>
             </div>
             <button
@@ -236,12 +237,12 @@ const AdminPage: React.FC = () => {
               onClick={() => fetchUsers(currentPage)}
               className="mobile-soft-press w-fit rounded bg-secondary px-4 py-2 text-sm font-semibold text-text transition-colors hover:bg-primary/10"
             >
-              Refresh
+              {t("Refresh")}
             </button>
           </div>
 
           {users.length === 0 && !error ? (
-            <p className="text-text/70">No users found.</p>
+            <p className="text-text/70">{t("No users found.")}</p>
           ) : (
             <div className="overflow-x-auto rounded border border-primary/20">
               <table className="min-w-full bg-secondary">
@@ -249,10 +250,10 @@ const AdminPage: React.FC = () => {
                   <tr>
                     <th className="px-4 py-3 text-left">ID</th>
                     <th className="px-4 py-3 text-left">Email</th>
-                    <th className="px-4 py-3 text-left">Role</th>
-                    <th className="px-4 py-3 text-left">Plan</th>
-                    <th className="px-4 py-3 text-left">Permissions</th>
-                    <th className="px-4 py-3 text-left">Actions</th>
+                    <th className="px-4 py-3 text-left">{t("Role")}</th>
+                    <th className="px-4 py-3 text-left">{t("Plan")}</th>
+                    <th className="px-4 py-3 text-left">{t("Permissions")}</th>
+                    <th className="px-4 py-3 text-left">{t("Actions")}</th>
                   </tr>
                 </thead>
                 <tbody className="text-sm text-text">
@@ -277,8 +278,8 @@ const AdminPage: React.FC = () => {
                             disabled={disabled || isSelf}
                             title={
                               isSelf
-                                ? "Use another admin account to change your own role"
-                                : "Change user role"
+                                ? t("Use another admin account to change your own role")
+                                : t("Change user role")
                             }
                           >
                             <option value="USER">USER</option>
@@ -302,7 +303,9 @@ const AdminPage: React.FC = () => {
                           </select>
                         </td>
                         <td className="max-w-md px-4 py-3 text-text/75">
-                          {rolePermissions[user.role].join(" · ")}
+                          {rolePermissions[user.role]
+                            .map((permission) => t(permission))
+                            .join(" · ")}
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex flex-wrap gap-2">
@@ -316,7 +319,7 @@ const AdminPage: React.FC = () => {
                               }
                               className="mobile-soft-press rounded bg-background px-3 py-2 text-sm font-semibold text-text transition-colors hover:bg-primary/10"
                             >
-                              Recipes
+                              {t("Recipes")}
                             </button>
                             <button
                               type="button"
@@ -324,7 +327,7 @@ const AdminPage: React.FC = () => {
                               className="mobile-soft-press rounded bg-accent px-3 py-2 text-sm font-semibold text-background transition-colors hover:bg-accent/80 disabled:cursor-not-allowed disabled:opacity-50"
                               disabled={disabled || isSelf}
                             >
-                              Delete
+                              {t("Delete")}
                             </button>
                           </div>
                         </td>

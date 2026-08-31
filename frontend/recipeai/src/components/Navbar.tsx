@@ -3,19 +3,36 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { DropDownButton } from "./DropDownButton";
 import DropDownMenu from "./DropDownMenu";
 import { useUser } from "../context/context";
+import { useLanguage } from "../context/languageContext";
+
+const getItemHref = (item: string) => (item === "Home" ? "/" : `/${item}`);
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, loading, isAdmin, logout } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
+  const { locale, t, toggleLocale } = useLanguage();
 
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
 
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [isOpen]);
+
   const toggleOpen = () => {
-    setIsOpen(!isOpen);
+    setIsOpen((current) => !current);
   };
 
   const handleLogout = async () => {
@@ -50,7 +67,7 @@ const Navbar = () => {
   const navItems = getNavItems();
 
   return (
-    <div className="flex bg-primary p-4 fixed top-0 left-0 w-full z-50 shadow-md">
+    <header className="fixed left-0 top-0 z-50 flex w-full bg-primary p-4 shadow-md">
       <nav className="container mx-auto">
         <ul className="flex w-full text-background justify-between items-center">
           {/* --- Left Side: Logo --- */}
@@ -67,19 +84,19 @@ const Navbar = () => {
                 height="36"
                 className="h-9 w-9 shrink-0 object-contain"
               />
-              <span>DishGenie</span>
+              <span>Dish Genie</span>
             </Link>
           </li>
 
           {/* --- Right Side: Controls (Desktop) / Burger (Mobile) --- */}
-          <div className="flex items-center space-x-3">
+          <li className="flex items-center space-x-3">
             {/* Desktop Nav Links */}
-            <div className="flex items-center space-x-3 max-sm:hidden">
+            <ul className="flex items-center space-x-3 max-sm:hidden">
               {loading ? (
                 // Skeleton pills during auth loading — prevents Login→items flash
                 <>
                   {["w-16", "w-20", "w-24"].map((w, i) => (
-                    <div
+                    <li
                       key={i}
                       className={`${w} h-8 rounded-full bg-background/20 animate-pulse`}
                     />
@@ -90,10 +107,10 @@ const Navbar = () => {
                   {navItems.map((item, index) => (
                     <li key={index} className="list-none">
                       <Link
-                        to={item === "Home" ? "/" : "/" + item}
+                        to={getItemHref(item)}
                         className="px-4 py-2 rounded-full text-background hover:text-accent inline-block border-none"
                       >
-                        {item}
+                        {t(item)}
                       </Link>
                     </li>
                   ))}
@@ -103,50 +120,73 @@ const Navbar = () => {
                         className="px-2 py-1 rounded-full hover:text-accent font-semibold cursor-pointer"
                         onClick={handleLogout}
                       >
-                        Logout
+                        {t("Logout")}
                       </button>
                     </li>
                   )}
                 </>
               )}
-            </div>
+              <li>
+                <button
+                  type="button"
+                  onClick={toggleLocale}
+                  className="rounded-full border border-background/30 px-3 py-2 text-xs font-bold text-background transition-colors hover:border-accent hover:text-accent"
+                  aria-label={
+                    locale === "en"
+                      ? "Przełącz język na polski"
+                      : "Switch language to English"
+                  }
+                >
+                  {locale === "en" ? "PL" : "EN"}
+                </button>
+              </li>
+            </ul>
 
             {/* Mobile Burger Button */}
-            <li className="sm:hidden flex items-center pr-1">
-              <DropDownButton onClick={toggleOpen} isOpen={isOpen} />
-            </li>
-          </div>
+            <button
+              type="button"
+              onClick={toggleLocale}
+              className="rounded-full border border-background/30 px-3 py-2 text-xs font-bold text-background sm:hidden"
+              aria-label={
+                locale === "en"
+                  ? "Przełącz język na polski"
+                  : "Switch language to English"
+              }
+            >
+              {locale === "en" ? "PL" : "EN"}
+            </button>
+            <span className="flex items-center pr-1 sm:hidden">
+              <DropDownButton
+                onClick={toggleOpen}
+                isOpen={isOpen}
+                controlsId="mobile-navigation"
+              />
+            </span>
+          </li>
         </ul>
-        <div
-          className={`
-            absolute left-0 top-full -mt-[1px] flex w-full flex-col bg-[#111111]
-            shadow-2xl transition-all duration-400 ease-in-out sm:hidden overflow-hidden
-            ${
-              isOpen
-                ? "max-h-[500px] opacity-100"
-                : "max-h-0 opacity-0 pointer-events-none"
-            }
-          `}
-        >
-          <DropDownMenu
-            className={`w-full flex flex-col pb-4 transition-opacity duration-300 ${
-              isOpen ? "opacity-100 delay-100" : "opacity-0"
-            }`}
-            dropdownItems={
-              loading
-                ? navItems
-                : user
-                  ? [...navItems, "Logout"].filter(
-                      (item): item is string => !!item,
-                    )
-                  : navItems
-            }
-            handleLogout={handleLogout}
-            onItemClick={() => setIsOpen(false)}
-          />
-        </div>
+        {isOpen && (
+          <div
+            id="mobile-navigation"
+            className="absolute left-0 top-full -mt-px flex w-full flex-col overflow-hidden bg-[#111111] shadow-2xl sm:hidden"
+          >
+            <DropDownMenu
+              className="flex w-full flex-col pb-4"
+              dropdownItems={
+                loading
+                  ? navItems
+                  : user
+                    ? [...navItems, "Logout"].filter(
+                        (item): item is string => !!item,
+                      )
+                    : navItems
+              }
+              handleLogout={handleLogout}
+              onItemClick={() => setIsOpen(false)}
+            />
+          </div>
+        )}
       </nav>
-    </div>
+    </header>
   );
 };
 

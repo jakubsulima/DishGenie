@@ -1,10 +1,19 @@
 package org.jakub.backendapi.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+
 import java.util.Objects;
 
 public class RecipeIngredientDto {
+    @NotBlank(message = "Ingredient name is required")
+    @Size(max = 160, message = "Ingredient name must not exceed 160 characters")
     private String name;
+    @Positive(message = "Ingredient amount must be positive")
     private double amount;
+    @NotBlank(message = "Ingredient unit is required")
+    @Size(max = 40, message = "Ingredient unit must not exceed 40 characters")
     private String unit;
 
     public RecipeIngredientDto() {

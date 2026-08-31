@@ -1,17 +1,36 @@
 package org.jakub.backendapi.dto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class RecipeDto {
     private Long id; // Added id field
+    @NotBlank(message = "Recipe name is required")
+    @Size(max = 160, message = "Recipe name must not exceed 160 characters")
     private String name;
+    @Valid
+    @NotEmpty(message = "Recipe must contain at least one ingredient")
+    @Size(max = 50, message = "Recipe must not contain more than 50 ingredients")
     private List<RecipeIngredientDto> ingredients = new ArrayList<>();
-    private List<String> instructions = new ArrayList<>();
+    @NotEmpty(message = "Recipe must contain at least one instruction")
+    @Size(max = 50, message = "Recipe must not contain more than 50 instructions")
+    private List<@NotBlank(message = "Instruction must not be blank") @Size(max = 1_000, message = "Instruction must not exceed 1000 characters") String> instructions = new ArrayList<>();
+    @Size(max = 2_000, message = "Description must not exceed 2000 characters")
     private String description;
+    @Size(max = 100, message = "Preparation time must not exceed 100 characters")
     private String timeToPrepare;
+    @Valid
     private RecipeNutritionDto nutrition;
+    @Min(value = 1, message = "Servings must be at least 1")
+    @Max(value = 100, message = "Servings must not exceed 100")
     private int servings;
 
     public RecipeDto() {

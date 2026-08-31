@@ -3,7 +3,6 @@ package org.jakub.backendapi.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 public class CredentialsDto {
@@ -42,21 +41,19 @@ public class CredentialsDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CredentialsDto that = (CredentialsDto) o;
-        return Objects.equals(email, that.email) && Arrays.equals(password, that.password);
+        return Objects.equals(email, that.email);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(email);
-        result = 31 * result + Arrays.hashCode(password);
-        return result;
+        return Objects.hash(email);
     }
 
     @Override
     public String toString() {
         return "CredentialsDto{" +
                 "email='" + email + '\'' +
-                ", password=" + Arrays.toString(password) +
+                ", password=[REDACTED]" +
                 '}';
     }
 }

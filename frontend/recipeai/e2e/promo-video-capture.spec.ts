@@ -59,8 +59,8 @@ const generatePromoRecipe = async (
     .getByPlaceholder("eggs, rice, spinach, chicken")
     .fill("quick creamy dinner");
   await page.getByRole("button", { name: "Dinner" }).click();
-  await page.getByRole("button", { name: "Quick" }).click();
-  await page.getByRole("button", { name: "Tell me what to cook" }).click();
+  await page.getByRole("button", { name: "Tired weeknight" }).click();
+  await page.getByRole("button", { name: "Show me 3 ideas" }).click();
   await expect(page.getByText(recipeTitle)).toBeVisible();
 };
 
@@ -72,7 +72,7 @@ const captureHomepageCreateState = async (
     .getByPlaceholder("eggs, rice, spinach, chicken")
     .fill("quick creamy dinner");
   await page.getByRole("button", { name: "Dinner" }).click();
-  await page.getByRole("button", { name: "Quick" }).click();
+  await page.getByRole("button", { name: "Tired weeknight" }).click();
   await page.screenshot({
     path: path.join(SCREEN_OUTPUT_DIR, "00-home-create-promo.png"),
     animations: "disabled",

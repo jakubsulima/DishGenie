@@ -51,6 +51,16 @@ describe("Login Component", () => {
     ).toBeInTheDocument();
   });
 
+  test("omits the complete Google sign-in section when OAuth is not configured", () => {
+    renderWithRouter(<Login />);
+
+    expect(screen.queryByText("Continue with Google")).not.toBeInTheDocument();
+    expect(screen.queryByText("or")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/If this creates a new account/),
+    ).not.toBeInTheDocument();
+  });
+
   test("updates input values on change", () => {
     renderWithRouter(<Login />);
 

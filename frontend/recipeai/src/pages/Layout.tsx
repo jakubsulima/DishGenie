@@ -6,14 +6,16 @@ import AnalyticsConsentBanner from "../components/AnalyticsConsentBanner";
 import { useAnalyticsConsent } from "../context/analyticsConsentContext";
 import { capturePageView } from "../lib/posthog";
 import { applySeo, getSeoConfig } from "../lib/seo";
+import { useLanguage } from "../context/languageContext";
 
 const Layout = () => {
   const location = useLocation();
   const { consentStatus } = useAnalyticsConsent();
+  const { locale } = useLanguage();
 
   useEffect(() => {
-    applySeo(getSeoConfig(location.pathname));
-  }, [location.pathname]);
+    applySeo(getSeoConfig(location.pathname, locale));
+  }, [location.pathname, locale]);
 
   useEffect(() => {
     if (consentStatus !== "granted") {

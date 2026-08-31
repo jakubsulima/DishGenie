@@ -81,8 +81,8 @@ test.describe("promo screenshot capture", () => {
       .getByPlaceholder("eggs, rice, spinach, chicken")
       .fill("quick creamy dinner");
     await page.getByRole("button", { name: "Dinner" }).click();
-    await page.getByRole("button", { name: "Quick" }).click();
-    await page.getByRole("button", { name: "Tell me what to cook" }).click();
+    await page.getByRole("button", { name: "Tired weeknight" }).click();
+    await page.getByRole("button", { name: "Show me 3 ideas" }).click();
 
     await expect(page.getByText("Creamy Coconut Chicken Bowl")).toBeVisible();
     await expect(page.getByRole("button", { name: "Save Recipe" })).toBeVisible();
@@ -98,8 +98,8 @@ test.describe("promo screenshot capture", () => {
       .getByPlaceholder("eggs, rice, spinach, chicken")
       .fill("quick creamy dinner");
     await page.getByRole("button", { name: "Dinner" }).click();
-    await page.getByRole("button", { name: "Quick" }).click();
-    await page.getByRole("button", { name: "Tell me what to cook" }).click();
+    await page.getByRole("button", { name: "Tired weeknight" }).click();
+    await page.getByRole("button", { name: "Show me 3 ideas" }).click();
     await expect(page.getByRole("button", { name: "Save Recipe" })).toBeVisible();
 
     await page.getByRole("button", { name: "Save Recipe" }).click();
@@ -116,8 +116,8 @@ test.describe("promo screenshot capture", () => {
       .getByPlaceholder("eggs, rice, spinach, chicken")
       .fill("quick creamy dinner");
     await page.getByRole("button", { name: "Dinner" }).click();
-    await page.getByRole("button", { name: "Quick" }).click();
-    await page.getByRole("button", { name: "Tell me what to cook" }).click();
+    await page.getByRole("button", { name: "Tired weeknight" }).click();
+    await page.getByRole("button", { name: "Show me 3 ideas" }).click();
     await expect(
       page.getByRole("button", { name: "Generate Shopping List" }),
     ).toBeVisible();

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { IScannerControls } from "@zxing/browser";
 import type { DecodeHintType, Result } from "@zxing/library";
 import ErrorAlert from "./ErrorAlert";
+import { useLanguage } from "../context/languageContext";
 
 interface BarcodeScannerProps {
   isOpen: boolean;
@@ -68,6 +69,7 @@ const BarcodeScanner = ({
   onClose,
   onBarcodeDetected,
 }: BarcodeScannerProps) => {
+  const { t } = useLanguage();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const controlsRef = useRef<ScannerControls | null>(null);
   const hasDetectedRef = useRef(false);
@@ -75,6 +77,19 @@ const BarcodeScanner = ({
   const [manualBarcode, setManualBarcode] = useState("");
   const [error, setError] = useState("");
   const [isStarting, setIsStarting] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [isOpen, onClose]);
 
   const stopScanner = () => {
     if (controlsRef.current) {
@@ -105,7 +120,7 @@ const BarcodeScanner = ({
       hasDetectedRef.current = false;
 
       if (!navigator.mediaDevices?.getUserMedia) {
-        setError("Your browser does not support camera access.");
+        setError(t("Your browser does not support camera access."));
         setIsStarting(false);
         return;
       }
@@ -173,7 +188,7 @@ const BarcodeScanner = ({
                   setError(
                     (currentError) =>
                       currentError ||
-                      "Scanner is active but cannot read this barcode yet. Try better lighting or enter the code manually.",
+                      t("Scanner is active but cannot read this barcode yet. Try better lighting or enter the code manually."),
                   );
                 }
               },
@@ -195,7 +210,7 @@ const BarcodeScanner = ({
 
         controlsRef.current = controls;
       } catch (caughtError) {
-        setError(getStartScannerError(caughtError));
+        setError(t(getStartScannerError(caughtError)));
       } finally {
         setIsStarting(false);
       }
@@ -207,7 +222,7 @@ const BarcodeScanner = ({
       isCancelled = true;
       stopScanner();
     };
-  }, [isOpen, onBarcodeDetected, onClose]);
+  }, [isOpen, onBarcodeDetected, onClose, t]);
 
   const handleManualSubmit = () => {
     const trimmed = manualBarcode.trim();
@@ -224,20 +239,27 @@ const BarcodeScanner = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm">
-      <div className="mobile-card-enter w-full max-w-xl overflow-hidden rounded-2xl border border-primary/20 bg-secondary shadow-2xl">
+      <div
+        className="mobile-card-enter w-full max-w-xl overflow-hidden rounded-2xl border border-primary/20 bg-secondary shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="barcode-scanner-title"
+      >
         <div className="border-b border-primary/10 bg-primary px-4 py-3 text-background sm:px-6">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h3 className="text-lg font-bold">Scan Barcode</h3>
+              <h3 id="barcode-scanner-title" className="text-lg font-bold">
+                {t("Scan Barcode")}
+              </h3>
               <p className="text-sm text-background/75">
-                Place the barcode inside the frame for fast detection.
+                {t("Place the barcode inside the frame for fast detection.")}
               </p>
             </div>
             <button
               onClick={onClose}
               className="mobile-soft-press rounded-md border border-background/20 px-2.5 py-1.5 text-sm font-medium text-background/80 transition-colors hover:bg-background/10 hover:text-background"
             >
-              Close
+              {t("Close")}
             </button>
           </div>
         </div>
@@ -260,11 +282,11 @@ const BarcodeScanner = ({
 
           <div className="mt-3 flex flex-wrap items-center gap-2 text-xs sm:text-sm">
             <span className="rounded-full border border-primary/15 bg-background px-3 py-1 text-text/70">
-              Supports EAN and UPC formats
+              {t("Supports EAN and UPC formats")}
             </span>
             {isStarting && (
               <span className="rounded-full bg-accent/20 px-3 py-1 font-medium text-text">
-                Starting camera...
+                {t("Starting camera...")}
               </span>
             )}
           </div>
@@ -278,7 +300,7 @@ const BarcodeScanner = ({
 
           <div className="mt-5 border-t border-primary/10 pt-4">
             <label className="mb-1.5 block text-sm font-medium text-text">
-              Enter barcode manually
+              {t("Enter barcode manually")}
             </label>
             <div className="flex flex-col gap-2 sm:flex-row">
               <input
@@ -292,7 +314,7 @@ const BarcodeScanner = ({
                 onClick={handleManualSubmit}
                 className="mobile-soft-press rounded-lg bg-accent px-4 py-2.5 font-semibold text-text transition-colors hover:bg-accent/90"
               >
-                Use Code
+                {t("Use Code")}
               </button>
             </div>
           </div>

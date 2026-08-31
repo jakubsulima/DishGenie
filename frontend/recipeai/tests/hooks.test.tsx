@@ -53,9 +53,43 @@ describe("generateRecipe", () => {
       expect(axiosMock.post).toHaveBeenCalledTimes(1);
     });
 
+    expect(axiosMock.post).toHaveBeenCalledWith(
+      expect.stringContaining("generateRecipe"),
+      {
+        prompt: "test prompt",
+        fridgeItems: ["Onion", "Tomato"],
+        locale: "en",
+        count: 1,
+      },
+      { signal: undefined },
+    );
+
     resolveRequest?.({ data: { name: "Test Recipe" } });
 
     await expect(firstRequest).resolves.toEqual({ name: "Test Recipe" });
     await expect(secondRequest).resolves.toEqual({ name: "Test Recipe" });
+  });
+
+  it("does not share a request when the locale changes", async () => {
+    const resolvers: Array<(value: { data: { name: string } }) => void> = [];
+    axiosMock.post.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolvers.push(resolve);
+        }),
+    );
+
+    document.documentElement.lang = "en";
+    const englishRequest = generateRecipe("test prompt", ["Onion"]);
+    document.documentElement.lang = "pl";
+    const polishRequest = generateRecipe("test prompt", ["Onion"]);
+
+    await waitFor(() => {
+      expect(axiosMock.post).toHaveBeenCalledTimes(2);
+    });
+
+    resolvers.forEach((resolve) => resolve({ data: { name: "Test Recipe" } }));
+    await expect(englishRequest).resolves.toEqual({ name: "Test Recipe" });
+    await expect(polishRequest).resolves.toEqual({ name: "Test Recipe" });
   });
 });

@@ -18,6 +18,7 @@ import ErrorAlert from "../components/ErrorAlert";
 import { captureEvent } from "../lib/posthog";
 import { applySeo } from "../lib/seo";
 import { clearPendingRecipeSearch } from "../lib/pendingRecipeIntent";
+import { useLanguage } from "../context/languageContext";
 
 export interface RecipeIngredient {
   name: string;
@@ -328,6 +329,7 @@ const RecipePage = () => {
     loading: fridgeLoading,
   } = useFridge();
   const { user } = useUser();
+  const { t, locale } = useLanguage();
 
   const { search, existingRecipe } = location.state || {};
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -384,17 +386,21 @@ const RecipePage = () => {
   useEffect(() => {
     const isPublicRecipeDetail = Boolean(recipeId);
     const seoTitle = isLoading
-      ? "Loading recipe | Dish Genie"
+      ? locale === "pl" ? "Wczytywanie przepisu | Dish Genie" : "Loading recipe | Dish Genie"
       : recipeData?.name
         ? `${recipeData.name} | Dish Genie`
         : isPublicRecipeDetail
-          ? "Recipe details | Dish Genie"
-          : "Recipe generator | Dish Genie";
+          ? locale === "pl" ? "Szczegóły przepisu | Dish Genie" : "Recipe details | Dish Genie"
+          : locale === "pl" ? "Generator przepisów | Dish Genie" : "Recipe generator | Dish Genie";
     const seoDescription = recipeData?.description?.trim()
       ? recipeData.description.trim()
       : isPublicRecipeDetail
-        ? "Open a public recipe on Dish Genie to view ingredients, steps, and cooking time."
-        : "Generate a recipe from your ingredients, then save it or try a different variation.";
+        ? locale === "pl"
+          ? "Otwórz publiczny przepis Dish Genie i zobacz składniki, instrukcje oraz czas przygotowania."
+          : "Open a public recipe on Dish Genie to view ingredients, steps, and cooking time."
+        : locale === "pl"
+          ? "Wygeneruj przepis ze swoich składników, zapisz go lub wypróbuj inną propozycję."
+          : "Generate a recipe from your ingredients, then save it or try a different variation.";
 
     applySeo({
       title: seoTitle,
@@ -402,7 +408,7 @@ const RecipePage = () => {
       canonicalPath: location.pathname,
       noindex: !isPublicRecipeDetail,
     });
-  }, [isLoading, location.pathname, recipeData, recipeId]);
+  }, [isLoading, locale, location.pathname, recipeData, recipeId]);
 
   useEffect(() => {
     const loadRecipe = async () => {
@@ -570,6 +576,7 @@ const RecipePage = () => {
         ingredients: recipeData.ingredients,
         instructions: recipeData.instructions,
         nutrition: recipeData.nutrition,
+        servings: 2,
       });
       captureEvent("recipe_saved", {
         ingredientCount: recipeData.ingredients.length,
@@ -710,8 +717,10 @@ const RecipePage = () => {
     if (isGeneratingRecipe) {
       return (
         <FoodLoadingScreen
-          title="Generating your recipe..."
-          subtitle="Mixing ingredients, matching flavors, and adding a spicy twist"
+          title={t("Generating your recipe...")}
+          subtitle={t(
+            "Mixing ingredients, matching flavors, and adding a spicy twist",
+          )}
           variant="generating"
         />
       );
@@ -727,10 +736,10 @@ const RecipePage = () => {
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <div className="rounded-2xl border border-primary/15 bg-secondary px-6 py-8 text-center shadow-sm">
           <div className="text-xl font-semibold text-text">
-            No recipe data available
+            {t("No recipe data available")}
           </div>
           <p className="mt-1 text-sm text-text/60">
-            {error || "Try generating a new recipe from the homepage."}
+            {error ? t(error) : t("Try generating a new recipe from the homepage.")}
           </p>
 
           {canRetryGeneration && (
@@ -740,14 +749,14 @@ const RecipePage = () => {
                 onClick={handleRetryGeneration}
                 className="rounded-lg bg-accent px-4 py-2.5 font-semibold text-text transition-colors hover:bg-accent/90"
               >
-                Retry Generation
+                {t("Retry Generation")}
               </button>
               <button
                 type="button"
                 onClick={() => navigate("/")}
                 className="rounded-lg border border-primary/20 bg-background px-4 py-2.5 font-semibold text-text transition-colors hover:border-accent/50"
               >
-                Back to Home
+                {t("Back to Home")}
               </button>
             </div>
           )}
@@ -763,7 +772,7 @@ const RecipePage = () => {
     <div className="mobile-page-enter min-h-screen bg-background">
       <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
         <ErrorAlert
-          message={error}
+          message={error ? t(error) : ""}
           className="mb-5"
           onAutoHide={() => setError("")}
         />
@@ -774,7 +783,7 @@ const RecipePage = () => {
 
           <div className="relative">
             <p className="mb-2 inline-flex rounded-full border border-primary/15 bg-background px-3 py-1 text-xs font-semibold uppercase tracking-wide text-text/60">
-              AI Kitchen Recipe
+              {t("Dish Genie Recipe")}
             </p>
             <h1 className="text-3xl font-bold leading-tight text-text sm:text-4xl">
               {recipeData.name}
@@ -793,10 +802,10 @@ const RecipePage = () => {
                 </span>
               )}
               <span className="rounded-full border border-primary/15 bg-background px-3 py-1.5 text-sm text-text/75">
-                {ingredientCount} ingredients
+                {t("{count} ingredients", { count: ingredientCount })}
               </span>
               <span className="rounded-full border border-primary/15 bg-background px-3 py-1.5 text-sm text-text/75">
-                {instructionCount} steps
+                {t("{count} steps", { count: instructionCount })}
               </span>
             </div>
           </div>
@@ -805,11 +814,14 @@ const RecipePage = () => {
         {!recipeId && recipeOptions.length > 1 && (
           <section className="mobile-card-enter mobile-card-delay-1 mt-6 rounded-2xl border border-primary/10 bg-secondary p-5">
             <h3 className="text-lg font-semibold text-text">
-              Choose One Of {recipeOptions.length} Different Recipes
+              {t("Choose One Of {count} Different Recipes", {
+                count: recipeOptions.length,
+              })}
             </h3>
             <p className="mt-1 text-sm text-text/60">
-              Generated in one request with intentionally different cuisine,
-              technique, and core ingredients.
+              {t(
+                "Generated in one request with intentionally different cuisine, technique, and core ingredients.",
+              )}
             </p>
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
               {recipeOptions.map((option, index) => {
@@ -829,7 +841,7 @@ const RecipePage = () => {
                     }`}
                   >
                     <p className="text-xs font-semibold uppercase tracking-wide text-text/60">
-                      Option {index + 1}
+                      {t("Option {number}", { number: index + 1 })}
                     </p>
                     <p className="mt-1 line-clamp-2 font-semibold text-text">
                       {option.name}
@@ -841,7 +853,7 @@ const RecipePage = () => {
                             key={highlight}
                             className="rounded-full border border-accent/35 bg-accent/10 px-2 py-1 text-[11px] font-semibold leading-tight text-text/70"
                           >
-                            {highlight}
+                            {t(highlight)}
                           </span>
                         ))}
                       </div>
@@ -852,7 +864,9 @@ const RecipePage = () => {
                       </p>
                     )}
                     <p className="mt-2 text-xs text-text/60">
-                      {option.ingredients.length} ingredients
+                      {t("{count} ingredients", {
+                        count: option.ingredients.length,
+                      })}
                       {option.timeToPrepare ? ` • ${option.timeToPrepare}` : ""}
                     </p>
                   </button>
@@ -865,29 +879,29 @@ const RecipePage = () => {
         {recipeData.nutrition && (
           <div className="mobile-card-enter mobile-card-delay-1 mt-6 rounded-2xl border border-accent/30 bg-secondary p-5">
             <h3 className="mb-4 text-lg font-semibold text-text">
-              Nutrition (estimated)
+              {t("Nutrition (estimated)")}
             </h3>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
               <div className="rounded-xl border border-accent/20 bg-background px-3 py-2.5 text-sm text-text">
-                <span className="block text-text/60">Calories</span>
+                <span className="block text-text/60">{t("Calories")}</span>
                 <span className="font-semibold">
                   {formatMacro(recipeData.nutrition.calories, " kcal")}
                 </span>
               </div>
               <div className="rounded-xl border border-accent/20 bg-background px-3 py-2.5 text-sm text-text">
-                <span className="block text-text/60">Protein</span>
+                <span className="block text-text/60">{t("Protein")}</span>
                 <span className="font-semibold">
                   {formatMacro(recipeData.nutrition.protein, " g")}
                 </span>
               </div>
               <div className="rounded-xl border border-accent/20 bg-background px-3 py-2.5 text-sm text-text">
-                <span className="block text-text/60">Carbs</span>
+                <span className="block text-text/60">{t("Carbs")}</span>
                 <span className="font-semibold">
                   {formatMacro(recipeData.nutrition.carbs, " g")}
                 </span>
               </div>
               <div className="rounded-xl border border-accent/20 bg-background px-3 py-2.5 text-sm text-text">
-                <span className="block text-text/60">Fats</span>
+                <span className="block text-text/60">{t("Fats")}</span>
                 <span className="font-semibold">
                   {formatMacro(recipeData.nutrition.fats, " g")}
                 </span>
@@ -900,7 +914,7 @@ const RecipePage = () => {
           <div>
             <div className="mobile-card-enter mobile-card-delay-1 h-full rounded-2xl border border-primary/10 bg-secondary p-6">
               <h2 className="mb-4 text-2xl font-semibold text-text">
-                Ingredients
+                {t("Ingredients")}
               </h2>
               <ul className="space-y-2.5">
                 {(recipeData.ingredients || []).map((ingredient, index) => (
@@ -921,7 +935,7 @@ const RecipePage = () => {
           <div>
             <div className="mobile-card-enter mobile-card-delay-2 h-full rounded-2xl border border-primary/10 bg-secondary p-6">
               <h2 className="mb-4 text-2xl font-semibold text-text">
-                Instructions
+                {t("Instructions")}
               </h2>
               <ol className="space-y-4">
                 {(recipeData.instructions || []).map((instruction, index) => (
@@ -956,7 +970,7 @@ const RecipePage = () => {
                     aria-hidden="true"
                   />
                 )}
-                <span>{shoppingListButtonLabel}</span>
+                <span>{t(shoppingListButtonLabel)}</span>
                 {isGeneratingShoppingList && (
                   <span
                     className="shopping-list-loader-dots"
@@ -983,10 +997,10 @@ const RecipePage = () => {
                 disabled={saveStatus === "saving" || saveStatus === "saved"}
               >
                 {saveStatus === "saving"
-                  ? "Saving..."
+                  ? t("Saving...")
                   : saveStatus === "saved"
-                    ? "Saved ✓"
-                    : "Save Recipe"}
+                    ? t("Saved ✓")
+                    : t("Save Recipe")}
               </button>
             )}
 
@@ -996,8 +1010,8 @@ const RecipePage = () => {
                 onClick={handleDelete}
               >
                 {confirmDelete
-                  ? "Click Again to Confirm Delete"
-                  : "Delete Recipe"}
+                  ? t("Click Again to Confirm Delete")
+                  : t("Delete Recipe")}
               </button>
             )}
           </div>

@@ -1,19 +1,21 @@
 import { Link } from "react-router-dom";
 
 interface RecipeContainerProps {
-  id: number;
+  id?: number;
   title: string;
   timeToPrepare: string;
+  to?: string;
 }
 
 const RecipeContainer = ({
   title,
   id,
   timeToPrepare,
+  to,
 }: RecipeContainerProps) => {
   return (
     <Link
-      to={`/recipe/${id}`}
+      to={to ?? `/recipe/${id}`}
       className="group flex flex-col rounded-2xl border border-primary/10 bg-secondary p-5 transition-all duration-300 hover:border-accent/30 hover:bg-secondary/80 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-accent/50 sm:flex-row sm:items-center sm:justify-between"
     >
         <div className="flex-1 mb-3 sm:mb-0">

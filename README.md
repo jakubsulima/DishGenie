@@ -13,6 +13,8 @@ A full-stack web application that helps users discover and manage recipes using 
 - **Dietary Preferences**: Set dietary restrictions (Vegan, Vegetarian, Gluten-Free, etc.) and ingredient dislikes
 - **Recipe Management**: Create, view, edit, and delete your own recipes
 - **Admin Panel**: Administrative dashboard for user and recipe management
+- **Polish and English UI**: Language switcher with a persisted preference, localized generated recipes, help content, legal pages, and metadata
+- **Password Recovery**: Single-use, expiring reset links delivered by SMTP without revealing whether an account exists
 
 ### User Features
 
@@ -42,7 +44,7 @@ A full-stack web application that helps users discover and manage recipes using 
 
 ### Backend
 
-- **Spring Boot 3.1** (Java 17)
+- **Spring Boot 3.3.11** (Java 17)
 - **Spring Security** with JWT authentication
 - **Spring Data JPA** with Hibernate
 - **PostgreSQL** database
@@ -116,7 +118,7 @@ recipeAi/
 
 - **Docker** and **Docker Compose** installed
 - **Java 17** (for local backend development)
-- **Node.js 18+** and **npm** (for local frontend development)
+- **Node.js 24.x** and **npm** (for local frontend development; matches CI and `package.json`)
 - **Google Gemini API Key** (get it from [Google AI Studio](https://makersuite.google.com/app/apikey))
 
 ### Environment Variables
@@ -152,6 +154,15 @@ JWT_SECRET_KEY=your_super_long_jwt_secret_min_32_chars
 TRUSTED_PROXY_IPS=
 JWT_COOKIE_SECURE=true
 JWT_COOKIE_SAME_SITE=Lax
+
+# Password-reset email delivery
+FRONTEND_URL=https://dishgenie.app
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USERNAME=no-reply@dishgenie.app
+SMTP_PASSWORD=change_me
+SMTP_AUTH=true
+SMTP_STARTTLS=true
 
 # Recipe plan limits
 FREE_PLAN_RECIPE_LIMIT=75
@@ -209,7 +220,7 @@ FRONTEND_PORT=80
 2. **Set environment variables in Dokploy UI**
 
 - Use values from `.env.example`
-- Required minimum: `BACKEND_IMAGE`, `FRONTEND_IMAGE`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `GEMINI_API_KEY`, `ALLOWED_ORIGINS`, `JWT_SECRET_KEY`
+- Required minimum: `BACKEND_IMAGE`, `FRONTEND_IMAGE`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `GEMINI_API_KEY`, `ALLOWED_ORIGINS`, `JWT_SECRET_KEY`, `FRONTEND_URL`, and the `SMTP_*` values used by your mail provider
 - For deterministic deploys, use image tags `sha-<commit>` instead of `latest`
 
 3. **Expose services in Dokploy**
@@ -233,7 +244,7 @@ Detailed checklist: `docs/DOKPLOY_DEPLOYMENT.md`
 Use the dedicated dev compose file, not `docker compose run`:
 
 ```bash
-docker compose -f docker-compose.dev.yml up --build
+docker compose -f docker-compose.yml up --build
 ```
 
 The app will be available through nginx on http://localhost.
@@ -358,6 +369,9 @@ The frontend will be available at http://localhost:5173
 
 - **JWT Authentication**: Stateless token-based authentication
 - **Password Encryption**: BCrypt password hashing
+- **Password Recovery**: Hashed, time-limited, single-use reset tokens and account-enumeration-safe responses
+- **Shared Rate Limits**: Database-backed request buckets work consistently across backend replicas
+- **Atomic Usage Limits**: Recipe-generation quota is reserved transactionally before calling the AI provider and released if generation fails
 - **CORS Configuration**: Configurable allowed origins
 - **Role-Based Access Control**: User and Admin roles
 - **SQL Injection Prevention**: JPA with parameterized queries

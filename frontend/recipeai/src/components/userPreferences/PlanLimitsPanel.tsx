@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLanguage } from "../../context/languageContext";
 
 interface PlanLimitsPanelProps {
   accountPlan: string;
@@ -16,6 +17,7 @@ const PlanLimitsPanel = ({
   recipeCreationLimitReached,
 }: PlanLimitsPanelProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useLanguage();
 
   return (
     <div className="mobile-card-enter mb-6 rounded-xl border border-primary/10 bg-background p-4">
@@ -28,11 +30,10 @@ const PlanLimitsPanel = ({
       >
         <div>
           <h2 className="mb-1 text-xl font-semibold text-text">
-            Generation Request Limit
+            {t("Generation Request Limit")}
           </h2>
           <p className="text-sm text-text/60">
-            Your account plan controls how many recipe generation requests you
-            can make per day.
+            {t("Your account plan controls how many recipe generation requests you can make per day.")}
           </p>
         </div>
         <span
@@ -56,7 +57,7 @@ const PlanLimitsPanel = ({
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="rounded-lg border border-primary/10 bg-secondary p-3">
               <p className="text-xs uppercase tracking-wide text-text/60">
-                Current plan
+                {t("Current plan")}
               </p>
               <p className="mt-1 text-base font-semibold text-text">
                 {accountPlan}
@@ -64,25 +65,24 @@ const PlanLimitsPanel = ({
             </div>
             <div className="rounded-lg border border-primary/10 bg-secondary p-3">
               <p className="text-xs uppercase tracking-wide text-text/60">
-                Generation request limit
+                {t("Generation request limit")}
               </p>
               <p className="mt-1 text-base font-semibold text-text">
-                {hasUnlimitedRecipes ? "Unlimited" : recipeCreationLimit}
+                {hasUnlimitedRecipes ? t("Unlimited") : recipeCreationLimit}
               </p>
             </div>
             <div className="rounded-lg border border-primary/10 bg-secondary p-3">
               <p className="text-xs uppercase tracking-wide text-text/60">
-                Remaining today
+                {t("Remaining today")}
               </p>
               <p className="mt-1 text-base font-semibold text-text">
-                {hasUnlimitedRecipes ? "Unlimited" : (recipesRemaining ?? 0)}
+                {hasUnlimitedRecipes ? t("Unlimited") : (recipesRemaining ?? 0)}
               </p>
             </div>
           </div>
           {!hasUnlimitedRecipes && recipeCreationLimitReached && (
             <p className="rounded-lg border border-accent/45 bg-accent/10 px-3 py-2 text-sm text-text">
-              You reached your daily request limit. Try again tomorrow or
-              upgrade your plan.
+              {t("You reached your daily request limit. Try again tomorrow or upgrade your plan.")}
             </p>
           )}
         </div>

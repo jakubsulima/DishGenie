@@ -2,16 +2,33 @@ package org.jakub.backendapi.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
 public class FridgeIngredientDto {
+    @Positive(message = "Fridge item ID must be positive")
     private Long id;
+
+    @NotBlank(message = "Fridge item name is required")
+    @Size(max = 100, message = "Fridge item must not exceed 100 characters")
     private String name;
+
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate expirationDate;
+
+    @PositiveOrZero(message = "Fridge item amount cannot be negative")
     private Double amount;
+
+    @Pattern(
+            regexp = "(?i)(GRAMS|KILOGRAMS|LITERS|MILLILITERS|PIECES|g|kg|l|ml|pcs)",
+            message = "Fridge item unit is invalid"
+    )
     private String unit;
 
     public FridgeIngredientDto() {

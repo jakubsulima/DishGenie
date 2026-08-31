@@ -1,3 +1,5 @@
+import { useLanguage } from "../context/languageContext";
+
 interface FoodLoadingScreenProps {
   title?: string;
   subtitle?: string;
@@ -13,6 +15,7 @@ const FoodLoadingScreen = ({
   variant = "default",
   compact = false,
 }: FoodLoadingScreenProps) => {
+  const { t } = useLanguage();
   const wrapperClasses = fullScreen
     ? "min-h-screen bg-background"
     : compact
@@ -66,14 +69,14 @@ const FoodLoadingScreen = ({
           </span>
         </div>
 
-        <h2 className="mt-2 text-xl font-semibold text-text">{title}</h2>
-        <p className="mt-2 text-sm text-text/65">{subtitle}</p>
+        <h2 className="mt-2 text-xl font-semibold text-text">{t(title)}</h2>
+        <p className="mt-2 text-sm text-text/65">{t(subtitle)}</p>
 
         {variant === "generating" && (
           <div className="mt-6 flex flex-wrap justify-center gap-2 text-xs text-text/75 h-8">
-            <span className="food-loader-chip">Marinating ideas</span>
-            <span className="food-loader-chip">Balancing flavors</span>
-            <span className="food-loader-chip">Plating the result</span>
+            <span className="food-loader-chip">{t("Marinating ideas")}</span>
+            <span className="food-loader-chip">{t("Balancing flavors")}</span>
+            <span className="food-loader-chip">{t("Plating the result")}</span>
           </div>
         )}
       </div>

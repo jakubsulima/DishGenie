@@ -10,6 +10,14 @@ server:
     include-exception: false
 
 spring:
+  mail:
+    host: ${SMTP_HOST}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
+    properties:
+      mail.smtp.auth: ${SMTP_AUTH:true}
+      mail.smtp.starttls.enable: ${SMTP_STARTTLS:true}
   datasource:
     url: ${POSTGRES_URL}
     username: ${POSTGRES_USER}
@@ -60,7 +68,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health
+        include: health,metrics
   endpoint:
     health:
       show-details: never
@@ -82,6 +90,7 @@ security:
       same-site: ${JWT_COOKIE_SAME_SITE:Lax}
 
 app:
+  frontend-url: ${FRONTEND_URL}
   limits:
     generate-recipe-requests-per-minute: ${GENERATE_RECIPE_LIMIT_PER_MINUTE:15}
     recipe-requests-per-day:

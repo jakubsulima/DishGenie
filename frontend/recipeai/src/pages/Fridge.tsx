@@ -14,6 +14,7 @@ import FridgeDisplay from "../components/FridgeDisplay";
 import BarcodeScanner from "../components/BarcodeScanner";
 import ReceiptScanner from "../components/ReceiptScanner";
 import ErrorAlert from "../components/ErrorAlert";
+import { useLanguage } from "../context/languageContext";
 
 const parseBackendDate = (dateString: string) => {
   const [day, month, year] = dateString.split("-");
@@ -32,6 +33,7 @@ const EXPIRED_BANNER_STORAGE_PREFIX = "recipeai.expiredBannerDismissed";
 export const Fridge = () => {
   const navigate = useNavigate();
   const { user } = useUser();
+  const { t } = useLanguage();
   const {
     fridgeItems,
     loading: contextLoading,
@@ -310,15 +312,15 @@ export const Fridge = () => {
     <>
       <div className="mobile-page-enter container mx-auto grid grid-cols-1 items-start gap-5 bg-background px-4 py-5 sm:px-6 md:grid-cols-3 md:gap-6">
         <div className="w-full space-y-4">
-          <ErrorAlert message={displayError} onAutoHide={() => setError("")} />
+          <ErrorAlert message={displayError ? t(displayError) : ""} onAutoHide={() => setError("")} />
 
           {showExpiredBanner && expiredItems.length > 0 && (
             <div className="rounded-2xl border border-amber-300/60 bg-amber-100/80 p-4 text-sm text-amber-950 shadow-sm">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="font-semibold">Expired ingredients detected</p>
+                  <p className="font-semibold">{t("Expired ingredients detected")}</p>
                   <p className="mt-1 text-amber-900/80">
-                    Review these items before they affect your next recipe:
+                    {t("Review these items before they affect your next recipe:")}
                     {" "}
                     {expiredItems.map((item) => item.name).join(", ")}.
                   </p>
@@ -328,7 +330,7 @@ export const Fridge = () => {
                   onClick={dismissExpiredBanner}
                   className="rounded-full border border-amber-400/60 px-3 py-1 text-xs font-semibold text-amber-900 transition-colors hover:bg-amber-200/70"
                 >
-                  Dismiss
+                  {t("Dismiss")}
                 </button>
               </div>
             </div>
@@ -337,10 +339,10 @@ export const Fridge = () => {
           <div className="ambient-gradient-card rounded-2xl border border-accent/30 bg-accent/10 p-3 sm:p-3.5">
             <div className="mb-2.5 px-1">
               <h2 className="text-sm font-semibold text-text/75">
-                Quick Add Options
+                {t("Quick Add Options")}
               </h2>
               <p className="text-xs text-text/55">
-                Choose how you want to add products to your fridge.
+                {t("Choose how you want to add products to your fridge.")}
               </p>
             </div>
 
@@ -350,23 +352,23 @@ export const Fridge = () => {
                 className="mobile-soft-press flex min-h-16 flex-col items-center justify-center rounded-xl border border-accent/35 bg-background px-3 py-2 text-center transition-colors hover:bg-accent/20"
               >
                 <span className="text-sm font-semibold text-text">
-                  Scan Barcode
+                  {t("Scan Barcode")}
                 </span>
                 <span className="mt-0.5 text-[11px] text-text/60">
-                  Use your camera
+                  {t("Use your camera")}
                 </span>
               </button>
               <button
                 onClick={() => setIsReceiptScannerOpen(true)}
                 disabled={true}
-                title="Coming soon"
+                title={t("Coming soon")}
                 className="mobile-soft-press flex min-h-16 flex-col items-center justify-center rounded-xl border border-accent/20 bg-background/50 px-3 py-2 text-center opacity-60 cursor-not-allowed"
               >
                 <span className="text-sm font-semibold text-text">
-                  Scan Receipt
+                  {t("Scan Receipt")}
                 </span>
                 <span className="mt-0.5 text-[11px] text-text/60">
-                  Coming soon
+                  {t("Coming soon")}
                 </span>
               </button>
               <button
@@ -374,10 +376,10 @@ export const Fridge = () => {
                 className="mobile-soft-press flex min-h-16 flex-col items-center justify-center rounded-xl bg-accent px-3 py-2 text-center shadow-[0_8px_18px_rgba(255,212,60,0.3)] transition-colors hover:bg-accent/90"
               >
                 <span className="text-sm font-semibold text-text">
-                  Use Expiring Soon
+                  {t("Use Expiring Soon")}
                 </span>
                 <span className="mt-0.5 text-[11px] text-text/70">
-                  Generate zero-waste recipe
+                  {t("Generate zero-waste recipe")}
                 </span>
               </button>
             </div>

@@ -2,10 +2,14 @@ import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useFridge } from "../context/fridgeContext";
 import { useUser } from "../context/context";
+import { useLanguage } from "../context/languageContext";
 import { captureEvent } from "../lib/posthog";
 import { savePendingRecipeSearch } from "../lib/pendingRecipeIntent";
 import { apiClient } from "../lib/hooks";
+import { landingFaqs } from "../lib/landingContent";
+import { featuredRecipes } from "../lib/featuredRecipes";
 import ButtonsForm from "../components/ButtonsForm";
+import RecipeContainer from "../components/RecipeContainer";
 import type { RecipeData } from "./RecipePage";
 import homepageIcon160 from "../assets/dish-genie-homepage-icon-160.webp";
 import homepageIcon288 from "../assets/dish-genie-homepage-icon-288.webp";
@@ -51,6 +55,7 @@ const landingScreenshots = [
 ];
 
 const allLandingScreenshotIndexes = landingScreenshots.map((_, index) => index);
+const landingRevealSectionIndexes = [0, 1, 2, 3, 4, 5];
 
 type TradeoffKey = "time" | "effort" | "mood" | "pantry" | "flavor";
 
@@ -224,17 +229,50 @@ const buildPresetSummary = (
 
 const landingContrasts = [
   {
-    title: "Not an endless recipe feed",
-    body: "You get three realistic options instead of another page of inspiration.",
+    title: "Three options, not a feed",
+    body: "Compare the best overall dinner, the fastest option, and the best use-it-up idea.",
   },
   {
-    title: "Not a fridge inventory chore",
-    body: "Start by typing what you have. Saved fridge items can help later.",
+    title: "Ingredients first",
+    body: "Start with eggs, rice, spinach, chicken, or whatever is already in the kitchen.",
   },
   {
     title: "Not weird AI recipes",
-    body: "See what is used, what is missing, and why the idea fits dinner.",
+    body: "Each idea explains what it uses, what is missing, and why it makes sense.",
   },
+];
+
+const practicalProofItems = [
+  "which ingredients from your kitchen it uses",
+  "what is missing before you start cooking",
+  "whether dinner works without shopping",
+  "why the option fits your time, effort, and mood",
+  "which idea is fastest, best overall, or best for using food up",
+];
+
+const dinnerDecisionOptions = [
+  {
+    label: "Best overall",
+    example: "Chicken, rice, and spinach skillet",
+    body: "Balanced for flavor, effort, and pantry fit when you want the most reliable dinner.",
+  },
+  {
+    label: "Fastest",
+    example: "Egg fried rice with spinach",
+    body: "The shortest route from ingredients to food when time and cleanup matter most.",
+  },
+  {
+    label: "Use-it-up",
+    example: "Spinach chicken rice bowls",
+    body: "Prioritizes ingredients that should be used soon so less food gets wasted.",
+  },
+];
+
+const ingredientSearchExamples = [
+  "what can I cook with eggs and rice",
+  "dinner ideas with ingredients I have",
+  "what can I cook without shopping",
+  "recipes from ingredients at home",
 ];
 
 interface PagedRecipesResponse {
@@ -261,10 +299,15 @@ const HomePage = () => {
   const [visibleScreenshotCards, setVisibleScreenshotCards] = useState<
     number[]
   >([]);
+  const [visibleLandingSections, setVisibleLandingSections] = useState<
+    number[]
+  >([]);
   const screenshotCardRefs = useRef<Array<HTMLElement | null>>([]);
+  const landingSectionRefs = useRef<Array<HTMLElement | null>>([]);
   const navigate = useNavigate();
   const { fridgeItems } = useFridge();
   const { user } = useUser();
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!user?.id) {
@@ -367,6 +410,118 @@ const HomePage = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (prefersReducedMotion) {
+      setVisibleLandingSections(landingRevealSectionIndexes);
+      return;
+    }
+
+    const settleDelay = 2600;
+    let retryTimeout = 0;
+    let revealInterval = 0;
+
+    const collectRevealElements = () =>
+      Array.from(
+        document.querySelectorAll<HTMLElement>("[data-landing-reveal-index]"),
+      );
+
+    const revealVisibleItems = (element: HTMLElement) => {
+      const animatedItems = Array.from(
+        element.querySelectorAll<HTMLElement>(".landing-animate-item"),
+      );
+
+      animatedItems.forEach((item) => {
+        const itemRect = item.getBoundingClientRect();
+        const isItemVisible =
+          itemRect.top < window.innerHeight * 0.84 && itemRect.bottom > 0;
+
+        if (isItemVisible) {
+          item.classList.add("landing-animate-item-visible");
+        }
+      });
+    };
+
+    const updateVisibleSections = () => {
+      const nextVisibleIndexes = collectRevealElements()
+        .map((element) => {
+          const rect = element.getBoundingClientRect();
+          const index = Number(element.dataset.landingRevealIndex);
+          const isNearViewport =
+            rect.top < window.innerHeight * 0.92 && rect.bottom > 0;
+          const shouldReveal =
+            isNearViewport ||
+            element.classList.contains("landing-scroll-reveal-visible");
+
+          if (shouldReveal) {
+            element.classList.add("landing-scroll-reveal-visible");
+            revealVisibleItems(element);
+
+            if (element.dataset.landingRevealSettling !== "true") {
+              element.dataset.landingRevealSettling = "true";
+              window.setTimeout(() => {
+                element.classList.add("landing-scroll-reveal-settled");
+              }, settleDelay);
+            }
+          }
+
+          return shouldReveal ? index : undefined;
+        })
+        .filter((index): index is number => index !== undefined);
+
+      if (!nextVisibleIndexes.length) {
+        return;
+      }
+
+      setVisibleLandingSections((current) => {
+        const next = Array.from(new Set([...current, ...nextVisibleIndexes]));
+        return next.length === current.length ? current : next;
+      });
+
+      if (
+        nextVisibleIndexes.length &&
+        document.querySelectorAll(".landing-scroll-reveal-visible").length >=
+          landingRevealSectionIndexes.length &&
+        revealInterval
+      ) {
+        window.clearInterval(revealInterval);
+        revealInterval = 0;
+      }
+    };
+
+    const startRevealWatcher = () => {
+      if (!collectRevealElements().length) {
+        retryTimeout = window.setTimeout(startRevealWatcher, 50);
+        return;
+      }
+
+      updateVisibleSections();
+      revealInterval = window.setInterval(updateVisibleSections, 180);
+      window.addEventListener("scroll", updateVisibleSections, {
+        passive: true,
+      });
+      window.addEventListener("resize", updateVisibleSections);
+    };
+
+    startRevealWatcher();
+
+    return () => {
+      if (retryTimeout) {
+        window.clearTimeout(retryTimeout);
+      }
+
+      if (revealInterval) {
+        window.clearInterval(revealInterval);
+      }
+
+      window.removeEventListener("scroll", updateVisibleSections);
+      window.removeEventListener("resize", updateVisibleSections);
+    };
+  }, [user]);
+
   const buildCategoryPrompt = () => {
     const tradeoffPrompts = tradeoffSliders
       .map((slider) => {
@@ -402,14 +557,12 @@ const HomePage = () => {
   const buildRecipeSearch = (searchValue = search) => {
     const categoryPrompt = buildCategoryPrompt();
     const customPrompt = searchValue.trim();
-    let finalSearch = [categoryPrompt, customPrompt].filter(Boolean).join(" with ");
+    const finalSearch = [categoryPrompt, customPrompt].filter(Boolean).join(" with ");
 
     if (!finalSearch) {
-      finalSearch = "random recipe";
-    } else if (hasIngredients) {
-      const ingredientsText = fridgeItems.map((item) => item.name).join(", ");
-      finalSearch += " and try to use those ingredients: " + ingredientsText;
+      return "random recipe";
     }
+
     return finalSearch;
   };
 
@@ -476,10 +629,10 @@ const HomePage = () => {
               <path d="M3 12h3m12 0h3M12 3v3m0 12v3" />
             </svg>
           </span>
-          <span>Generating...</span>
+          <span>{t("Generating...")}</span>
         </>
       ) : (
-        "Tell me what to cook"
+        t(user ? "Show me 3 ideas" : "Get my 3 dinner ideas")
       )}
     </button>
   );
@@ -563,7 +716,7 @@ const HomePage = () => {
                 />
                 <img
                   src="/dish-genie-homepage-icon.png"
-                  alt="Dish Genie app icon with a chef hat, steam, and a cooking pot"
+                  alt={t("Dish Genie app icon with a chef hat, steam, and a cooking pot")}
                   width="144"
                   height="144"
                   fetchPriority="high"
@@ -572,24 +725,32 @@ const HomePage = () => {
               </picture>
             </div>
             <h1 className="mx-auto max-w-3xl px-2 text-4xl font-bold leading-tight text-text md:text-5xl">
-              {user
-                ? "What should we cook next?"
-                : "Turn what's in your kitchen into dinner"}
+              {t(
+                user
+                  ? "What should we cook next?"
+                  : "What can I cook with these ingredients?",
+              )}
             </h1>
             <p className="mx-auto mb-5 mt-4 max-w-2xl text-sm leading-relaxed text-text/70 md:mt-5 md:text-base">
-              {user
-                ? "Start with ingredients, pick a mode, and get a practical dinner idea from what you already know."
-                : "Tell Dish Genie what you have and get 3 realistic ideas for tonight. No inventory setup. No endless recipe feed."}
+              {t(
+                user
+                  ? "Start with ingredients, pick a mode, and get a practical dinner idea from what you already know."
+                  : "Type what you have at home and Dish Genie gives you 3 realistic dinner ideas for tonight: best overall, fastest, and use-it-up.",
+              )}
             </p>
             <div className="mx-auto w-full max-w-3xl rounded-3xl border border-primary/10 bg-background/85 p-4 shadow-[0_18px_45px_rgba(0,0,0,0.06)] md:p-5">
               <article className="relative w-full">
+                <label htmlFor="ingredient-search" className="sr-only">
+                  {t("Ingredients you have")}
+                </label>
                 <input
+                  id="ingredient-search"
                   type="text"
                   value={search}
                   onChange={(e) => {
                     setSearch(e.target.value);
                   }}
-                  placeholder="eggs, rice, spinach, chicken"
+                  placeholder={t("eggs, rice, spinach, chicken")}
                   className="w-full rounded-full border border-primary/20 bg-secondary/90 p-2 pr-10 text-text shadow-[0_8px_20px_rgba(0,0,0,0.04)] placeholder:text-text/50 focus:outline-none focus:ring-2 focus:ring-accent"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -601,7 +762,7 @@ const HomePage = () => {
                 <button
                   onClick={handleClear}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text/70 transition-colors hover:text-accent focus:outline-none"
-                  aria-label="Clear search"
+                  aria-label={t("Clear search")}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -619,12 +780,14 @@ const HomePage = () => {
                 )}
               </article>
               <p className="mx-auto mt-3 max-w-2xl text-xs text-text/55 md:text-sm">
-                Pick a mode, cook from defaults, or tune the details.
+                {t(
+                  "Try eggs, rice, spinach, chicken, leftovers, or the ingredients you need to use before they go bad.",
+                )}
               </p>
               <section className="mx-auto max-w-3xl space-y-4 pb-1 pt-4">
                 <section className="flex w-full flex-col items-center">
                   <h2 className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-text/45">
-                    Mode
+                    {t("Mode")}
                   </h2>
                   <div className="flex w-full flex-wrap justify-center gap-2">
                     {chooserPresets.map((preset) => {
@@ -642,7 +805,7 @@ const HomePage = () => {
                               : "border-primary/10 bg-secondary/80 text-text/70 shadow-sm hover:-translate-y-0.5 hover:border-accent/70 hover:bg-background hover:text-text hover:shadow-md"
                           }`}
                         >
-                          {preset.label}
+                          {t(preset.label)}
                         </button>
                       );
                     })}
@@ -666,7 +829,9 @@ const HomePage = () => {
                     aria-expanded={isDetailsOpen}
                     className="chooser-details-toggle flex w-full items-center justify-between gap-3 px-4 py-3 text-sm font-extrabold text-text transition-colors hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
                   >
-                    <span>{isDetailsOpen ? "Hide details" : "Tune details"}</span>
+                    <span>
+                      {t(isDetailsOpen ? "Hide details" : "Tune details")}
+                    </span>
                     <span
                       className={`chooser-toggle-icon ${
                         isDetailsOpen ? "chooser-toggle-icon-open" : ""
@@ -678,7 +843,7 @@ const HomePage = () => {
                     <div className="chooser-details-panel space-y-5 border-t border-primary/10 px-4 pb-4 pt-4">
                       <section>
                         <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.12em] text-text/45">
-                          Tradeoffs
+                          {t("Tradeoffs")}
                         </h2>
                         <div className="grid w-full gap-4 md:grid-cols-2">
                           {tradeoffSliders.map((slider, index) => {
@@ -698,10 +863,12 @@ const HomePage = () => {
                               >
                                 <span className="flex items-center justify-between gap-3">
                                   <span className="text-sm font-extrabold text-text">
-                                    {slider.label}
+                                    {t(slider.label)}
                                   </span>
                                   <span className="rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-text/65">
-                                    Selected: {selectedLabel}
+                                    {t("Selected: {value}", {
+                                      value: t(selectedLabel),
+                                    })}
                                   </span>
                                 </span>
                                 <input
@@ -716,7 +883,7 @@ const HomePage = () => {
                                       Number(event.target.value),
                                     )
                                   }
-                                  aria-label={slider.label}
+                                  aria-label={t(slider.label)}
                                   className="chooser-range mt-3"
                                   style={
                                     {
@@ -728,10 +895,10 @@ const HomePage = () => {
                                 />
                                 <span className="mt-2 flex justify-between text-[11px] font-bold text-text/45">
                                   <span aria-hidden="true">
-                                    {slider.lowLabel}
+                                    {t(slider.lowLabel)}
                                   </span>
                                   <span aria-hidden="true">
-                                    {slider.highLabel}
+                                    {t(slider.highLabel)}
                                   </span>
                                 </span>
                               </label>
@@ -741,7 +908,7 @@ const HomePage = () => {
                       </section>
                       <section>
                         <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.12em] text-text/45">
-                          Stackable needs
+                          {t("Stackable needs")}
                         </h2>
                         <div className="flex w-full flex-wrap gap-2">
                           {recipeConstraints.map((constraint, index) => {
@@ -770,7 +937,7 @@ const HomePage = () => {
                                     aria-hidden="true"
                                   />
                                 )}
-                                {constraint.label}
+                                {t(constraint.label)}
                               </button>
                             );
                           })}
@@ -784,7 +951,6 @@ const HomePage = () => {
                         selectedButton={selectedMealType}
                         title="Meal"
                       />
-                      {renderPrimaryCta("mt-1")}
                     </div>
                   )}
                 </section>
@@ -796,15 +962,15 @@ const HomePage = () => {
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.12em] text-text/45">
-                    Quick setup
+                    {t("Quick setup")}
                   </p>
                   <h2 className="mt-1 text-lg font-bold text-text">
-                    Your home screen is now the cooking workflow.
+                    {t("Your home screen is now the cooking workflow.")}
                   </h2>
                   <ul className="mt-3 space-y-1.5 text-sm text-text/65">
-                    <li>1. Add what you have in the input.</li>
-                    <li>2. Pick a dinner mode or tune details.</li>
-                    <li>3. Use fridge items and saved recipes below.</li>
+                    <li>{t("1. Add what you have in the input.")}</li>
+                    <li>{t("2. Pick a dinner mode or tune details.")}</li>
+                    <li>{t("3. Use fridge items and saved recipes below.")}</li>
                   </ul>
                 </div>
                 <button
@@ -812,7 +978,7 @@ const HomePage = () => {
                   onClick={handleDismissLoggedInOnboarding}
                   className="rounded-full border border-primary/15 bg-background px-4 py-2 text-sm font-bold text-text shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
                 >
-                  Got it
+                  {t("Got it")}
                 </button>
               </div>
             </section>
@@ -823,7 +989,7 @@ const HomePage = () => {
                 onClick={handleBrowseLatest}
                 className="mobile-soft-press rounded-full border border-primary/10 bg-background/80 px-4 py-2 text-sm font-semibold text-text shadow-sm transition-colors hover:border-accent/60 hover:text-accent"
               >
-                Browse latest public recipes
+                {t("Browse latest public recipes")}
               </button>
             </div>
           )}
@@ -835,17 +1001,17 @@ const HomePage = () => {
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.12em] text-text/45">
-                    Saved fridge
+                    {t("Saved fridge")}
                   </p>
                   <h2 className="mt-1 text-xl font-bold text-text">
-                    Ingredients ready to use
+                    {t("Ingredients ready to use")}
                   </h2>
                 </div>
                 <Link
                   to="/Fridge"
                   className="rounded-full border border-primary/10 px-3 py-1.5 text-sm font-bold text-text/70 transition-all hover:border-primary/25 hover:bg-secondary hover:text-text"
                 >
-                  Manage
+                  {t("Manage")}
                 </Link>
               </div>
               {recentFridgeItems.length > 0 ? (
@@ -870,13 +1036,13 @@ const HomePage = () => {
               ) : (
                 <div className="mt-4 rounded-xl border border-dashed border-primary/15 bg-secondary/60 p-4">
                   <p className="text-sm text-text/65">
-                    Add a few staples to make future dinner ideas more useful.
+                    {t("Add a few staples to make future dinner ideas more useful.")}
                   </p>
                   <Link
                     to="/Fridge"
                     className="mt-3 inline-flex rounded-full bg-primary px-4 py-2 text-sm font-bold text-background transition-all hover:-translate-y-0.5 hover:shadow-md"
                   >
-                    Add fridge items
+                    {t("Add fridge items")}
                   </Link>
                 </div>
               )}
@@ -886,17 +1052,17 @@ const HomePage = () => {
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.12em] text-text/45">
-                    Recent dinners
+                    {t("Recent dinners")}
                   </p>
                   <h2 className="mt-1 text-xl font-bold text-text">
-                    Saved recipes
+                    {t("Saved recipes")}
                   </h2>
                 </div>
                 <Link
                   to="/Recipes"
                   className="rounded-full border border-primary/10 px-3 py-1.5 text-sm font-bold text-text/70 transition-all hover:border-primary/25 hover:bg-secondary hover:text-text"
                 >
-                  View all
+                  {t("View all")}
                 </Link>
               </div>
               {isRecentRecipesLoading ? (
@@ -930,7 +1096,7 @@ const HomePage = () => {
               ) : (
                 <div className="mt-4 rounded-xl border border-dashed border-primary/15 bg-secondary/60 p-4">
                   <p className="text-sm text-text/65">
-                    Saved dinners will show here after you keep a recipe.
+                    {t("Saved dinners will show here after you keep a recipe.")}
                   </p>
                 </div>
               )}
@@ -943,9 +1109,9 @@ const HomePage = () => {
                 className="flex w-full items-center justify-between gap-3 text-left text-sm font-extrabold text-text"
                 aria-expanded={showLoggedInHelp}
               >
-                <span>How it works</span>
+                <span>{t("How it works")}</span>
                 <span className="text-text/45">
-                  {showLoggedInHelp ? "Hide" : "Show"}
+                  {t(showLoggedInHelp ? "Hide" : "Show")}
                 </span>
               </button>
               {showLoggedInHelp && (
@@ -957,10 +1123,10 @@ const HomePage = () => {
                         className="rounded-lg border border-primary/10 bg-background p-3"
                       >
                         <h3 className="text-sm font-bold text-text">
-                          {contrast.title}
+                          {t(contrast.title)}
                         </h3>
                         <p className="mt-1.5 text-sm leading-relaxed text-text/65">
-                          {contrast.body}
+                          {t(contrast.body)}
                         </p>
                       </div>
                     ))}
@@ -973,16 +1139,16 @@ const HomePage = () => {
                       >
                         <img
                           src={screenshot.src}
-                          alt={screenshot.alt}
+                          alt={t(screenshot.alt)}
                           loading="lazy"
                           className="h-52 w-full bg-secondary/40 object-contain object-top lg:h-48"
                         />
                         <div className="p-3">
                           <h3 className="text-sm font-bold text-text">
-                            {screenshot.title}
+                            {t(screenshot.title)}
                           </h3>
                           <p className="mt-1.5 text-xs leading-relaxed text-text/60">
-                            {screenshot.body}
+                            {t(screenshot.body)}
                           </p>
                         </div>
                       </article>
@@ -996,28 +1162,107 @@ const HomePage = () => {
 
         {!user && (
           <>
-            <section className="landing-scroll-reveal relative z-10 border-y border-primary/10 bg-secondary/45 py-8">
-              <div className="mx-auto grid w-full max-w-6xl gap-5 px-5 md:grid-cols-[1fr_1.7fr] md:px-8">
+            <section
+              ref={(node) => {
+                landingSectionRefs.current[0] = node;
+              }}
+              data-landing-reveal-index="0"
+              className={`landing-scroll-reveal landing-polished-band relative z-10 border-y border-primary/10 py-10 md:py-12 ${
+                visibleLandingSections.includes(0)
+                  ? "landing-scroll-reveal-visible"
+                  : ""
+              }`}
+            >
+              <div className="mx-auto grid w-full max-w-6xl gap-6 px-5 md:grid-cols-[0.9fr_1.1fr] md:items-center md:px-8">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.12em] text-text/45">
-                    Fewer choices, faster dinner
+                    {t("Practical AI recipes")}
                   </p>
-                  <h2 className="mt-2 text-2xl font-bold text-text">
-                    Dish Genie is built for the kitchen moment before you order
-                    takeout.
+                  <h2 className="mt-2 text-2xl font-bold leading-tight text-text md:text-3xl">
+                    {t("Not another weird AI recipe generator")}
                   </h2>
+                  <p className="mt-3 text-sm leading-7 text-text/65 md:text-base">
+                    {t(
+                      "Dish Genie is designed for practical dinner decisions, not novelty recipes. It should be obvious why each suggestion belongs on your table tonight.",
+                    )}
+                  </p>
                 </div>
-                <div className="grid gap-3 md:grid-cols-3">
-                  {landingContrasts.map((contrast) => (
+                <div className="landing-animate-item landing-polished-panel rounded-2xl p-4 transition-all md:p-5">
+                  <p className="text-sm font-extrabold text-text">
+                    {t("Each suggestion makes clear:")}
+                  </p>
+                  <ul className="mt-4 grid gap-2 text-sm leading-6 text-text/70 sm:grid-cols-2">
+                    {practicalProofItems.map((item) => (
+                      <li key={item} className="flex gap-2">
+                        <span
+                          className="mt-2 h-1.5 w-1.5 flex-none rounded-full bg-accent"
+                          aria-hidden="true"
+                        />
+                        <span>{t(item)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            <section
+              ref={(node) => {
+                landingSectionRefs.current[1] = node;
+              }}
+              data-landing-reveal-index="1"
+              className={`landing-scroll-reveal relative z-10 mx-auto w-full max-w-6xl px-5 pt-12 md:px-8 md:pt-16 ${
+                visibleLandingSections.includes(1)
+                  ? "landing-scroll-reveal-visible"
+                  : ""
+              }`}
+            >
+              <div className="grid gap-6 md:grid-cols-[0.85fr_1.15fr] md:items-start">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.12em] text-text/45">
+                    {t("Food at home, no plan")}
+                  </p>
+                  <h2 className="mt-2 text-2xl font-bold leading-tight text-text md:text-3xl">
+                    {t(
+                      "What to cook when you have ingredients but no dinner idea",
+                    )}
+                  </h2>
+                  <p className="mt-3 text-sm leading-7 text-text/65 md:text-base">
+                    {t(
+                      "Instead of forcing you into one recipe, Dish Genie turns your ingredient list into a small decision set you can compare by time, missing items, and food that needs using.",
+                    )}
+                  </p>
+                  <div className="landing-mobile-chip-row mt-4 flex flex-wrap gap-2">
+                    {ingredientSearchExamples.map((example) => (
+                      <span
+                        key={example}
+                        className="rounded-full border border-primary/10 bg-secondary px-3 py-1.5 text-xs font-bold text-text/60"
+                      >
+                        {t(example)}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="grid gap-3">
+                  {dinnerDecisionOptions.map((option, index) => (
                     <article
-                      key={contrast.title}
-                      className="rounded-lg border border-primary/10 bg-background p-4"
+                      key={option.label}
+                      className={`landing-animate-item landing-feature-card ${
+                        index % 2 === 0
+                          ? "landing-side-right"
+                          : "landing-side-left"
+                      } rounded-lg border border-primary/10 bg-background p-4 shadow-sm`}
                     >
-                      <h3 className="text-sm font-bold text-text">
-                        {contrast.title}
-                      </h3>
-                      <p className="mt-2 text-sm leading-relaxed text-text/65">
-                        {contrast.body}
+                      <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+                        <h3 className="text-base font-extrabold text-text">
+                          {t(option.label)}
+                        </h3>
+                        <p className="text-sm font-bold text-text/45">
+                          {t(option.example)}
+                        </p>
+                      </div>
+                      <p className="mt-2 text-sm leading-6 text-text/65">
+                        {t(option.body)}
                       </p>
                     </article>
                   ))}
@@ -1025,14 +1270,112 @@ const HomePage = () => {
               </div>
             </section>
 
-            <section className="landing-scroll-reveal relative z-10 mx-auto mb-10 w-full max-w-6xl px-5 pt-12 md:px-8 md:pt-16">
+            <section
+              ref={(node) => {
+                landingSectionRefs.current[2] = node;
+              }}
+              data-landing-reveal-index="2"
+              className={`landing-scroll-reveal relative z-10 mx-auto w-full max-w-6xl px-5 pt-12 md:px-8 md:pt-16 ${
+                visibleLandingSections.includes(2)
+                  ? "landing-scroll-reveal-visible"
+                  : ""
+              }`}
+            >
+              <div className="grid gap-6 md:grid-cols-[0.85fr_1.15fr] md:items-start">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.12em] text-text/45">
+                    {t("Featured recipes")}
+                  </p>
+                  <h2 className="mt-2 text-2xl font-bold leading-tight text-text md:text-3xl">
+                    {t("Realistic ideas worth clicking")}
+                  </h2>
+                  <p className="mt-3 text-sm leading-7 text-text/65 md:text-base">
+                    {t(
+                      "These examples use the same recipe shape Dish Genie creates: a practical title, cooking time, ingredients, nutrition, and clear steps.",
+                    )}
+                  </p>
+                </div>
+                <div className="space-y-3 md:space-y-4">
+                  {featuredRecipes.map((recipe, index) => (
+                    <div
+                      key={recipe.slug}
+                      className={`landing-animate-item landing-recipe-link ${
+                        index % 2 === 0
+                          ? "landing-side-right"
+                          : "landing-side-left"
+                      }`}
+                      style={{ transitionDelay: `${index * 50}ms` }}
+                    >
+                      <RecipeContainer
+                        title={recipe.name}
+                        timeToPrepare={recipe.timeToPrepare}
+                        to={`/featured-recipes/${recipe.slug}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            <section
+              ref={(node) => {
+                landingSectionRefs.current[4] = node;
+              }}
+              data-landing-reveal-index="4"
+              className={`landing-scroll-reveal relative z-10 mx-auto w-full max-w-6xl px-5 pt-12 md:px-8 md:pt-16 ${
+                visibleLandingSections.includes(4)
+                  ? "landing-scroll-reveal-visible"
+                  : ""
+              }`}
+            >
+              <div className="grid gap-5 md:grid-cols-[0.8fr_1.2fr]">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.12em] text-text/45">
+                    {t("Common questions")}
+                  </p>
+                  <h2 className="mt-2 text-2xl font-bold leading-tight text-text md:text-3xl">
+                    {t("Cooking from what you already have")}
+                  </h2>
+                </div>
+                <div className="grid gap-3">
+                  {landingFaqs.map((item, index) => (
+                    <article
+                      key={item.question}
+                      className={`landing-animate-item landing-feature-card ${
+                        index % 2 === 0
+                          ? "landing-side-right"
+                          : "landing-side-left"
+                      } rounded-lg border border-primary/10 bg-background p-4 shadow-sm`}
+                    >
+                      <h3 className="text-base font-extrabold text-text">
+                        {t(item.question)}
+                      </h3>
+                      <p className="mt-2 text-sm leading-6 text-text/65">
+                        {t(item.answer)}
+                      </p>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            <section
+              ref={(node) => {
+                landingSectionRefs.current[5] = node;
+              }}
+              data-landing-reveal-index="5"
+              className={`landing-scroll-reveal relative z-10 mx-auto mb-10 w-full max-w-6xl px-5 pt-12 md:px-8 md:pt-16 ${
+                visibleLandingSections.includes(5)
+                  ? "landing-scroll-reveal-visible"
+                  : ""
+              }`}
+            >
               <div className="mb-5 text-center">
                 <h2 className="text-xl font-bold text-text">
-                  How Dish Genie helps after you choose
+                  {t("How Dish Genie helps after you choose")}
                 </h2>
                 <p className="mt-2 text-sm leading-relaxed text-text/65">
-                  Real app screens, shown as a simple flow: choose, cook, shop,
-                  scan, then reuse what is already in the fridge.
+                  {t("Real app screens, shown as a simple flow: choose, cook, shop, scan, then reuse what is already in the fridge.")}
                 </p>
               </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -1044,7 +1387,7 @@ const HomePage = () => {
                     }}
                     data-screenshot-index={index}
                     style={{ transitionDelay: `${index * 85}ms` }}
-                    className={`landing-screenshot-card landing-proof-card overflow-hidden rounded-2xl border border-primary/10 bg-background shadow-[0_18px_42px_rgba(0,0,0,0.08)] ${
+                    className={`landing-screenshot-card landing-proof-card landing-feature-card overflow-hidden rounded-2xl border border-primary/10 bg-background shadow-[0_18px_42px_rgba(0,0,0,0.08)] ${
                       visibleScreenshotCards.includes(index)
                         ? "landing-proof-card-visible"
                         : ""
@@ -1058,10 +1401,10 @@ const HomePage = () => {
                     />
                     <div className="p-4">
                       <h3 className="text-sm font-bold text-text">
-                        {screenshot.title}
+                        {t(screenshot.title)}
                       </h3>
                       <p className="mt-2 text-sm leading-relaxed text-text/65">
-                        {screenshot.body}
+                        {t(screenshot.body)}
                       </p>
                     </div>
                   </article>

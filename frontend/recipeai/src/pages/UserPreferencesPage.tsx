@@ -13,6 +13,7 @@ import {
   getDietOptionGroups,
   normalizeDietValue,
 } from "../lib/dietOptions";
+import { useLanguage } from "../context/languageContext";
 
 const NONE_DIET_VALUE = "NONE";
 
@@ -38,6 +39,7 @@ const MePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading: userLoading, getUserPreferences, setUser } = useUser();
+  const { t } = useLanguage();
 
   const [error, setError] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
@@ -277,7 +279,7 @@ const MePage = () => {
   const selectedDietLabels = selectedDiets.map((value) => getDietLabel(value));
   const activeDiet =
     selectedDietLabels.length === 0
-      ? "Not set"
+      ? t("Not set")
       : selectedDietLabels.length <= 2
         ? selectedDietLabels.join(", ")
         : `${selectedDietLabels.slice(0, 2).join(", ")} +${selectedDietLabels.length - 2}`;
@@ -287,8 +289,11 @@ const MePage = () => {
   const hasUnlimitedRecipes = recipeCreationLimit < 0;
   const recipesRemaining = user.recipesRemaining;
   const recipeUsageLabel = hasUnlimitedRecipes
-    ? `${recipesCreated} requests today • unlimited`
-    : `${recipesCreated}/${recipeCreationLimit} requests today`;
+    ? t("{count} requests today • unlimited", { count: recipesCreated })
+    : t("{used}/{limit} requests today", {
+        used: recipesCreated,
+        limit: recipeCreationLimit,
+      });
 
   return (
     <div className="mobile-page-enter min-h-screen w-full bg-background">
@@ -301,17 +306,16 @@ const MePage = () => {
         />
 
         <ErrorAlert
-          message={error}
+          message={t(error)}
           className="mb-6"
           onAutoHide={() => setError("")}
         />
 
         {showRegistrationOnboarding && (
           <div className="mb-6 rounded-xl border border-accent/40 bg-accent/15 p-4 text-text">
-            <p className="font-semibold">Account created successfully.</p>
+            <p className="font-semibold">{t("Account created successfully.")}</p>
             <p className="mt-1 text-sm text-text/80">
-              Choose your diet and disliked ingredients now to get better recipe
-              suggestions from the start.
+              {t("Choose your diet and disliked ingredients now to get better recipe suggestions from the start.")}
             </p>
           </div>
         )}
@@ -324,7 +328,7 @@ const MePage = () => {
             <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-bold text-primary">
               ✓
             </span>
-            <span>{successMessage}</span>
+            <span>{t(successMessage)}</span>
           </div>
         )}
 

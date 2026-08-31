@@ -1,18 +1,16 @@
 package org.jakub.backendapi.mappers;
 
 import org.jakub.backendapi.dto.RecipeDto;
-import org.jakub.backendapi.dto.RecipeIngredientDto;
 import org.jakub.backendapi.dto.RecipeNutritionDto;
 import org.jakub.backendapi.dto.RecipeResponseDto;
 import org.jakub.backendapi.entities.Recipe;
-import org.jakub.backendapi.entities.RecipeIngredient;
 import org.jakub.backendapi.entities.User;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = RecipeIngredientMapper.class)
 public interface RecipeMapper {
     @Mapping(target = "ingredients", source = "recipeIngredients")
     @Mapping(target = "instructions", source = "instructions")
@@ -35,9 +33,6 @@ public interface RecipeMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     Recipe toRecipe(RecipeDto recipeDto);
-
-    @Mapping(source = "ingredient.name", target = "name")
-    RecipeIngredientDto recipeIngredientToRecipeIngredientDto(RecipeIngredient recipeIngredient);
 
     @AfterMapping
     default void removeEmptyNutrition(@MappingTarget RecipeDto recipeDto) {

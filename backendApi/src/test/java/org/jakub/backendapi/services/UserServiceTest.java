@@ -35,11 +35,43 @@ public class UserServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private RecipePlanLimitService recipePlanLimitService;
+
     private UserService userService;
 
     @BeforeEach
     void setUp() {
-        userService = new UserService(userRepository, userMapper, passwordEncoder, null);
+        userService = new UserService(userRepository, userMapper, passwordEncoder, recipePlanLimitService);
+    }
+
+    @Test
+    void reserveRecipeGenerationChecksAndConsumesTheLimitUnderOneLock() {
+        User user = new User();
+        user.setEmail("cook@example.com");
+        user.setDailyRecipeCount(2);
+        user.setLastRecipeResetDate(java.time.LocalDate.now());
+        when(userRepository.findByEmailForUpdate("cook@example.com")).thenReturn(Optional.of(user));
+
+        userService.reserveRecipeGeneration("cook@example.com");
+
+        verify(recipePlanLimitService).assertCanCreateRecipe(user);
+        assertEquals(3, user.getDailyRecipeCount());
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void releaseRecipeGenerationCompensatesAFailedAiRequest() {
+        User user = new User();
+        user.setEmail("cook@example.com");
+        user.setDailyRecipeCount(3);
+        user.setLastRecipeResetDate(java.time.LocalDate.now());
+        when(userRepository.findByEmailForUpdate("cook@example.com")).thenReturn(Optional.of(user));
+
+        userService.releaseRecipeGeneration("cook@example.com");
+
+        assertEquals(2, user.getDailyRecipeCount());
+        verify(userRepository).save(user);
     }
 
     @Test

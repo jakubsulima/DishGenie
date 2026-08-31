@@ -7,7 +7,9 @@ import org.jakub.backendapi.config.JwtUtils;
 import org.jakub.backendapi.config.UserAuthProvider;
 import org.jakub.backendapi.dto.CredentialsDto;
 import org.jakub.backendapi.dto.ErrorDto;
+import org.jakub.backendapi.dto.ForgotPasswordDto;
 import org.jakub.backendapi.dto.OAuthLoginDto;
+import org.jakub.backendapi.dto.ResetPasswordDto;
 import org.jakub.backendapi.dto.SignUpDto;
 import org.jakub.backendapi.dto.UserDto;
 import org.jakub.backendapi.exceptions.AppException;
@@ -15,6 +17,7 @@ import org.jakub.backendapi.services.OAuthService;
 import org.jakub.backendapi.services.PostHogService;
 import org.jakub.backendapi.services.UserService;
 import org.jakub.backendapi.services.RateLimitService;
+import org.jakub.backendapi.services.PasswordResetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,16 +43,48 @@ public class AuthController {
     private final OAuthService oAuthService;
     private final PostHogService postHogService;
     private final RateLimitService rateLimitService;
+    private final PasswordResetService passwordResetService;
 
     @Value("${app.security.trusted-proxies:127.0.0.1,0:0:0:0:0:0:0:1}")
     private String trustedProxyIps;
 
-    public AuthController(UserService userService, UserAuthProvider userAuthProvider, OAuthService oAuthService, PostHogService postHogService, RateLimitService rateLimitService) {
+    public AuthController(UserService userService, UserAuthProvider userAuthProvider, OAuthService oAuthService, PostHogService postHogService, RateLimitService rateLimitService, PasswordResetService passwordResetService) {
         this.userService = userService;
         this.userAuthProvider = userAuthProvider;
         this.oAuthService = oAuthService;
         this.postHogService = postHogService;
         this.rateLimitService = rateLimitService;
+        this.passwordResetService = passwordResetService;
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Map<String, String>> forgotPassword(
+            @Valid @RequestBody ForgotPasswordDto requestBody,
+            HttpServletRequest request) {
+        rateLimitService.assertAllowed(
+                "forgot-password_" + resolveClientIp(request),
+                5,
+                60 * 60 * 1000L,
+                "Too many password reset requests. Please try again later."
+        );
+        passwordResetService.requestReset(requestBody.email(), requestBody.locale());
+        return ResponseEntity.accepted().body(Map.of(
+                "message", "If an eligible account exists, a password reset link has been sent."
+        ));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Map<String, String>> resetPassword(
+            @Valid @RequestBody ResetPasswordDto requestBody,
+            HttpServletRequest request) {
+        rateLimitService.assertAllowed(
+                "reset-password_" + resolveClientIp(request),
+                10,
+                15 * 60 * 1000L,
+                "Too many password reset attempts. Please try again later."
+        );
+        passwordResetService.resetPassword(requestBody.token(), requestBody.password());
+        return ResponseEntity.ok(Map.of("message", "Password updated successfully."));
     }
 
     private String resolveClientIp(HttpServletRequest request) {
