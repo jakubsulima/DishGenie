@@ -6,6 +6,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+
+import java.util.UUID;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -15,12 +19,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(properties = {
-        "security.jwt.token.secret-key=integration-test-secret-key-at-least-32-characters",
         "oauth.google.client-id=test-client-id",
         "posthog.enabled=false"
 })
 @AutoConfigureMockMvc
 class SecurityRoutesIntegrationTest {
+
+    private static final String TEST_JWT_SECRET = UUID.randomUUID().toString() + UUID.randomUUID();
+
+    @DynamicPropertySource
+    static void registerTestProperties(DynamicPropertyRegistry registry) {
+        registry.add("security.jwt.token.secret-key", () -> TEST_JWT_SECRET);
+    }
 
     @Autowired
     private MockMvc mockMvc;

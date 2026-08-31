@@ -14,17 +14,24 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
+import java.util.UUID;
 
 @Testcontainers
 @SpringBootTest(properties = {
         "spring.flyway.enabled=true",
         "spring.jpa.hibernate.ddl-auto=validate",
         "spring.jpa.properties.hibernate.type.preferred_instant_jdbc_type=TIMESTAMP",
-        "security.jwt.token.secret-key=integration-test-secret-key-at-least-32-characters",
         "oauth.google.client-id=test-client-id",
         "posthog.enabled=false"
 })
 class DatabaseMigrationIT {
+
+    private static final String TEST_JWT_SECRET = UUID.randomUUID().toString() + UUID.randomUUID();
+
+    @DynamicPropertySource
+    static void registerTestProperties(DynamicPropertyRegistry registry) {
+        registry.add("security.jwt.token.secret-key", () -> TEST_JWT_SECRET);
+    }
 
     @Container
     static final PostgreSQLContainer<?> POSTGRES =

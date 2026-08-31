@@ -29,7 +29,7 @@
     "@zxing/browser": "^0.1.5",
     "@zxing/library": "^0.21.3",
     "axios": "^1.16.0",
-    "posthog-js": "1.365.3",
+    "posthog-js": "1.422.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.56.2",
