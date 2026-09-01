@@ -40,6 +40,10 @@ public class RecipeGenerationRequestDto {
     @Max(value = 5, message = "Recipe count must be between 1 and 5")
     private Integer count;
 
+    @Min(value = 1, message = "Servings must be between 1 and 100")
+    @Max(value = 100, message = "Servings must be between 1 and 100")
+    private Integer servings = 2;
+
     @NotNull(message = "Fridge policy is required")
     private FridgePolicy fridgePolicy = FridgePolicy.SUGGEST;
 
@@ -131,6 +135,18 @@ public class RecipeGenerationRequestDto {
 
     public void setCount(Integer count) {
         this.count = count;
+    }
+
+    public Integer servings() {
+        return servings == null ? 2 : servings;
+    }
+
+    public Integer getServings() {
+        return servings();
+    }
+
+    public void setServings(Integer servings) {
+        this.servings = servings;
     }
 
     public FridgePolicy fridgePolicy() {

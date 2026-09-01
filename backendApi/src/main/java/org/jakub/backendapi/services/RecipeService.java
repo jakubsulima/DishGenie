@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.jakub.backendapi.dto.RecipeDto;
 import org.jakub.backendapi.dto.RecipeResponseDto;
 import org.jakub.backendapi.entities.Enums.Role;
+import org.jakub.backendapi.entities.Enums.RecipeVisibility;
 import org.jakub.backendapi.entities.Ingredient;
 import org.jakub.backendapi.entities.Recipe;
 import org.jakub.backendapi.entities.RecipeIngredient;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -63,25 +65,52 @@ public class RecipeService {
         if (!StringUtils.hasText(normalizedIdentifier)) {
             throw new AppException("Recipe not found", HttpStatus.NOT_FOUND);
         }
-
         if (NUMERIC_IDENTIFIER_PATTERN.matcher(normalizedIdentifier).matches()) {
             return getRecipeById(Long.parseLong(normalizedIdentifier));
         }
 
         String normalizedSlug = toRecipeSlug(normalizedIdentifier);
         String guessedName = normalizedSlug.replace('-', ' ');
-
         Recipe recipe = recipeRepository.findBySlugWithIngredients(normalizedSlug)
                 .or(() -> recipeRepository.findByNameIgnoreCaseWithIngredients(normalizedIdentifier))
                 .or(() -> recipeRepository.findByNameIgnoreCaseWithIngredients(guessedName))
                 .orElseThrow(() -> new AppException("Recipe not found", HttpStatus.NOT_FOUND));
-
         return toRecipeDto(recipe);
+    }
+
+    @Transactional
+    public RecipeDto getRecipeByIdentifier(String identifier, String requesterEmail) {
+        String normalizedIdentifier = identifier == null ? "" : identifier.trim();
+        if (!StringUtils.hasText(normalizedIdentifier)) {
+            throw new AppException("Recipe not found", HttpStatus.NOT_FOUND);
+        }
+
+        if (NUMERIC_IDENTIFIER_PATTERN.matcher(normalizedIdentifier).matches()) {
+            return toRecipeDto(
+                    findReadableRecipeById(Long.parseLong(normalizedIdentifier), requesterEmail),
+                    requesterEmail
+            );
+        }
+
+        String normalizedSlug = toRecipeSlug(normalizedIdentifier);
+        String guessedName = normalizedSlug.replace('-', ' ');
+
+        Recipe recipe = findReadableRecipeBySlugOrName(normalizedSlug, normalizedIdentifier, guessedName, requesterEmail);
+
+        return toRecipeDto(recipe, requesterEmail);
     }
 
     @Transactional
     public Page<RecipeDto> getAllRecipes(Pageable pageable) {
         Page<Long> recipeIds = recipeRepository.findRecipeIds(pageable);
+        return mapRecipeIdPage(recipeIds, pageable);
+    }
+
+    @Transactional
+    public Page<RecipeDto> getAllRecipes(Pageable pageable, String requesterEmail) {
+        Page<Long> recipeIds = isAdmin(requesterEmail)
+                ? recipeRepository.findRecipeIds(pageable)
+                : recipeRepository.findRecipeIdsByVisibility(RecipeVisibility.PUBLIC, pageable);
         return mapRecipeIdPage(recipeIds, pageable);
     }
 
@@ -100,11 +129,20 @@ public class RecipeService {
         }
 
         Recipe recipe = recipeMapper.toRecipeWithUser(recipeDto, user);
+        recipe.setVisibility(RecipeVisibility.PRIVATE);
+        if (recipeDto.getServings() > 0) {
+            recipe.setServings(recipeDto.getServings());
+        }
 
         List<RecipeIngredient> recipeIngredients = getRecipeIngredients(recipeDto, recipe);
 
         recipe.setRecipeIngredients(recipeIngredients);
         return recipeRepository.save(recipe);
+    }
+
+    @Transactional
+    public RecipeDto saveRecipeDto(RecipeDto recipeDto, String login) {
+        return toRecipeDto(saveRecipe(recipeDto, login), login);
     }
 
     public Page<RecipeDto> findRecipesByUserId(long userId, Pageable pageable, String requesterEmail) {
@@ -129,6 +167,12 @@ public class RecipeService {
         Recipe recipe = recipeRepository.findByNameIgnoreCaseWithIngredients(name)
                 .orElseThrow(() -> new AppException("Recipe not found", HttpStatus.NOT_FOUND));
         return toRecipeDto(recipe);
+    }
+
+    @Transactional
+    public RecipeDto getRecipeByName(String name, String requesterEmail) {
+        Recipe recipe = findReadableRecipeBySlugOrName("", name, name, requesterEmail);
+        return toRecipeDto(recipe, requesterEmail);
     }
 
     @Transactional
@@ -166,6 +210,9 @@ public class RecipeService {
         recipe.setName(recipeDto.getName());
         recipe.setDescription(recipeDto.getDescription());
         recipe.setTimeToPrepare(recipeDto.getTimeToPrepare());
+        if (recipeDto.getServings() > 0) {
+            recipe.setServings(recipeDto.getServings());
+        }
         recipe.setInstructions(recipeDto.getInstructions() == null ? List.of() : recipeDto.getInstructions());
         applyNutrition(recipeDto, recipe);
 
@@ -283,8 +330,166 @@ public class RecipeService {
     }
 
     @Transactional
+    public Page<RecipeDto> searchRecipes(String searchTerm, Pageable pageable, String requesterEmail) {
+        String normalizedSearchTerm = searchTerm == null ? "" : searchTerm.trim();
+        if (!StringUtils.hasText(normalizedSearchTerm)) {
+            return Page.empty(pageable);
+        }
+
+        Optional<User> requester = StringUtils.hasText(requesterEmail)
+                ? userRepository.findByEmail(requesterEmail)
+                : Optional.empty();
+        Page<Long> recipeIds;
+        if (requester.map(user -> user.getRole() == Role.ADMIN).orElse(false)) {
+            recipeIds = recipeRepository.searchRecipeIds(normalizedSearchTerm, pageable);
+        } else if (requester.isPresent()) {
+            recipeIds = recipeRepository.searchRecipeIdsByUser(
+                    normalizedSearchTerm,
+                    requester.get(),
+                    pageable
+            );
+        } else {
+            recipeIds = recipeRepository.searchRecipeIdsByVisibility(
+                    normalizedSearchTerm,
+                    RecipeVisibility.PUBLIC,
+                    pageable
+            );
+        }
+        return mapRecipeIdPage(recipeIds, pageable);
+    }
+
+    @Transactional
+    public RecipeDto publishRecipe(Long id, String requesterEmail) {
+        Recipe recipe = findRecipeForMutation(id, requesterEmail);
+        recipe.setVisibility(RecipeVisibility.PUBLIC);
+        return toRecipeDto(recipeRepository.save(recipe), requesterEmail);
+    }
+
+    @Transactional
+    public RecipeDto unpublishRecipe(Long id, String requesterEmail) {
+        Recipe recipe = findRecipeForMutation(id, requesterEmail);
+        recipe.setVisibility(RecipeVisibility.PRIVATE);
+        return toRecipeDto(recipeRepository.save(recipe), requesterEmail);
+    }
+
+    @Transactional
     public List<RecipeSitemapEntry> getPublicRecipeSitemapEntries() {
-        return recipeRepository.findAllSitemapEntries();
+        return recipeRepository.findPublicSitemapEntries(RecipeVisibility.PUBLIC);
+    }
+
+    private Recipe findReadableRecipeById(Long id, String requesterEmail) {
+        Optional<Recipe> publicRecipe = recipeRepository.findByIdWithIngredientsAndVisibility(
+                id,
+                RecipeVisibility.PUBLIC
+        );
+        if (publicRecipe.isPresent()) {
+            return publicRecipe.get();
+        }
+
+        if (canReadPrivateRecipes(requesterEmail, id)) {
+            return recipeRepository.findByIdWithIngredients(id)
+                    .orElseThrow(() -> new AppException("Recipe not found", HttpStatus.NOT_FOUND));
+        }
+
+        throw new AppException("Recipe not found", HttpStatus.NOT_FOUND);
+    }
+
+    private Recipe findReadableRecipeBySlugOrName(
+            String slug,
+            String requestedName,
+            String guessedName,
+            String requesterEmail
+    ) {
+        Optional<Recipe> publicRecipe = StringUtils.hasText(slug)
+                ? recipeRepository.findBySlugWithIngredientsAndVisibility(slug, RecipeVisibility.PUBLIC)
+                : Optional.empty();
+        if (publicRecipe.isEmpty()) {
+            publicRecipe = recipeRepository.findByNameIgnoreCaseWithIngredientsAndVisibility(
+                    requestedName,
+                    RecipeVisibility.PUBLIC
+            );
+        }
+        if (publicRecipe.isEmpty() && !Objects.equals(requestedName, guessedName)) {
+            publicRecipe = recipeRepository.findByNameIgnoreCaseWithIngredientsAndVisibility(
+                    guessedName,
+                    RecipeVisibility.PUBLIC
+            );
+        }
+        if (publicRecipe.isPresent()) {
+            return publicRecipe.get();
+        }
+
+        if (StringUtils.hasText(requesterEmail)) {
+            User requester = userRepository.findByEmail(requesterEmail).orElse(null);
+            if (requester != null) {
+                Optional<Recipe> privateRecipe = StringUtils.hasText(slug)
+                        ? requester.getRole() == Role.ADMIN
+                            ? recipeRepository.findBySlugWithIngredients(slug)
+                            : recipeRepository.findBySlugWithIngredientsAndUser(slug, requester)
+                        : requester.getRole() == Role.ADMIN
+                            ? recipeRepository.findByNameIgnoreCaseWithIngredients(requestedName)
+                            : recipeRepository.findByNameIgnoreCaseWithIngredientsAndUser(requestedName, requester);
+                if (privateRecipe.isPresent()
+                        && (requester.getRole() == Role.ADMIN
+                        || Objects.equals(privateRecipe.get().getUser().getId(), requester.getId()))) {
+                    return privateRecipe.get();
+                }
+            }
+        }
+
+        throw new AppException("Recipe not found", HttpStatus.NOT_FOUND);
+    }
+
+    private Recipe findRecipeForMutation(Long id, String requesterEmail) {
+        Recipe recipe = recipeRepository.findById(id)
+                .orElseThrow(() -> new AppException("Recipe not found", HttpStatus.NOT_FOUND));
+        User requester = userRepository.findByEmail(requesterEmail)
+                .orElseThrow(() -> new AppException("User not found", HttpStatus.NOT_FOUND));
+        if (requester.getRole() != Role.ADMIN && !Objects.equals(recipe.getUser().getId(), requester.getId())) {
+            throw new AppException("You are not the owner of this recipe", HttpStatus.FORBIDDEN);
+        }
+        return recipe;
+    }
+
+    private boolean canReadPrivateRecipes(String requesterEmail, Long recipeId) {
+        if (!StringUtils.hasText(requesterEmail)) {
+            return false;
+        }
+        User requester = userRepository.findByEmail(requesterEmail).orElse(null);
+        if (requester == null) {
+            return false;
+        }
+        if (requester.getRole() == Role.ADMIN) {
+            return true;
+        }
+        return recipeRepository.findById(recipeId)
+                .map(recipe -> Objects.equals(recipe.getUser().getId(), requester.getId()))
+                .orElse(false);
+    }
+
+    private boolean isAdmin(String requesterEmail) {
+        return StringUtils.hasText(requesterEmail)
+                && userRepository.findByEmail(requesterEmail)
+                .map(user -> user.getRole() == Role.ADMIN)
+                .orElse(false);
+    }
+
+    private RecipeDto toRecipeDto(Recipe recipe, String requesterEmail) {
+        RecipeDto recipeDto = toRecipeDto(recipe);
+        recipeDto.setCanManage(canManageRecipe(recipe, requesterEmail));
+        return recipeDto;
+    }
+
+    private boolean canManageRecipe(Recipe recipe, String requesterEmail) {
+        if (!StringUtils.hasText(requesterEmail)) {
+            return false;
+        }
+        if (recipe.getUser() != null && Objects.equals(recipe.getUser().getEmail(), requesterEmail)) {
+            return true;
+        }
+        return userRepository.findByEmail(requesterEmail)
+                .map(requester -> requester.getRole() == Role.ADMIN)
+                .orElse(false);
     }
 
     private Page<RecipeDto> mapRecipeIdPage(Page<Long> recipeIds, Pageable pageable) {

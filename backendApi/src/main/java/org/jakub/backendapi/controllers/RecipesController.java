@@ -37,6 +37,7 @@ import io.micrometer.core.instrument.Timer;
 @RestController
 public class RecipesController {
     private static final Logger log = LoggerFactory.getLogger(RecipesController.class);
+    private static final int PUBLIC_RECIPE_PAGE_SIZE = 10;
 
     private final RecipeService recipeService;
     private final UserService userService;
@@ -65,12 +66,12 @@ public class RecipesController {
     @PostMapping("/addRecipe")
     public ResponseEntity<RecipeDto> addRecipe(@Valid @RequestBody RecipeDto recipeDto) {
         String userEmail = getAuthenticatedUserEmail();
-        recipeService.saveRecipe(recipeDto, userEmail);
+        RecipeDto savedRecipe = recipeService.saveRecipeDto(recipeDto, userEmail);
         captureUserEvent(userEmail, "recipe_saved", Map.of(
                 "ingredientCount", recipeDto.getIngredients() != null ? recipeDto.getIngredients().size() : 0,
                 "instructionCount", recipeDto.getInstructions() != null ? recipeDto.getInstructions().size() : 0
         ));
-        return ResponseEntity.ok(recipeDto);
+        return ResponseEntity.ok(savedRecipe);
     }
 
     @GetMapping("/getAllRecipes")
@@ -78,28 +79,36 @@ public class RecipesController {
         Pageable effectivePageable = p;
         String authenticatedUserEmail = getAuthenticatedUserEmail();
         if (!StringUtils.hasText(authenticatedUserEmail)) {
-            effectivePageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
+            effectivePageable = publicRecipePageable();
         }
 
-        Page<RecipeDto> recipes = recipeService.getAllRecipes(effectivePageable);
+        Page<RecipeDto> recipes = recipeService.getAllRecipes(effectivePageable, authenticatedUserEmail);
         return ResponseEntity.ok(recipes);
     }
 
     @GetMapping("/searchRecipes/{searchTerm}")
     public ResponseEntity<Page<RecipeDto>> searchRecipes(@PathVariable String searchTerm, Pageable p) {
-        Page<RecipeDto> recipes = recipeService.searchRecipes(searchTerm, p);
+        String authenticatedUserEmail = getAuthenticatedUserEmail();
+        Pageable effectivePageable = StringUtils.hasText(authenticatedUserEmail)
+                ? p
+                : publicRecipePageable();
+        Page<RecipeDto> recipes = recipeService.searchRecipes(
+                searchTerm,
+                effectivePageable,
+                authenticatedUserEmail
+        );
         return ResponseEntity.ok(recipes);
     }
 
     @GetMapping("/getRecipe/{identifier}")
     public ResponseEntity<RecipeDto> getRecipe(@PathVariable String identifier) {
-        RecipeDto recipe = recipeService.getRecipeByIdentifier(identifier);
+        RecipeDto recipe = recipeService.getRecipeByIdentifier(identifier, getAuthenticatedUserEmail());
         return ResponseEntity.ok(recipe);
     }
 
     @GetMapping("/getRecipeByName/{name}")
     public ResponseEntity<RecipeDto> getRecipeByName(@PathVariable String name) {
-        RecipeDto recipe = recipeService.getRecipeByName(name);
+        RecipeDto recipe = recipeService.getRecipeByName(name, getAuthenticatedUserEmail());
         return ResponseEntity.ok(recipe);
     }
 
@@ -119,6 +128,16 @@ public class RecipesController {
     public ResponseEntity<RecipeDto> updateRecipe(@PathVariable Long id, @Valid @RequestBody RecipeDto recipeDto) {
         RecipeDto updatedRecipe = recipeService.updateRecipe(id, recipeDto, getAuthenticatedUserEmail());
         return ResponseEntity.ok(updatedRecipe);
+    }
+
+    @PostMapping("/publishRecipe/{id}")
+    public ResponseEntity<RecipeDto> publishRecipe(@PathVariable Long id) {
+        return ResponseEntity.ok(recipeService.publishRecipe(id, getAuthenticatedUserEmail()));
+    }
+
+    @PostMapping("/unpublishRecipe/{id}")
+    public ResponseEntity<RecipeDto> unpublishRecipe(@PathVariable Long id) {
+        return ResponseEntity.ok(recipeService.unpublishRecipe(id, getAuthenticatedUserEmail()));
     }
 
     // Admin Recipe Endpoints
@@ -292,6 +311,14 @@ public class RecipesController {
         }
 
         return null;
+    }
+
+    private Pageable publicRecipePageable() {
+        return PageRequest.of(
+                0,
+                PUBLIC_RECIPE_PAGE_SIZE,
+                Sort.by(Sort.Direction.DESC, "id")
+        );
     }
 
     private boolean isFromTrustedProxy(String remoteAddr) {

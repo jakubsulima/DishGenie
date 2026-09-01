@@ -4,6 +4,8 @@ import org.jakub.backendapi.dto.RecipeDto;
 import org.jakub.backendapi.dto.RecipeIngredientDto;
 import org.jakub.backendapi.dto.RecipeNutritionDto;
 import org.jakub.backendapi.entities.Enums.Role;
+import org.jakub.backendapi.entities.Enums.RecipeVisibility;
+import org.jakub.backendapi.entities.Ingredient;
 import org.jakub.backendapi.entities.Recipe;
 import org.jakub.backendapi.entities.RecipeIngredient;
 import org.jakub.backendapi.entities.User;
@@ -27,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
@@ -124,6 +127,303 @@ class RecipeServiceTest {
         assertEquals("Berry Bliss Cottage Bowl", result.getName());
         verify(recipeRepository).findBySlugWithIngredients("berry-bliss-cottage-bowl");
         verify(recipeRepository, never()).findByIdWithIngredients(9L);
+    }
+
+    @Test
+    void getRecipeByIdentifier_shouldHidePrivateRecipeFromGuests() {
+        when(recipeRepository.findByIdWithIngredientsAndVisibility(42L, RecipeVisibility.PUBLIC))
+                .thenReturn(Optional.empty());
+
+        AppException exception = assertThrows(
+                AppException.class,
+                () -> recipeService.getRecipeByIdentifier("42", null)
+        );
+
+        assertEquals("Recipe not found", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getCode());
+        verify(recipeRepository, never()).findByIdWithIngredients(42L);
+    }
+
+    @Test
+    void getRecipeByIdentifier_shouldAllowOwnerToReadPrivateRecipe() {
+        User owner = new User();
+        owner.setId(7L);
+        owner.setEmail("owner@example.com");
+        owner.setRole(Role.USER);
+
+        Recipe recipe = new Recipe();
+        recipe.setId(42L);
+        recipe.setName("Private soup");
+        recipe.setUser(owner);
+        recipe.setVisibility(RecipeVisibility.PRIVATE);
+
+        RecipeDto recipeDto = new RecipeDto();
+        recipeDto.setId(42L);
+        recipeDto.setName("Private soup");
+
+        when(recipeRepository.findByIdWithIngredientsAndVisibility(42L, RecipeVisibility.PUBLIC))
+                .thenReturn(Optional.empty());
+        when(userRepository.findByEmail("owner@example.com")).thenReturn(Optional.of(owner));
+        when(recipeRepository.findById(42L)).thenReturn(Optional.of(recipe));
+        when(recipeRepository.findByIdWithIngredients(42L)).thenReturn(Optional.of(recipe));
+        when(recipeMapper.toRecipeDto(recipe)).thenReturn(recipeDto);
+
+        RecipeDto result = recipeService.getRecipeByIdentifier("42", "owner@example.com");
+
+        assertEquals("Private soup", result.getName());
+        assertTrue(result.isCanManage());
+    }
+
+    @Test
+    void getRecipeByIdentifier_shouldHidePrivateRecipeFromAnotherUser() {
+        User owner = new User();
+        owner.setId(7L);
+        owner.setEmail("owner@example.com");
+        owner.setRole(Role.USER);
+
+        User requester = new User();
+        requester.setId(8L);
+        requester.setEmail("requester@example.com");
+        requester.setRole(Role.USER);
+
+        Recipe recipe = new Recipe();
+        recipe.setId(42L);
+        recipe.setUser(owner);
+        recipe.setVisibility(RecipeVisibility.PRIVATE);
+
+        when(recipeRepository.findByIdWithIngredientsAndVisibility(42L, RecipeVisibility.PUBLIC))
+                .thenReturn(Optional.empty());
+        when(userRepository.findByEmail("requester@example.com")).thenReturn(Optional.of(requester));
+        when(recipeRepository.findById(42L)).thenReturn(Optional.of(recipe));
+
+        AppException exception = assertThrows(
+                AppException.class,
+                () -> recipeService.getRecipeByIdentifier("42", "requester@example.com")
+        );
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getCode());
+        verify(recipeRepository, never()).findByIdWithIngredients(42L);
+    }
+
+    @Test
+    void getRecipeByIdentifier_shouldAllowAdminToReadPrivateRecipe() {
+        User admin = new User();
+        admin.setId(1L);
+        admin.setEmail("admin@example.com");
+        admin.setRole(Role.ADMIN);
+
+        Recipe recipe = new Recipe();
+        recipe.setId(42L);
+        recipe.setVisibility(RecipeVisibility.PRIVATE);
+
+        RecipeDto recipeDto = new RecipeDto();
+        recipeDto.setId(42L);
+
+        when(recipeRepository.findByIdWithIngredientsAndVisibility(42L, RecipeVisibility.PUBLIC))
+                .thenReturn(Optional.empty());
+        when(userRepository.findByEmail("admin@example.com")).thenReturn(Optional.of(admin));
+        when(recipeRepository.findByIdWithIngredients(42L)).thenReturn(Optional.of(recipe));
+        when(recipeMapper.toRecipeDto(recipe)).thenReturn(recipeDto);
+
+        RecipeDto result = recipeService.getRecipeByIdentifier("42", "admin@example.com");
+
+        assertEquals(42L, result.getId());
+        assertTrue(result.isCanManage());
+    }
+
+    @Test
+    void getRecipeByIdentifier_shouldNotGrantManagementForAnotherUsersPublicRecipe() {
+        User owner = new User();
+        owner.setId(7L);
+        owner.setEmail("owner@example.com");
+
+        User requester = new User();
+        requester.setId(8L);
+        requester.setEmail("requester@example.com");
+        requester.setRole(Role.USER);
+
+        Recipe recipe = new Recipe();
+        recipe.setId(42L);
+        recipe.setUser(owner);
+        recipe.setVisibility(RecipeVisibility.PUBLIC);
+
+        RecipeDto recipeDto = new RecipeDto();
+        recipeDto.setId(42L);
+        when(recipeRepository.findByIdWithIngredientsAndVisibility(42L, RecipeVisibility.PUBLIC))
+                .thenReturn(Optional.of(recipe));
+        when(userRepository.findByEmail("requester@example.com")).thenReturn(Optional.of(requester));
+        when(recipeMapper.toRecipeDto(recipe)).thenReturn(recipeDto);
+
+        RecipeDto result = recipeService.getRecipeByIdentifier("42", "requester@example.com");
+
+        assertEquals(42L, result.getId());
+        assertFalse(result.isCanManage());
+    }
+
+    @Test
+    void publishRecipe_shouldRequireOwnerAndSetPublicVisibility() {
+        User owner = new User();
+        owner.setId(7L);
+        owner.setEmail("owner@example.com");
+        owner.setRole(Role.USER);
+        Recipe recipe = new Recipe();
+        recipe.setId(42L);
+        recipe.setUser(owner);
+        recipe.setVisibility(RecipeVisibility.PRIVATE);
+        RecipeDto result = new RecipeDto();
+
+        when(recipeRepository.findById(42L)).thenReturn(Optional.of(recipe));
+        when(userRepository.findByEmail("owner@example.com")).thenReturn(Optional.of(owner));
+        when(recipeRepository.save(recipe)).thenReturn(recipe);
+        when(recipeMapper.toRecipeDto(recipe)).thenReturn(result);
+
+        recipeService.publishRecipe(42L, "owner@example.com");
+
+        assertEquals(RecipeVisibility.PUBLIC, recipe.getVisibility());
+        verify(recipeRepository).save(recipe);
+    }
+
+    @Test
+    void publishRecipe_shouldRejectAnotherUser() {
+        User owner = new User();
+        owner.setId(7L);
+        owner.setEmail("owner@example.com");
+        owner.setRole(Role.USER);
+        User requester = new User();
+        requester.setId(8L);
+        requester.setEmail("requester@example.com");
+        requester.setRole(Role.USER);
+
+        Recipe recipe = new Recipe();
+        recipe.setId(42L);
+        recipe.setUser(owner);
+        recipe.setVisibility(RecipeVisibility.PRIVATE);
+
+        when(recipeRepository.findById(42L)).thenReturn(Optional.of(recipe));
+        when(userRepository.findByEmail("requester@example.com")).thenReturn(Optional.of(requester));
+
+        AppException exception = assertThrows(
+                AppException.class,
+                () -> recipeService.publishRecipe(42L, "requester@example.com")
+        );
+
+        assertEquals(HttpStatus.FORBIDDEN, exception.getCode());
+        assertEquals(RecipeVisibility.PRIVATE, recipe.getVisibility());
+        verify(recipeRepository, never()).save(recipe);
+    }
+
+    @Test
+    void publishRecipe_shouldAllowAdmin() {
+        User admin = new User();
+        admin.setId(1L);
+        admin.setEmail("admin@example.com");
+        admin.setRole(Role.ADMIN);
+
+        Recipe recipe = new Recipe();
+        recipe.setId(42L);
+        recipe.setVisibility(RecipeVisibility.PRIVATE);
+
+        when(recipeRepository.findById(42L)).thenReturn(Optional.of(recipe));
+        when(userRepository.findByEmail("admin@example.com")).thenReturn(Optional.of(admin));
+        when(recipeRepository.save(recipe)).thenReturn(recipe);
+        when(recipeMapper.toRecipeDto(recipe)).thenReturn(new RecipeDto());
+
+        recipeService.publishRecipe(42L, "admin@example.com");
+
+        assertEquals(RecipeVisibility.PUBLIC, recipe.getVisibility());
+        verify(recipeRepository).save(recipe);
+    }
+
+    @Test
+    void saveRecipeDto_shouldReturnPersistedPrivateVisibility() {
+        User owner = new User();
+        owner.setId(7L);
+        owner.setEmail("owner@example.com");
+        owner.setRole(Role.USER);
+
+        RecipeDto request = new RecipeDto();
+        request.setName("Private recipe");
+        request.setVisibility(RecipeVisibility.PUBLIC);
+        request.setIngredients(List.of(new RecipeIngredientDto("Egg", 2, "PIECES")));
+        request.setInstructions(List.of("Cook"));
+
+        Recipe recipe = new Recipe();
+        recipe.setId(42L);
+        recipe.setUser(owner);
+        RecipeDto persistedDto = new RecipeDto();
+        persistedDto.setId(42L);
+        persistedDto.setVisibility(RecipeVisibility.PRIVATE);
+
+        Ingredient egg = new Ingredient(9L, "Egg", List.of());
+        when(userRepository.findByEmailForUpdate("owner@example.com")).thenReturn(Optional.of(owner));
+        when(recipeRepository.findByNameAndUser("Private recipe", owner)).thenReturn(Optional.empty());
+        when(recipeMapper.toRecipeWithUser(request, owner)).thenReturn(recipe);
+        when(ingredientRepository.findAllByLowerNameIn(any())).thenReturn(List.of(egg));
+        when(recipeRepository.save(recipe)).thenReturn(recipe);
+        when(recipeMapper.toRecipeDto(recipe)).thenReturn(persistedDto);
+
+        RecipeDto result = recipeService.saveRecipeDto(request, "owner@example.com");
+
+        assertEquals(RecipeVisibility.PRIVATE, recipe.getVisibility());
+        assertEquals(RecipeVisibility.PRIVATE, result.getVisibility());
+        assertEquals(42L, result.getId());
+    }
+
+    @Test
+    void getAllRecipes_shouldReturnOnlyPublicRecipesForRegularUsers() {
+        PageRequest pageable = PageRequest.of(0, 10);
+        User user = new User();
+        user.setRole(Role.USER);
+        user.setEmail("user@example.com");
+        Page<Long> recipeIds = new PageImpl<>(List.of(3L), pageable, 1);
+
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
+        when(recipeRepository.findRecipeIdsByVisibility(RecipeVisibility.PUBLIC, pageable)).thenReturn(recipeIds);
+
+        recipeService.getAllRecipes(pageable, "user@example.com");
+
+        verify(recipeRepository).findRecipeIdsByVisibility(RecipeVisibility.PUBLIC, pageable);
+        verify(recipeRepository, never()).findRecipeIds(pageable);
+    }
+
+    @Test
+    void getAllRecipes_shouldReturnAllRecipesForAdmins() {
+        PageRequest pageable = PageRequest.of(0, 10);
+        User admin = new User();
+        admin.setRole(Role.ADMIN);
+        admin.setEmail("admin@example.com");
+        Page<Long> recipeIds = new PageImpl<>(List.of(), pageable, 0);
+
+        when(userRepository.findByEmail("admin@example.com")).thenReturn(Optional.of(admin));
+        when(recipeRepository.findRecipeIds(pageable)).thenReturn(recipeIds);
+
+        recipeService.getAllRecipes(pageable, "admin@example.com");
+
+        verify(recipeRepository).findRecipeIds(pageable);
+        verify(recipeRepository, never()).findRecipeIdsByVisibility(RecipeVisibility.PUBLIC, pageable);
+    }
+
+    @Test
+    void searchRecipes_shouldSearchTheRegularUsersOwnCollection() {
+        PageRequest pageable = PageRequest.of(0, 10);
+        User user = new User();
+        user.setId(7L);
+        user.setRole(Role.USER);
+        user.setEmail("user@example.com");
+        Page<Long> recipeIds = new PageImpl<>(List.of(), pageable, 0);
+
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
+        when(recipeRepository.searchRecipeIdsByUser("pasta", user, pageable)).thenReturn(recipeIds);
+
+        recipeService.searchRecipes("pasta", pageable, "user@example.com");
+
+        verify(recipeRepository).searchRecipeIdsByUser("pasta", user, pageable);
+        verify(recipeRepository, never()).searchRecipeIdsByVisibility(
+                "pasta",
+                RecipeVisibility.PUBLIC,
+                pageable
+        );
+        verify(recipeRepository, never()).searchRecipeIds("pasta", pageable);
     }
 
     @Test
@@ -252,5 +552,6 @@ class RecipeServiceTest {
         assertEquals(20.0, recipe.getNutritionProtein());
         assertEquals(30.0, recipe.getNutritionCarbs());
         assertEquals(10.0, recipe.getNutritionFats());
+        assertEquals(2, recipe.getServings());
     }
 }

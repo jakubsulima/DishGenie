@@ -2,15 +2,18 @@ package org.jakub.backendapi.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jakub.backendapi.dto.ShoppingListGenerationItemDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jakub.backendapi.dto.FridgeIngredientDto;
+import org.jakub.backendapi.dto.RecipeIngredientDto;
 import org.jakub.backendapi.dto.RecipeGenerationRequestDto;
+import org.jakub.backendapi.dto.ShoppingListGenerationItemDto;
 import org.jakub.backendapi.dto.UserPreferencesDto;
 import org.jakub.backendapi.entities.Enums.Unit;
 import org.jakub.backendapi.entities.Enums.FridgePolicy;
 import org.jakub.backendapi.exceptions.AppException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,9 +36,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -79,9 +83,16 @@ public class GeminiService {
 
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate;
+    private final ShoppingListCoverageService shoppingListCoverageService;
 
     public GeminiService(ObjectMapper objectMapper) {
+        this(objectMapper, new ShoppingListCoverageService());
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public GeminiService(ObjectMapper objectMapper, ShoppingListCoverageService shoppingListCoverageService) {
         this.objectMapper = objectMapper;
+        this.shoppingListCoverageService = shoppingListCoverageService;
 
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(GEMINI_CONNECT_TIMEOUT_MS);
@@ -111,13 +122,26 @@ public class GeminiService {
                 requestedLocale,
                 recipeCount
         );
-        return generateValidatedRecipeResponse(serverPrompt, recipeCount);
+        List<FridgeIngredientDto> coverageFridgeItems = fridgeItems == null
+                ? List.of()
+                : fridgeItems.stream().map(name -> new FridgeIngredientDto(null, name, null, null, null)).toList();
+        return generateValidatedRecipeResponse(
+                serverPrompt,
+                recipeCount,
+                coverageFridgeItems,
+                requestedLocale
+        );
     }
 
     public String generateRecipes(RecipeGenerationRequestDto request, UserPreferencesDto hardConstraints) {
         int recipeCount = normalizeRecipeCount(request.count());
         String serverPrompt = buildStructuredRecipeGenerationPrompt(request, hardConstraints, recipeCount);
-        return generateValidatedRecipeResponse(serverPrompt, recipeCount);
+        return generateValidatedRecipeResponse(
+                serverPrompt,
+                recipeCount,
+                request.fridgeItems(),
+                request.locale()
+        );
     }
 
     String buildStructuredRecipeGenerationPrompt(
@@ -127,23 +151,44 @@ public class GeminiService {
     ) {
         List<FridgeIngredientDto> decisionFridgeItems = request.fridgePolicy() == FridgePolicy.IGNORE
                 ? List.of()
-                : request.fridgeItems();
+                : request.fridgeItems().stream()
+                .sorted(Comparator.comparing(
+                        FridgeIngredientDto::getExpirationDate,
+                        Comparator.nullsLast(Comparator.naturalOrder())
+                ))
+                .toList();
+        List<String> fridgeItemNames = decisionFridgeItems.stream()
+                .map(FridgeIngredientDto::getName)
+                .filter(StringUtils::hasText)
+                .map(String::trim)
+                .distinct()
+                .toList();
+        Set<Long> mandatoryFridgeItemIds = new LinkedHashSet<>(request.mustUseFridgeItemIds());
+        List<String> mustUseFridgeItemNames = decisionFridgeItems.stream()
+                .filter(item -> item.getId() != null && mandatoryFridgeItemIds.contains(item.getId()))
+                .map(FridgeIngredientDto::getName)
+                .filter(StringUtils::hasText)
+                .map(String::trim)
+                .distinct()
+                .toList();
         String legacyCompatiblePrompt = buildRecipeGenerationPrompt(
                 request.requestText(),
-                decisionFridgeItems.stream().map(FridgeIngredientDto::getName).toList(),
+                fridgeItemNames,
                 request.locale(),
-                recipeCount
+                recipeCount,
+                request.servings()
         );
 
         Map<String, Object> structuredContext = new LinkedHashMap<>();
         structuredContext.put("requestText", request.requestText());
         structuredContext.put("locale", request.locale());
         structuredContext.put("count", recipeCount);
+        structuredContext.put("servings", request.servings());
         structuredContext.put("fridgePolicy", request.fridgePolicy());
         structuredContext.put("shoppingPolicy", request.shoppingPolicy());
-        structuredContext.put("mustUseFridgeItemIds", request.mustUseFridgeItemIds());
         structuredContext.put("preferences", request.preferences());
-        structuredContext.put("fridgeItems", decisionFridgeItems);
+        structuredContext.put("fridgeItemNames", fridgeItemNames);
+        structuredContext.put("mustUseFridgeItemNames", mustUseFridgeItemNames);
 
         Map<String, Object> serverConstraints = new LinkedHashMap<>();
         serverConstraints.put("diets", hardConstraints == null ? List.of() : safeValues(hardConstraints.getDiets(), hardConstraints.getDiet()));
@@ -163,6 +208,13 @@ public class GeminiService {
                     <server-provided hard constraints>
                     %s
                     </server-provided hard constraints>
+
+                    Structured selection rules:
+                    - fridgeItemNames are ordered by expiration priority: earlier names expire sooner; items without dates are last.
+                    - PRIORITIZE means prefer naturally fitting fridge items with higher expiration priority, without breaking dietary or culinary coherence.
+                    - Every item in mustUseFridgeItemNames must be used when that list is not empty.
+                    - MINIMIZE means reduce shopping as a preference; it is not a promise that no shopping is needed.
+                    - The application will deterministically recalculate fridge coverage and missing ingredients after generation.
                     """.formatted(
                     objectMapper.writeValueAsString(structuredContext),
                     objectMapper.writeValueAsString(serverConstraints)
@@ -191,6 +243,16 @@ public class GeminiService {
             String requestedLocale,
             int recipeCount
     ) {
+        return buildRecipeGenerationPrompt(userRequest, fridgeItems, requestedLocale, recipeCount, 2);
+    }
+
+    private String buildRecipeGenerationPrompt(
+            String userRequest,
+            List<String> fridgeItems,
+            String requestedLocale,
+            int recipeCount,
+            int servings
+    ) {
         String responseLanguage = "pl".equalsIgnoreCase(requestedLocale) ? "Polish" : "English";
         List<String> safeFridgeItems = fridgeItems == null
                 ? List.of()
@@ -203,8 +265,8 @@ public class GeminiService {
                 : String.join(", ", safeFridgeItems);
 
         String responseSchema = recipeCount == 1
-                ? "{\"name\":string,\"description\":string,\"timeToPrepare\":string,\"ingredients\":[{\"name\":string,\"amount\":number,\"unit\":string}],\"instructions\":[string],\"nutrition\":{\"calories\":number,\"protein\":number,\"carbs\":number,\"fats\":number}}"
-                : "{\"recipes\":[{\"name\":string,\"description\":string,\"timeToPrepare\":string,\"ingredients\":[{\"name\":string,\"amount\":number,\"unit\":string}],\"instructions\":[string],\"nutrition\":{\"calories\":number,\"protein\":number,\"carbs\":number,\"fats\":number}}]}";
+                ? "{\"name\":string,\"description\":string,\"timeToPrepare\":string,\"servings\":number,\"ingredients\":[{\"name\":string,\"amount\":number,\"unit\":string}],\"instructions\":[string],\"nutrition\":{\"calories\":number,\"protein\":number,\"carbs\":number,\"fats\":number}}"
+                : "{\"recipes\":[{\"name\":string,\"description\":string,\"timeToPrepare\":string,\"servings\":number,\"ingredients\":[{\"name\":string,\"amount\":number,\"unit\":string}],\"instructions\":[string],\"nutrition\":{\"calories\":number,\"protein\":number,\"carbs\":number,\"fats\":number}}]}";
 
         return """
                 You are Dish Genie's professional culinary recommendation engine.
@@ -216,7 +278,7 @@ public class GeminiService {
                 - Return exactly %d recipe%s.
                 - Write every user-facing string in %s.
                 - Treat dietary restrictions, allergies, and disliked ingredients as hard constraints.
-                - Each recipe must be realistic, fully cookable, and contain 8-14 ingredients with realistic amounts for 2 servings.
+                - Each recipe must be realistic, fully cookable, and contain 8-14 ingredients with realistic amounts for %d servings.
                 - Use metric units (g, ml, kg) or whole counts.
                 - Include 6-9 clear instructions with sensory cues and time or temperature markers.
                 - Avoid vague steps such as "cook until done".
@@ -244,15 +306,21 @@ public class GeminiService {
                 recipeCount,
                 recipeCount == 1 ? "" : "s",
                 responseLanguage,
+                servings,
                 recipeCount > 1
                         ? "- Make recipes meaningfully different in strategy while preserving the same user intent; do not change the requested dish, cuisine, main ingredient, or base merely to create variety."
-                        : "",
+                : "",
                 userRequest,
                 fridgeContext
         );
     }
 
-    private String generateValidatedRecipeResponse(String recipePrompt, int expectedRecipeCount) {
+    private String generateValidatedRecipeResponse(
+            String recipePrompt,
+            int expectedRecipeCount,
+            List<FridgeIngredientDto> fridgeItems,
+            String requestedLocale
+    ) {
         if (!StringUtils.hasText(geminiApiKey)) {
             throw new AppException("Gemini API key is not configured on the server.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -268,7 +336,12 @@ public class GeminiService {
             throw new AppException("Gemini returned an empty recipe response.", HttpStatus.BAD_GATEWAY);
         }
 
-        return parseAndValidateGeneratedRecipeResponse(textResponse, expectedRecipeCount);
+        return parseAndValidateGeneratedRecipeResponse(
+                textResponse,
+                expectedRecipeCount,
+                fridgeItems,
+                requestedLocale
+        );
     }
 
     private int normalizeRecipeCount(Integer requestedCount) {
@@ -614,7 +687,12 @@ public class GeminiService {
         return cleaned;
     }
 
-    private String parseAndValidateGeneratedRecipeResponse(String payload, int expectedRecipeCount) {
+    private String parseAndValidateGeneratedRecipeResponse(
+            String payload,
+            int expectedRecipeCount,
+            List<FridgeIngredientDto> fridgeItems,
+            String requestedLocale
+    ) {
         JsonNode root;
         try {
             root = objectMapper.readTree(cleanJsonPayload(payload));
@@ -639,6 +717,8 @@ public class GeminiService {
             }
         }
 
+        addDeterministicFridgeCoverage(root, expectedRecipeCount, fridgeItems, requestedLocale);
+
         try {
             return objectMapper.writeValueAsString(root);
         } catch (IOException e) {
@@ -654,6 +734,7 @@ public class GeminiService {
         requireTextField(recipeNode, "name");
         requireTextField(recipeNode, "description");
         requireTextField(recipeNode, "timeToPrepare");
+        requireNumericField(recipeNode, "servings");
 
         JsonNode ingredientsNode = recipeNode.path("ingredients");
         if (!ingredientsNode.isArray() || ingredientsNode.isEmpty()) {
@@ -701,6 +782,129 @@ public class GeminiService {
         if (fieldNode == null || !fieldNode.isNumber()) {
             throw new AppException(INVALID_RECIPE_JSON_MESSAGE, HttpStatus.BAD_GATEWAY);
         }
+    }
+
+    private void addDeterministicFridgeCoverage(
+            JsonNode root,
+            int expectedRecipeCount,
+            List<FridgeIngredientDto> fridgeItems,
+            String requestedLocale
+    ) {
+        if (expectedRecipeCount == 1) {
+            addDeterministicFridgeCoverageToRecipe((ObjectNode) root, fridgeItems, requestedLocale);
+            return;
+        }
+
+        JsonNode recipesNode = root.path("recipes");
+        for (JsonNode recipeNode : recipesNode) {
+            addDeterministicFridgeCoverageToRecipe((ObjectNode) recipeNode, fridgeItems, requestedLocale);
+        }
+    }
+
+    private void addDeterministicFridgeCoverageToRecipe(
+            ObjectNode recipeNode,
+            List<FridgeIngredientDto> fridgeItems,
+            String requestedLocale
+    ) {
+        List<FridgeIngredientDto> safeFridgeItems = fridgeItems == null ? List.of() : fridgeItems;
+        List<RecipeIngredientDto> recipeIngredients = new ArrayList<>();
+        Set<String> fridgeNames = safeFridgeItems.stream()
+                .filter(item -> item != null && StringUtils.hasText(item.getName()))
+                .map(item -> normalizeIngredientName(item.getName()))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        JsonNode ingredientsNode = recipeNode.path("ingredients");
+        for (JsonNode ingredientNode : ingredientsNode) {
+            recipeIngredients.add(new RecipeIngredientDto(
+                    ingredientNode.path("name").asText(),
+                    ingredientNode.path("amount").asDouble(),
+                    ingredientNode.path("unit").asText()
+            ));
+        }
+
+        List<ShoppingListGenerationItemDto> missing = shoppingListCoverageService.findMissingItems(
+                recipeIngredients,
+                safeFridgeItems
+        );
+        Set<String> missingNames = missing.stream()
+                .map(ShoppingListGenerationItemDto::getName)
+                .map(this::normalizeIngredientName)
+                .collect(Collectors.toSet());
+
+        ArrayNode available = objectMapper.createArrayNode();
+        Set<String> addedAvailable = new LinkedHashSet<>();
+        for (RecipeIngredientDto ingredient : recipeIngredients) {
+            String normalizedName = normalizeIngredientName(ingredient.getName());
+            if (fridgeNames.contains(normalizedName) && addedAvailable.add(normalizedName)) {
+                available.add(ingredient.getName());
+            }
+        }
+
+        ObjectNode coverage = recipeNode.putObject("fridgeCoverage");
+        coverage.set("available", available);
+        coverage.set("missing", objectMapper.valueToTree(missing));
+        coverage.put("explanation", buildCoverageExplanation(
+                recipeIngredients,
+                safeFridgeItems,
+                missingNames,
+                requestedLocale
+        ));
+    }
+
+    String buildCoverageExplanation(
+            List<RecipeIngredientDto> recipeIngredients,
+            List<FridgeIngredientDto> fridgeItems,
+            Set<String> missingNames,
+            String requestedLocale
+    ) {
+        boolean polish = "pl".equalsIgnoreCase(requestedLocale);
+        String expiringName = null;
+        java.time.LocalDate expiringDate = null;
+        for (FridgeIngredientDto fridgeItem : fridgeItems) {
+            if (fridgeItem == null || fridgeItem.getExpirationDate() == null) {
+                continue;
+            }
+            boolean used = recipeIngredients.stream().anyMatch(ingredient ->
+                    normalizeIngredientName(ingredient.getName()).equals(normalizeIngredientName(fridgeItem.getName()))
+            );
+            if (used && (expiringDate == null || fridgeItem.getExpirationDate().isBefore(expiringDate))) {
+                expiringName = fridgeItem.getName();
+                expiringDate = fridgeItem.getExpirationDate();
+            }
+        }
+
+        if (expiringName != null) {
+            long days = java.time.temporal.ChronoUnit.DAYS.between(java.time.LocalDate.now(), expiringDate);
+            if (days == 1) {
+                return polish
+                        ? "Wykorzystuje " + expiringName + " — termin ważności upływa jutro."
+                        : "Uses " + expiringName + ", whose expiration date is tomorrow.";
+            }
+            if (days >= 0) {
+                return polish
+                        ? "Wykorzystuje " + expiringName + " — termin ważności upływa za " + days + " dni."
+                        : "Uses " + expiringName + ", which expires in " + days + " days.";
+            }
+        }
+
+        long availableCount = recipeIngredients.stream()
+                .map(RecipeIngredientDto::getName)
+                .map(this::normalizeIngredientName)
+                .filter(name -> !missingNames.contains(name))
+                .distinct()
+                .count();
+        if (polish) {
+            return availableCount > 0
+                    ? "Wykorzystuje składniki, które masz już w lodówce."
+                    : "Ten przepis wymaga składników, których nie ma obecnie na liście Twojej lodówki.";
+        }
+        return availableCount > 0
+                ? "Uses ingredients already available in your fridge."
+                : "This recipe needs ingredients not currently listed in your fridge.";
+    }
+
+    private String normalizeIngredientName(String value) {
+        return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
     }
 
     private Set<String> parseStillMissingIngredientNames(

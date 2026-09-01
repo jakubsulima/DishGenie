@@ -298,6 +298,7 @@ const Recipes = () => {
                     id={Number(recipe.id)}
                     title={recipe.name}
                     timeToPrepare={recipe.timeToPrepare}
+                    visibility={user ? recipe.visibility : undefined}
                   />
                 </div>
               ))}

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ColumnDefault;
+import org.jakub.backendapi.entities.Enums.RecipeVisibility;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -19,6 +20,14 @@ public class Recipe {
 
     @Column(nullable = false)
     private String name;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private RecipeVisibility visibility = RecipeVisibility.PRIVATE;
+
+    @Column(nullable = false)
+    @ColumnDefault("2")
+    private int servings = 2;
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecipeIngredient> recipeIngredients = new ArrayList<>();
@@ -82,6 +91,22 @@ public class Recipe {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public RecipeVisibility getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(RecipeVisibility visibility) {
+        this.visibility = visibility;
+    }
+
+    public int getServings() {
+        return servings;
+    }
+
+    public void setServings(int servings) {
+        this.servings = servings;
     }
 
     public List<RecipeIngredient> getRecipeIngredients() {

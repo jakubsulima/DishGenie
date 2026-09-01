@@ -42,8 +42,25 @@ class SecurityRoutesIntegrationTest {
     }
 
     @Test
+    void anonymousRecipeSearchIgnoresOversizedPagination() throws Exception {
+        mockMvc.perform(get("/searchRecipes/pasta?page=7&size=2000&sort=name,asc"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.number").value(0))
+                .andExpect(jsonPath("$.size").value(10));
+    }
+
+    @Test
     void fridgeRemainsProtectedWithoutAuthentication() throws Exception {
         mockMvc.perform(get("/getFridgeIngredients"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void recipePublicationRemainsProtectedWithoutAuthentication() throws Exception {
+        mockMvc.perform(post("/publishRecipe/42").with(csrf()))
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(post("/unpublishRecipe/42").with(csrf()))
                 .andExpect(status().isUnauthorized());
     }
 

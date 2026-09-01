@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
+import { useLanguage } from "../context/languageContext";
 
 interface RecipeContainerProps {
   id?: number;
   title: string;
   timeToPrepare: string;
   to?: string;
+  visibility?: "PRIVATE" | "PUBLIC";
 }
 
 const RecipeContainer = ({
@@ -12,16 +14,25 @@ const RecipeContainer = ({
   id,
   timeToPrepare,
   to,
+  visibility,
 }: RecipeContainerProps) => {
+  const { t } = useLanguage();
   return (
     <Link
       to={to ?? `/recipe/${id}`}
       className="group flex flex-col rounded-2xl border border-primary/10 bg-secondary p-5 transition-all duration-300 hover:border-accent/30 hover:bg-secondary/80 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-accent/50 sm:flex-row sm:items-center sm:justify-between"
     >
         <div className="flex-1 mb-3 sm:mb-0">
-          <h2 className="text-xl font-semibold text-text group-hover:text-accent transition-colors leading-tight">
-            {title}
-          </h2>
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-xl font-semibold text-text group-hover:text-accent transition-colors leading-tight">
+              {title}
+            </h2>
+            {visibility && (
+              <span className="rounded-full border border-primary/15 bg-background px-2 py-0.5 text-[11px] font-medium text-text/60">
+                {t(visibility === "PUBLIC" ? "Public" : "Private")}
+              </span>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-2 text-text/70 text-sm">
           <svg

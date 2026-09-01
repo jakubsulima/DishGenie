@@ -50,7 +50,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/csrf", "/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.GET, "/actuator/metrics/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/login", "/register", "/refresh", "/oauth/google", "/forgot-password", "/reset-password").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/getAllRecipes", "/getRecipe/**", "/sitemap.xml").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/getAllRecipes", "/searchRecipes/**", "/getRecipe/**", "/getRecipeByName/**", "/sitemap.xml").permitAll()
                         .requestMatchers(HttpMethod.POST, "/addRecipe").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
