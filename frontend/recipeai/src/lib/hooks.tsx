@@ -63,7 +63,7 @@ const hasContentTypeError = (error: unknown): boolean => {
 
 const inFlightRecipeRequests = new Map<string, Promise<unknown>>();
 
-export interface RecipeGenerationFridgeItem {
+interface RecipeGenerationFridgeItem {
   id: number;
   name: string;
   expirationDate: string | null;
