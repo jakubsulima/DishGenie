@@ -5,32 +5,25 @@ import org.jakub.backendapi.dto.RecipeIngredientDto;
 import org.jakub.backendapi.dto.ShoppingListGenerationItemDto;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 @Component
 public class ShoppingListCoverageService {
 
-    private enum SupportedUnit {
-        G("g", "g", 1d),
-        KG("kg", "g", 1000d),
-        ML("ml", "ml", 1d),
-        L("l", "ml", 1000d),
-        PCS("pcs", "pcs", 1d);
+    private final UnitConversionService unitConversionService;
 
-        private final String canonical;
-        private final String baseUnit;
-        private final double factor;
+    public ShoppingListCoverageService() {
+        this(new UnitConversionService());
+    }
 
-        SupportedUnit(String canonical, String baseUnit, double factor) {
-            this.canonical = canonical;
-            this.baseUnit = baseUnit;
-            this.factor = factor;
-        }
+    @Autowired
+    public ShoppingListCoverageService(UnitConversionService unitConversionService) {
+        this.unitConversionService = unitConversionService;
     }
 
     public List<ShoppingListGenerationItemDto> findMissingItems(
@@ -40,7 +33,7 @@ public class ShoppingListCoverageService {
         Map<String, List<FridgeIngredientDto>> fridgeItemsByName = new HashMap<>();
 
         for (FridgeIngredientDto fridgeItem : safeFridgeItems(fridgeItems)) {
-            String normalizedName = normalizeIngredientName(fridgeItem.getName());
+            String normalizedName = unitConversionService.normalizeIngredientName(fridgeItem.getName());
             if (!StringUtils.hasText(normalizedName)) {
                 continue;
             }
@@ -51,7 +44,7 @@ public class ShoppingListCoverageService {
         List<ShoppingListGenerationItemDto> missingIngredients = new ArrayList<>();
 
         for (RecipeIngredientDto ingredient : safeRecipeIngredients(recipeIngredients)) {
-            String normalizedName = normalizeIngredientName(ingredient.getName());
+            String normalizedName = unitConversionService.normalizeIngredientName(ingredient.getName());
             if (!StringUtils.hasText(normalizedName)) {
                 continue;
             }
@@ -63,35 +56,35 @@ public class ShoppingListCoverageService {
             }
 
             Double requiredAmount = ingredient.getAmount() > 0 ? ingredient.getAmount() : null;
-            SupportedUnit requiredUnit = normalizeUnit(ingredient.getUnit());
+            UnitConversionService.NormalizedUnit requiredUnit = unitConversionService.normalize(ingredient.getUnit()).orElse(null);
             if (requiredAmount == null || requiredUnit == null) {
                 continue;
             }
 
-            double requiredBaseAmount = toBaseAmount(requiredAmount, requiredUnit);
+            double requiredBaseAmount = unitConversionService.toBaseAmount(requiredAmount, requiredUnit);
             double availableBaseAmount = 0d;
             boolean hasCompatibleMeasuredItem = false;
             boolean hasUnmeasuredMatch = false;
 
             for (FridgeIngredientDto fridgeItem : matchingFridgeItems) {
                 Double fridgeAmount = fridgeItem.getAmount();
-                SupportedUnit fridgeUnit = normalizeUnit(fridgeItem.getUnit());
+                UnitConversionService.NormalizedUnit fridgeUnit = unitConversionService.normalize(fridgeItem.getUnit()).orElse(null);
 
                 if (fridgeAmount == null || fridgeAmount <= 0 || fridgeUnit == null) {
                     hasUnmeasuredMatch = true;
                     continue;
                 }
 
-                if (!requiredUnit.baseUnit.equals(fridgeUnit.baseUnit)) {
+                if (!unitConversionService.areCompatible(requiredUnit, fridgeUnit)) {
                     continue;
                 }
 
                 hasCompatibleMeasuredItem = true;
-                availableBaseAmount += toBaseAmount(fridgeAmount, fridgeUnit);
+                availableBaseAmount += unitConversionService.toBaseAmount(fridgeAmount, fridgeUnit);
             }
 
             if (hasCompatibleMeasuredItem && availableBaseAmount < requiredBaseAmount) {
-                double missingAmount = roundAmount((requiredBaseAmount - availableBaseAmount) / requiredUnit.factor);
+                double missingAmount = roundAmount(unitConversionService.fromBaseAmount(requiredBaseAmount - availableBaseAmount, requiredUnit));
                 missingIngredients.add(toShoppingListItem(ingredient.getName(), missingAmount, normalizeOutputUnit(ingredient.getUnit(), requiredUnit)));
                 continue;
             }
@@ -112,39 +105,15 @@ public class ShoppingListCoverageService {
         return fridgeItems == null ? List.of() : fridgeItems;
     }
 
-    private String normalizeIngredientName(String name) {
-        return name == null ? "" : name.trim().toLowerCase(Locale.ROOT);
-    }
-
-    private SupportedUnit normalizeUnit(String unit) {
-        if (!StringUtils.hasText(unit)) {
-            return null;
-        }
-
-        String normalized = unit.trim().toLowerCase(Locale.ROOT);
-        return switch (normalized) {
-            case "g", "gram", "grams" -> SupportedUnit.G;
-            case "kg", "kilogram", "kilograms" -> SupportedUnit.KG;
-            case "ml", "milliliter", "milliliters" -> SupportedUnit.ML;
-            case "l", "liter", "liters", "litre", "litres" -> SupportedUnit.L;
-            case "pcs", "pc", "piece", "pieces", "unit", "units" -> SupportedUnit.PCS;
-            default -> null;
-        };
-    }
-
-    private double toBaseAmount(double amount, SupportedUnit unit) {
-        return amount * unit.factor;
-    }
-
     private double roundAmount(double amount) {
         return Math.round(amount * 100d) / 100d;
     }
 
-    private String normalizeOutputUnit(String originalUnit, SupportedUnit fallbackUnit) {
+    private String normalizeOutputUnit(String originalUnit, UnitConversionService.NormalizedUnit fallbackUnit) {
         if (StringUtils.hasText(originalUnit)) {
             return originalUnit.trim();
         }
-        return fallbackUnit.canonical;
+        return fallbackUnit.canonical();
     }
 
     private ShoppingListGenerationItemDto toShoppingListItem(String name, Double amount, String unit) {

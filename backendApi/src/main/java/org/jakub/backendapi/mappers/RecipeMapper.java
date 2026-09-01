@@ -18,7 +18,7 @@ public interface RecipeMapper {
     @Mapping(target = "nutrition.protein", source = "nutritionProtein")
     @Mapping(target = "nutrition.carbs", source = "nutritionCarbs")
     @Mapping(target = "nutrition.fats", source = "nutritionFats")
-    @Mapping(target = "servings", ignore = true)
+    @Mapping(target = "canManage", ignore = true)
     RecipeDto toRecipeDto(Recipe recipe);
 
     @Mapping(target = "recipeDto", source = "recipe")
@@ -32,6 +32,7 @@ public interface RecipeMapper {
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "visibility", ignore = true)
     Recipe toRecipe(RecipeDto recipeDto);
 
     @AfterMapping

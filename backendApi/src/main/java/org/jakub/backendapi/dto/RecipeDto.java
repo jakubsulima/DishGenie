@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import org.jakub.backendapi.entities.Enums.RecipeVisibility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,9 @@ public class RecipeDto {
     private RecipeNutritionDto nutrition;
     @Min(value = 1, message = "Servings must be at least 1")
     @Max(value = 100, message = "Servings must not exceed 100")
-    private int servings;
+    private int servings = 2;
+    private RecipeVisibility visibility;
+    private boolean canManage;
 
     public RecipeDto() {
     }
@@ -110,12 +113,29 @@ public class RecipeDto {
         this.servings = servings;
     }
 
+    public RecipeVisibility getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(RecipeVisibility visibility) {
+        this.visibility = visibility;
+    }
+
+    public boolean isCanManage() {
+        return canManage;
+    }
+
+    public void setCanManage(boolean canManage) {
+        this.canManage = canManage;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RecipeDto recipeDto = (RecipeDto) o;
         return servings == recipeDto.servings
+                && canManage == recipeDto.canManage
                 && Objects.equals(id, recipeDto.id)
                 && Objects.equals(name, recipeDto.name)
                 && Objects.equals(ingredients, recipeDto.ingredients)
@@ -135,7 +155,8 @@ public class RecipeDto {
                 description,
                 timeToPrepare,
                 nutrition,
-                servings
+                servings,
+                canManage
         );
     }
 
@@ -150,6 +171,7 @@ public class RecipeDto {
                 ", timeToPrepare='" + timeToPrepare + '\'' +
                 ", nutrition=" + nutrition +
                 ", servings=" + servings +
+                ", canManage=" + canManage +
                 '}';
     }
 }

@@ -63,24 +63,68 @@ const hasContentTypeError = (error: unknown): boolean => {
 
 const inFlightRecipeRequests = new Map<string, Promise<unknown>>();
 
+export interface RecipeGenerationFridgeItem {
+  id: number;
+  name: string;
+  expirationDate: string | null;
+  amount?: string | number;
+  unit?: string;
+}
+
+type RecipeGenerationFridgeInput = string[] | RecipeGenerationFridgeItem[];
+
+const getStructuredFridgeItems = (
+  productsFridge: RecipeGenerationFridgeInput,
+): RecipeGenerationFridgeItem[] | null => {
+  if (Array.isArray(productsFridge) && "__structuredItems" in productsFridge) {
+    return (productsFridge as string[] & {
+      __structuredItems?: RecipeGenerationFridgeItem[];
+    }).__structuredItems ?? null;
+  }
+  return Array.isArray(productsFridge) &&
+    productsFridge.length > 0 &&
+    typeof productsFridge[0] !== "string"
+    ? (productsFridge as RecipeGenerationFridgeItem[])
+    : null;
+};
+
 const getRecipeGenerationLocale = (): "en" | "pl" =>
   document.documentElement.lang === "pl" ? "pl" : "en";
 
 const requestRecipeGeneration = async (
   prompt: string,
-  productsFridge: string[],
+  productsFridge: RecipeGenerationFridgeInput,
   requestedCount: number,
+  structured: boolean,
   signal?: AbortSignal,
 ): Promise<unknown> => {
   await ensureCsrfToken();
+  const structuredFridgeItems = getStructuredFridgeItems(productsFridge);
+  const useStructuredPayload = structured || structuredFridgeItems !== null;
+  const payload = useStructuredPayload
+    ? {
+        requestText: prompt,
+        fridgeItems: structuredFridgeItems ?? productsFridge,
+        locale: getRecipeGenerationLocale(),
+        count: requestedCount,
+        servings: 2,
+        fridgePolicy: "PRIORITIZE",
+        shoppingPolicy: "MINIMIZE",
+        mustUseFridgeItemIds: [],
+        preferences: {
+          mealType: "ANY",
+          servings: 2,
+        },
+      }
+    : {
+        prompt,
+        fridgeItems: productsFridge,
+        locale: getRecipeGenerationLocale(),
+        count: requestedCount,
+      };
   const result = await axios.post(
     `${API_URL}generateRecipe`,
-    {
-      prompt,
-      fridgeItems: productsFridge,
-      locale: getRecipeGenerationLocale(),
-      count: requestedCount,
-    },
+    payload,
     { signal },
   );
 
@@ -89,28 +133,49 @@ const requestRecipeGeneration = async (
 
 const buildGenerationKey = (
   prompt: string,
-  productsFridge: string[],
+  productsFridge: RecipeGenerationFridgeInput,
   requestedCount: number,
+  structured: boolean,
 ) =>
-  JSON.stringify({
-    requestText: prompt,
-    locale: getRecipeGenerationLocale(),
-    count: requestedCount,
-    fridgePolicy: "SUGGEST",
-    shoppingPolicy: "ALLOWED",
-    mustUseFridgeItemIds: [],
-    preferences: null,
-    fridgeItems: productsFridge,
-  });
+  (() => {
+    const structuredFridgeItems = getStructuredFridgeItems(productsFridge);
+    const useStructuredPayload = structured || structuredFridgeItems !== null;
+    return JSON.stringify(
+      useStructuredPayload
+        ? {
+            requestText: prompt,
+            locale: getRecipeGenerationLocale(),
+            count: requestedCount,
+            servings: 2,
+            fridgePolicy: "PRIORITIZE",
+            shoppingPolicy: "MINIMIZE",
+            mustUseFridgeItemIds: [],
+            preferences: { mealType: "ANY", servings: 2 },
+            fridgeItems: structuredFridgeItems ?? productsFridge,
+          }
+        : {
+            requestText: prompt,
+            locale: getRecipeGenerationLocale(),
+            count: requestedCount,
+            fridgePolicy: "SUGGEST",
+            shoppingPolicy: "ALLOWED",
+            mustUseFridgeItemIds: [],
+            preferences: null,
+            fridgeItems: productsFridge,
+          },
+    );
+  })();
 
 export const generateRecipe = async function (
   prompt: string,
-  productsFridge: string[],
+  productsFridge: RecipeGenerationFridgeInput,
   signal?: AbortSignal,
   count: number = 1,
+  options: { structured?: boolean } = {},
 ) {
   try {
     const normalizedCount = Math.max(1, Math.min(5, Math.floor(count)));
+    const structured = options.structured === true;
 
     // Requests controlled by AbortController should never share promises,
     // otherwise a previously aborted request can cancel a fresh one.
@@ -119,6 +184,7 @@ export const generateRecipe = async function (
         prompt,
         productsFridge,
         normalizedCount,
+        structured,
         signal,
       );
     }
@@ -127,6 +193,7 @@ export const generateRecipe = async function (
       prompt,
       productsFridge,
       normalizedCount,
+      structured,
     );
 
     if (!inFlightRecipeRequests.has(requestKey)) {
@@ -134,6 +201,7 @@ export const generateRecipe = async function (
         prompt,
         productsFridge,
         normalizedCount,
+        structured,
         signal,
       ).finally(() => {
         inFlightRecipeRequests.delete(requestKey);

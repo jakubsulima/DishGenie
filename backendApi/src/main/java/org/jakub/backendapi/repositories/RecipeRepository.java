@@ -2,6 +2,7 @@ package org.jakub.backendapi.repositories;
 
 import org.jakub.backendapi.entities.Recipe;
 import org.jakub.backendapi.entities.User;
+import org.jakub.backendapi.entities.Enums.RecipeVisibility;
 import org.jakub.backendapi.repositories.projections.RecipeSitemapEntry;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +38,12 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     @Query("""
             SELECT r.id FROM Recipe r
+            WHERE r.visibility = :visibility
+            """)
+    Page<Long> findRecipeIdsByVisibility(@Param("visibility") RecipeVisibility visibility, Pageable pageable);
+
+    @Query("""
+            SELECT r.id FROM Recipe r
             WHERE r.user = :user
             """)
     Page<Long> findRecipeIdsByUser(@Param("user") User user, Pageable pageable);
@@ -46,6 +53,28 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             WHERE LOWER(r.name) LIKE LOWER(CONCAT(:searchTerm, '%'))
             """)
     Page<Long> searchRecipeIds(@Param("searchTerm") String searchTerm, Pageable pageable);
+
+    @Query("""
+            SELECT r.id FROM Recipe r
+            WHERE r.visibility = :visibility
+              AND LOWER(r.name) LIKE LOWER(CONCAT(:searchTerm, '%'))
+            """)
+    Page<Long> searchRecipeIdsByVisibility(
+            @Param("searchTerm") String searchTerm,
+            @Param("visibility") RecipeVisibility visibility,
+            Pageable pageable
+    );
+
+    @Query("""
+            SELECT r.id FROM Recipe r
+            WHERE r.user = :user
+              AND LOWER(r.name) LIKE LOWER(CONCAT(:searchTerm, '%'))
+            """)
+    Page<Long> searchRecipeIdsByUser(
+            @Param("searchTerm") String searchTerm,
+            @Param("user") User user,
+            Pageable pageable
+    );
 
     @Query("""
             SELECT DISTINCT r FROM Recipe r
@@ -59,9 +88,68 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             SELECT DISTINCT r FROM Recipe r
             LEFT JOIN FETCH r.recipeIngredients ri
             LEFT JOIN FETCH ri.ingredient
+            WHERE r.id = :id AND r.visibility = :visibility
+            """)
+    Optional<Recipe> findByIdWithIngredientsAndVisibility(
+            @Param("id") Long id,
+            @Param("visibility") RecipeVisibility visibility
+    );
+
+    @Query("""
+            SELECT DISTINCT r FROM Recipe r
+            LEFT JOIN FETCH r.recipeIngredients ri
+            LEFT JOIN FETCH ri.ingredient
             WHERE LOWER(REPLACE(TRIM(r.name), ' ', '-')) = LOWER(:slug)
             """)
     Optional<Recipe> findBySlugWithIngredients(@Param("slug") String slug);
+
+    @Query("""
+            SELECT DISTINCT r FROM Recipe r
+            LEFT JOIN FETCH r.recipeIngredients ri
+            LEFT JOIN FETCH ri.ingredient
+            WHERE LOWER(REPLACE(TRIM(r.name), ' ', '-')) = LOWER(:slug)
+              AND r.user = :user
+            """)
+    Optional<Recipe> findBySlugWithIngredientsAndUser(
+            @Param("slug") String slug,
+            @Param("user") User user
+    );
+
+    @Query("""
+            SELECT DISTINCT r FROM Recipe r
+            LEFT JOIN FETCH r.recipeIngredients ri
+            LEFT JOIN FETCH ri.ingredient
+            WHERE LOWER(REPLACE(TRIM(r.name), ' ', '-')) = LOWER(:slug)
+              AND r.visibility = :visibility
+            """)
+    Optional<Recipe> findBySlugWithIngredientsAndVisibility(
+            @Param("slug") String slug,
+            @Param("visibility") RecipeVisibility visibility
+    );
+
+    @Query("""
+            SELECT DISTINCT r FROM Recipe r
+            LEFT JOIN FETCH r.recipeIngredients ri
+            LEFT JOIN FETCH ri.ingredient
+            WHERE LOWER(r.name) = LOWER(:name)
+              AND r.visibility = :visibility
+            """)
+    Optional<Recipe> findByNameIgnoreCaseWithIngredientsAndVisibility(
+            @Param("name") String name,
+            @Param("visibility") RecipeVisibility visibility
+    );
+
+    @Query("""
+            SELECT DISTINCT r FROM Recipe r
+            LEFT JOIN FETCH r.recipeIngredients ri
+            LEFT JOIN FETCH ri.ingredient
+            WHERE LOWER(r.name) = LOWER(:name)
+              AND r.user = :user
+            """)
+    Optional<Recipe> findByNameIgnoreCaseWithIngredientsAndUser(
+            @Param("name") String name,
+            @Param("user") User user
+    );
 
     @Query("""
             SELECT DISTINCT r FROM Recipe r
@@ -77,4 +165,12 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             ORDER BY r.updatedAt DESC, r.id DESC
             """)
     List<RecipeSitemapEntry> findAllSitemapEntries();
+
+    @Query("""
+            SELECT r.id AS id, r.updatedAt AS updatedAt
+            FROM Recipe r
+            WHERE r.visibility = :visibility
+            ORDER BY r.updatedAt DESC, r.id DESC
+            """)
+    List<RecipeSitemapEntry> findPublicSitemapEntries(@Param("visibility") RecipeVisibility visibility);
 }

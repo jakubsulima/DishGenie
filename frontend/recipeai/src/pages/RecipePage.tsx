@@ -34,6 +34,14 @@ export interface RecipeData {
   ingredients: RecipeIngredient[];
   instructions: string[];
   timeToPrepare: string;
+  servings?: number;
+  visibility?: "PRIVATE" | "PUBLIC";
+  canManage?: boolean;
+  fridgeCoverage?: {
+    available?: string[];
+    missing?: RecipeIngredient[];
+    explanation?: string;
+  };
   nutrition?: {
     calories?: string | number;
     protein?: string | number;
@@ -272,6 +280,50 @@ const normalizeGeneratedRecipes = (raw: unknown): RecipeData[] => {
           candidate.timeToPrepare.trim()
             ? candidate.timeToPrepare.trim()
             : "",
+        servings:
+          typeof candidate.servings === "number" && candidate.servings > 0
+            ? candidate.servings
+            : 2,
+        visibility:
+          candidate.visibility === "PRIVATE" || candidate.visibility === "PUBLIC"
+            ? candidate.visibility
+            : undefined,
+        canManage: candidate.canManage === true,
+        fridgeCoverage: (() => {
+          const coverage = asRecord(candidate.fridgeCoverage);
+          if (!coverage) {
+            return undefined;
+          }
+          const available = Array.isArray(coverage.available)
+            ? coverage.available.filter((value): value is string => typeof value === "string")
+            : [];
+          const missing = Array.isArray(coverage.missing)
+            ? coverage.missing
+                .map((value) => {
+                  const item = asRecord(value);
+                  if (!item || typeof item.name !== "string") {
+                    return null;
+                  }
+                  return {
+                    name: item.name,
+                    amount:
+                      typeof item.amount === "number" || typeof item.amount === "string"
+                        ? item.amount
+                        : null,
+                    unit: typeof item.unit === "string" ? item.unit : "",
+                  };
+                })
+                .filter((value): value is RecipeIngredient => value !== null)
+            : [];
+          return {
+            available,
+            missing,
+            explanation:
+              typeof coverage.explanation === "string"
+                ? coverage.explanation
+                : undefined,
+          };
+        })(),
         nutrition: nutritionData
           ? {
               calories:
@@ -325,6 +377,7 @@ const RecipePage = () => {
   const params = useParams();
   const recipeId = params.id;
   const {
+    fridgeItems,
     getFridgeItemNames,
     loading: fridgeLoading,
   } = useFridge();
@@ -341,6 +394,8 @@ const RecipePage = () => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [isGeneratingShoppingList, setIsGeneratingShoppingList] =
     useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [confirmPublish, setConfirmPublish] = useState(false);
   const [saveStatus, setSaveStatus] = useState<
     "idle" | "saving" | "saved" | "error"
   >("idle");
@@ -457,7 +512,13 @@ const RecipePage = () => {
             try {
               setIsLoading(true);
               setError("");
-              const fridgeIngredients = getFridgeItemNames();
+              const fridgeIngredients = getFridgeItemNames() as string[] & {
+                __structuredItems?: typeof fridgeItems;
+              };
+              Object.defineProperty(fridgeIngredients, "__structuredItems", {
+                value: fridgeItems,
+                enumerable: false,
+              });
               captureEvent("recipe_generation_requested", {
                 requestRecipeCount: GENERATED_RECIPES_REQUEST_COUNT,
                 fridgeItemCount: fridgeIngredients.length,
@@ -532,6 +593,7 @@ const RecipePage = () => {
     existingRecipe,
     recipeId,
     applyGeneratedRecipeResponse,
+    fridgeItems,
     getFridgeItemNames,
     generationRetryKey,
     user,
@@ -576,7 +638,7 @@ const RecipePage = () => {
         ingredients: recipeData.ingredients,
         instructions: recipeData.instructions,
         nutrition: recipeData.nutrition,
-        servings: 2,
+        servings: recipeData.servings ?? 2,
       });
       captureEvent("recipe_saved", {
         ingredientCount: recipeData.ingredients.length,
@@ -699,6 +761,56 @@ const RecipePage = () => {
     }
   };
 
+  const handleTogglePublication = async () => {
+    if (
+      !recipeId ||
+      !user ||
+      !recipeData?.canManage ||
+      !recipeData.visibility ||
+      isPublishing
+    ) {
+      return;
+    }
+
+    const nextVisibility = recipeData.visibility === "PUBLIC" ? "PRIVATE" : "PUBLIC";
+    if (nextVisibility === "PUBLIC" && !confirmPublish) {
+      setConfirmPublish(true);
+      return;
+    }
+
+    try {
+      setIsPublishing(true);
+      setError("");
+      await apiClient(
+        `${nextVisibility === "PUBLIC" ? "publishRecipe" : "unpublishRecipe"}/${recipeId}`,
+        true,
+        null,
+      );
+      setRecipeData((current) =>
+        current ? { ...current, visibility: nextVisibility } : current,
+      );
+    } catch (publicationError: unknown) {
+      setError(
+        getErrorMessage(
+          publicationError,
+          "Could not update recipe visibility. Please try again.",
+        ),
+      );
+    } finally {
+      setIsPublishing(false);
+      setConfirmPublish(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!confirmPublish) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => setConfirmPublish(false), 5000);
+    return () => window.clearTimeout(timeoutId);
+  }, [confirmPublish]);
+
   useEffect(() => {
     if (!confirmDelete) {
       return;
@@ -807,9 +919,49 @@ const RecipePage = () => {
               <span className="rounded-full border border-primary/15 bg-background px-3 py-1.5 text-sm text-text/75">
                 {t("{count} steps", { count: instructionCount })}
               </span>
+              {recipeData.visibility && (
+                <span className="rounded-full border border-primary/15 bg-background px-3 py-1.5 text-sm text-text/75">
+                  {t(recipeData.visibility === "PUBLIC" ? "Public" : "Private")}
+                </span>
+              )}
             </div>
           </div>
         </section>
+
+        {recipeData.fridgeCoverage && (
+          <section className="mobile-card-enter mobile-card-delay-1 mt-6 rounded-2xl border border-primary/10 bg-secondary p-5">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-text/60">
+                  {t("You have")}
+                </h2>
+                <p className="mt-2 text-sm text-text/85">
+                  {recipeData.fridgeCoverage.available?.length
+                    ? recipeData.fridgeCoverage.available.join(", ")
+                    : t("Nothing from your fridge is needed")}
+                </p>
+              </div>
+              <div>
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-text/60">
+                  {t("Missing")}
+                </h2>
+                <p className="mt-2 text-sm text-text/85">
+                  {recipeData.fridgeCoverage.missing?.length
+                    ? recipeData.fridgeCoverage.missing
+                        .map((ingredient) => `${ingredient.name} · ${ingredient.amount ?? "?"} ${ingredient.unit}`.trim())
+                        .join(", ")
+                    : t("Nothing — shopping is optional")}
+                </p>
+              </div>
+            </div>
+            {recipeData.fridgeCoverage.explanation && (
+              <p className="mt-4 rounded-xl border border-accent/25 bg-accent/10 px-3 py-2 text-sm text-text/80">
+                <span className="font-semibold">{t("Why it fits")}:</span>{" "}
+                {recipeData.fridgeCoverage.explanation}
+              </p>
+            )}
+          </section>
+        )}
 
         {!recipeId && recipeOptions.length > 1 && (
           <section className="mobile-card-enter mobile-card-delay-1 mt-6 rounded-2xl border border-primary/10 bg-secondary p-5">
@@ -1004,17 +1156,37 @@ const RecipePage = () => {
               </button>
             )}
 
-            {recipeId && user && (
-              <button
-                className="mobile-soft-press inline-flex w-full items-center justify-center rounded-xl bg-black px-4 py-3 font-semibold text-white transition-colors hover:bg-black/90"
-                onClick={handleDelete}
-              >
-                {confirmDelete
-                  ? t("Click Again to Confirm Delete")
-                  : t("Delete Recipe")}
-              </button>
+            {recipeId && user && recipeData.canManage && (
+              <>
+                {recipeData.visibility && (
+                  <button
+                    className="mobile-soft-press inline-flex w-full items-center justify-center rounded-xl border border-primary/20 bg-background px-4 py-3 font-semibold text-text transition-colors hover:border-accent/60"
+                    onClick={handleTogglePublication}
+                    disabled={isPublishing}
+                  >
+                    {isPublishing
+                      ? t("Saving...")
+                      : confirmPublish
+                        ? t("Confirm Publish")
+                        : t(recipeData.visibility === "PUBLIC" ? "Unpublish Recipe" : "Publish Recipe")}
+                  </button>
+                )}
+                <button
+                  className="mobile-soft-press inline-flex w-full items-center justify-center rounded-xl bg-black px-4 py-3 font-semibold text-white transition-colors hover:bg-black/90"
+                  onClick={handleDelete}
+                >
+                  {confirmDelete
+                    ? t("Click Again to Confirm Delete")
+                    : t("Delete Recipe")}
+                </button>
+              </>
             )}
           </div>
+          {confirmPublish && (
+            <p className="mt-3 text-center text-xs text-text/65">
+              {t("Confirming will make this recipe visible to everyone.")}
+            </p>
+          )}
         </div>
       </div>
     </div>

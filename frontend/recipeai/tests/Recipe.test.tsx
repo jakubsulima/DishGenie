@@ -250,4 +250,49 @@ describe("RecipePage", () => {
     expect(addShoppingItems).not.toHaveBeenCalled();
     expect(await screen.findByText("Login Page::/Recipe/101")).toBeInTheDocument();
   });
+
+  test("does not show management controls for another user's public recipe", async () => {
+    vi.mocked(apiClient).mockResolvedValue({
+      id: "101",
+      title: "Community Pasta",
+      name: "Community Pasta",
+      ingredients: [{ name: "Tomato", amount: 200, unit: "g" }],
+      instructions: ["Boil pasta"],
+      timeToPrepare: "25 min",
+      visibility: "PUBLIC",
+      canManage: false,
+    });
+
+    renderRecipePage("/Recipe/101");
+
+    expect(await screen.findByText("Community Pasta")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Unpublish Recipe" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Delete Recipe" }),
+    ).not.toBeInTheDocument();
+  });
+
+  test("shows management controls when the backend grants permission", async () => {
+    vi.mocked(apiClient).mockResolvedValue({
+      id: "102",
+      title: "My Pasta",
+      name: "My Pasta",
+      ingredients: [{ name: "Tomato", amount: 200, unit: "g" }],
+      instructions: ["Boil pasta"],
+      timeToPrepare: "25 min",
+      visibility: "PUBLIC",
+      canManage: true,
+    });
+
+    renderRecipePage("/Recipe/102");
+
+    expect(
+      await screen.findByRole("button", { name: "Unpublish Recipe" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Delete Recipe" }),
+    ).toBeInTheDocument();
+  });
 });

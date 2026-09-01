@@ -1,0 +1,6 @@
+ALTER TABLE recipe
+    ADD COLUMN visibility VARCHAR(20) NOT NULL DEFAULT 'PRIVATE',
+    ADD COLUMN servings INTEGER NOT NULL DEFAULT 2;
+
+ALTER TABLE recipe
+    ADD CONSTRAINT recipe_visibility_check CHECK (visibility IN ('PRIVATE', 'PUBLIC'));

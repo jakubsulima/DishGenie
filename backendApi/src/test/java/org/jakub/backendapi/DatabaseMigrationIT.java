@@ -66,6 +66,21 @@ class DatabaseMigrationIT {
 
         assertThat(resetColumns).isEqualTo(2);
         assertThat(rateLimitTables).isEqualTo(1);
+
+        Integer recipePrivacyColumns = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM information_schema.columns " +
+                        "WHERE table_name = 'recipe' " +
+                        "AND column_name IN ('visibility', 'servings')",
+                Integer.class
+        );
+        assertThat(recipePrivacyColumns).isEqualTo(2);
+
+        Integer privacyConstraint = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM pg_constraint " +
+                        "WHERE conname = 'recipe_visibility_check'",
+                Integer.class
+        );
+        assertThat(privacyConstraint).isEqualTo(1);
     }
 
     @Test
