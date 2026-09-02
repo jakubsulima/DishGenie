@@ -7,6 +7,12 @@ import org.jakub.backendapi.dto.RecipeGenerationRequestDto;
 import org.jakub.backendapi.dto.RecipeResponseDto;
 import org.jakub.backendapi.dto.UserDto;
 import org.jakub.backendapi.dto.UserPreferencesDto;
+import org.jakub.backendapi.dto.RecipeGenerationResponseDto;
+import org.jakub.backendapi.dto.FridgeIngredientDto;
+import org.jakub.backendapi.entities.FridgeIngredient;
+import org.jakub.backendapi.entities.Enums.ContentLocale;
+import org.jakub.backendapi.repositories.FridgeIngredientRepository;
+import org.jakub.backendapi.services.GeneratedRecipeValidator;
 import org.jakub.backendapi.services.GeminiService;
 import org.jakub.backendapi.services.PostHogService;
 import org.jakub.backendapi.services.RateLimitService;
@@ -29,6 +35,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
@@ -46,6 +54,8 @@ public class RecipesController {
     private final PostHogService postHogService;
     private final RateLimitService rateLimitService;
     private final MeterRegistry meterRegistry;
+    private final FridgeIngredientRepository fridgeIngredientRepository;
+    private final GeneratedRecipeValidator generatedRecipeValidator;
 
     @Value("${app.limits.generate-recipe-requests-per-minute:${GENERATE_RECIPE_LIMIT_PER_MINUTE:15}}")
     private int generateRecipeLimitPerMinute;
@@ -54,6 +64,11 @@ public class RecipesController {
     private String trustedProxyIps;
 
     public RecipesController(RecipeService recipeService, UserService userService, UserPreferencesService userPreferencesService, GeminiService geminiService, PostHogService postHogService, RateLimitService rateLimitService, MeterRegistry meterRegistry) {
+        this(recipeService, userService, userPreferencesService, geminiService, postHogService, rateLimitService, meterRegistry, null, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public RecipesController(RecipeService recipeService, UserService userService, UserPreferencesService userPreferencesService, GeminiService geminiService, PostHogService postHogService, RateLimitService rateLimitService, MeterRegistry meterRegistry, FridgeIngredientRepository fridgeIngredientRepository, GeneratedRecipeValidator generatedRecipeValidator) {
         this.recipeService = recipeService;
         this.userService = userService;
         this.userPreferencesService = userPreferencesService;
@@ -61,6 +76,8 @@ public class RecipesController {
         this.postHogService = postHogService;
         this.rateLimitService = rateLimitService;
         this.meterRegistry = meterRegistry;
+        this.fridgeIngredientRepository = fridgeIngredientRepository;
+        this.generatedRecipeValidator = generatedRecipeValidator;
     }
 
     @PostMapping("/addRecipe")
@@ -75,19 +92,30 @@ public class RecipesController {
     }
 
     @GetMapping("/getAllRecipes")
-    public ResponseEntity<Page<RecipeDto>> getAllRecipes(Pageable p) {
+    public ResponseEntity<Page<RecipeDto>> getAllRecipes(
+            Pageable p,
+            @RequestParam(required = false) ContentLocale locale
+    ) {
         Pageable effectivePageable = p;
         String authenticatedUserEmail = getAuthenticatedUserEmail();
         if (!StringUtils.hasText(authenticatedUserEmail)) {
             effectivePageable = publicRecipePageable();
         }
 
-        Page<RecipeDto> recipes = recipeService.getAllRecipes(effectivePageable, authenticatedUserEmail);
+        Page<RecipeDto> recipes = recipeService.getAllRecipes(effectivePageable, authenticatedUserEmail, locale);
         return ResponseEntity.ok(recipes);
     }
 
+    ResponseEntity<Page<RecipeDto>> getAllRecipes(Pageable p) {
+        return getAllRecipes(p, null);
+    }
+
     @GetMapping("/searchRecipes/{searchTerm}")
-    public ResponseEntity<Page<RecipeDto>> searchRecipes(@PathVariable String searchTerm, Pageable p) {
+    public ResponseEntity<Page<RecipeDto>> searchRecipes(
+            @PathVariable String searchTerm,
+            Pageable p,
+            @RequestParam(required = false) ContentLocale locale
+    ) {
         String authenticatedUserEmail = getAuthenticatedUserEmail();
         Pageable effectivePageable = StringUtils.hasText(authenticatedUserEmail)
                 ? p
@@ -95,9 +123,14 @@ public class RecipesController {
         Page<RecipeDto> recipes = recipeService.searchRecipes(
                 searchTerm,
                 effectivePageable,
-                authenticatedUserEmail
+                authenticatedUserEmail,
+                locale
         );
         return ResponseEntity.ok(recipes);
+    }
+
+    ResponseEntity<Page<RecipeDto>> searchRecipes(String searchTerm, Pageable p) {
+        return searchRecipes(searchTerm, p, null);
     }
 
     @GetMapping("/getRecipe/{identifier}")
@@ -119,8 +152,13 @@ public class RecipesController {
     }
 
     @GetMapping("/getUserRecipes/{userId}")
-    public ResponseEntity<Page<RecipeDto>> getUserRecipes(@PathVariable long userId, Pageable p) {
-        Page<RecipeDto> recipes = recipeService.findRecipesByUserId(userId, p, getAuthenticatedUserEmail());
+    public ResponseEntity<Page<RecipeDto>> getUserRecipes(
+            @PathVariable long userId,
+            Pageable p,
+            @RequestParam(required = false) ContentLocale locale
+    ) {
+        Page<RecipeDto> recipes = recipeService.findRecipesByUserId(
+                userId, p, getAuthenticatedUserEmail(), locale);
         return ResponseEntity.ok(recipes);
     }
 
@@ -215,6 +253,97 @@ public class RecipesController {
             ));
         }
         return ResponseEntity.ok(generatedRecipe);
+    }
+
+    @PostMapping("/v2/recipes/generate")
+    public ResponseEntity<RecipeGenerationResponseDto> createRecipeV2(
+            @Valid @RequestBody RecipeGenerationRequestDto recipeRequest,
+            HttpServletRequest request
+    ) {
+        String userEmail = getAuthenticatedUserEmail();
+        if (generatedRecipeValidator == null || fridgeIngredientRepository == null) {
+            throw new org.jakub.backendapi.exceptions.AppException("Recipe generation v2 is not configured.", org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        String clientKey = resolveClientKey(request);
+        rateLimitService.assertAllowed(
+                "generateRecipe:" + clientKey,
+                Math.max(1, generateRecipeLimitPerMinute),
+                60_000L,
+                "Too many recipe generation requests. Please try again in a minute."
+        );
+
+        UserDto currentUser = StringUtils.hasText(userEmail) ? userService.findByEmail(userEmail) : null;
+        List<FridgeIngredient> serverItems = currentUser == null
+                ? List.of()
+                : fridgeIngredientRepository.findByUser_Id(currentUser.getId());
+        List<FridgeIngredientDto> fridgeDtos = serverItems.stream().map(item -> new FridgeIngredientDto(
+                item.getId(), item.getName(), item.getExpirationDate(), item.getAmount(),
+                item.getUnit() == null ? null : item.getUnit().name())).toList();
+        java.util.Map<Long, FridgeIngredientDto> itemsById = fridgeDtos.stream()
+                .filter(item -> item.getId() != null)
+                .collect(Collectors.toMap(FridgeIngredientDto::getId, item -> item));
+        List<FridgeIngredientDto> requiredItems = recipeRequest.mustUseFridgeItemIds().stream()
+                .map(itemsById::get)
+                .toList();
+        if (requiredItems.stream().anyMatch(java.util.Objects::isNull)) {
+            throw new org.jakub.backendapi.exceptions.AppException("Mandatory fridge items must belong to the current user.", org.springframework.http.HttpStatus.FORBIDDEN);
+        }
+        recipeRequest.setFridgeItems(fridgeDtos);
+        UserPreferencesDto preferences = resolvePromptPreferences(userEmail);
+        int count = recipeRequest.count() == null ? 1 : recipeRequest.count();
+        boolean generationReserved = StringUtils.hasText(userEmail);
+        if (generationReserved) {
+            userService.reserveRecipeGeneration(userEmail);
+        }
+
+        try {
+            com.fasterxml.jackson.databind.JsonNode root = null;
+            List<RecipeGenerationResponseDto.ConstraintCheckDto> checks = List.of();
+            RuntimeException lastValidationError = null;
+            for (int attempt = 0; attempt < 3; attempt++) {
+                String generated = geminiService.generateRecipes(recipeRequest, preferences);
+                try {
+                    root = new com.fasterxml.jackson.databind.ObjectMapper().readTree(generated);
+                    checks = generatedRecipeValidator.validate(
+                            root, count, preferences, requiredItems,
+                            recipeRequest.preferences() == null ? null : recipeRequest.preferences().getMaxMinutes(),
+                            recipeRequest.shoppingPolicy(), recipeRequest.servings(), recipeRequest.locale());
+                    lastValidationError = null;
+                    break;
+                } catch (java.io.IOException exception) {
+                    lastValidationError = new org.jakub.backendapi.exceptions.AppException(
+                            "Generated recipe response is invalid.", org.springframework.http.HttpStatus.BAD_GATEWAY);
+                } catch (RuntimeException exception) {
+                    lastValidationError = exception;
+                }
+            }
+            if (lastValidationError != null || root == null) {
+                throw lastValidationError != null ? lastValidationError
+                        : new org.jakub.backendapi.exceptions.AppException(
+                        "Generated recipe response is invalid.", org.springframework.http.HttpStatus.BAD_GATEWAY);
+            }
+            List<com.fasterxml.jackson.databind.JsonNode> recipeNodes = new java.util.ArrayList<>();
+            if (count == 1) recipeNodes.add(root); else root.path("recipes").forEach(recipeNodes::add);
+            List<RecipeGenerationResponseDto.GeneratedRecipeResultDto> results = new java.util.ArrayList<>();
+            for (int index = 0; index < recipeNodes.size(); index++) {
+                com.fasterxml.jackson.databind.JsonNode recipe = recipeNodes.get(index);
+                if (recipe.isObject()) {
+                    ((com.fasterxml.jackson.databind.node.ObjectNode) recipe).put(
+                            "locale", "pl".equalsIgnoreCase(recipeRequest.locale()) ? "pl" : "en");
+                }
+                results.add(new RecipeGenerationResponseDto.GeneratedRecipeResultDto(
+                        recipe,
+                        recipe.path("fridgeCoverage"),
+                        checks.get(index)));
+            }
+            return ResponseEntity.ok(new RecipeGenerationResponseDto(UUID.randomUUID().toString(), results, List.of()));
+        } catch (RuntimeException exception) {
+            if (generationReserved) {
+                userService.releaseRecipeGeneration(userEmail);
+            }
+            throw exception;
+        }
     }
 
     private void captureUserEvent(String userEmail, String eventName, Map<String, Object> properties) {

@@ -19,9 +19,37 @@ type AnalyticsEventName =
   | "shopping_list_generated"
   | "fridge_item_added"
   | "fridge_item_added_barcode"
-  | "fridge_items_added_receipt";
+  | "fridge_items_added_receipt"
+  | "planner_opened"
+  | "meal_plan_generation_requested"
+  | "meal_plan_generation_completed"
+  | "meal_plan_slot_swapped"
+  | "meal_plan_slot_locked"
+  | "meal_plan_accepted"
+  | "meal_plan_shopping_list_created"
+  | "meal_plan_slot_cooked"
+  | "meal_plan_slot_skipped";
 
 type AnalyticsProperties = Record<string, unknown>;
+
+const FORBIDDEN_ANALYTICS_PROPERTIES = new Set([
+  "prompt",
+  "requestText",
+  "fridgeItems",
+  "ingredients",
+  "diets",
+  "dislikedIngredients",
+  "email",
+]);
+
+export const sanitizeAnalyticsProperties = (
+  properties: AnalyticsProperties,
+): AnalyticsProperties =>
+  Object.fromEntries(
+    Object.entries(properties).filter(
+      ([key]) => !FORBIDDEN_ANALYTICS_PROPERTIES.has(key),
+    ),
+  );
 
 let posthogInitialized = false;
 
@@ -71,7 +99,7 @@ export const captureEvent = (
 
   posthog.capture(eventName, {
     captureSource: "frontend",
-    ...properties,
+    ...sanitizeAnalyticsProperties(properties),
   });
 };
 

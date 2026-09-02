@@ -5,6 +5,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ColumnDefault;
 import org.jakub.backendapi.entities.Enums.RecipeVisibility;
+import org.jakub.backendapi.entities.Enums.ContentLocale;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -28,6 +29,10 @@ public class Recipe {
     @Column(nullable = false)
     @ColumnDefault("2")
     private int servings = 2;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "content_locale", nullable = false, length = 2)
+    private ContentLocale locale = ContentLocale.en;
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecipeIngredient> recipeIngredients = new ArrayList<>();
@@ -107,6 +112,14 @@ public class Recipe {
 
     public void setServings(int servings) {
         this.servings = servings;
+    }
+
+    public ContentLocale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(ContentLocale locale) {
+        this.locale = locale == null ? ContentLocale.en : locale;
     }
 
     public List<RecipeIngredient> getRecipeIngredients() {

@@ -4,6 +4,8 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class RecipeGenerationPreferencesDto {
@@ -23,6 +25,9 @@ public class RecipeGenerationPreferencesDto {
 
     @Pattern(regexp = "BALANCED|SPICY|SWEET|SAVORY|TANGY|ANY", message = "Flavor is invalid")
     private String flavor;
+
+    @jakarta.validation.constraints.Size(max = 8, message = "Too many additional constraints")
+    private List<String> constraints = new ArrayList<>();
 
     public String getMealType() {
         return mealType;
@@ -62,6 +67,14 @@ public class RecipeGenerationPreferencesDto {
 
     public void setFlavor(String flavor) {
         this.flavor = normalize(flavor);
+    }
+
+    public List<String> getConstraints() {
+        return constraints;
+    }
+
+    public void setConstraints(List<String> constraints) {
+        this.constraints = constraints == null ? new ArrayList<>() : new ArrayList<>(constraints);
     }
 
     private String normalize(String value) {

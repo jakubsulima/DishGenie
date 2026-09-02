@@ -38,7 +38,17 @@ test("authenticated user can generate a shopping list from a recipe", async ({
   await mockAuthenticatedRecipesApi(page);
   await page.goto("/Recipe/101");
 
+  const previewRequest = page.waitForRequest(
+    (request) =>
+      request.method() === "POST" &&
+      request.url().endsWith("/api/v2/shopping-list/preview-from-recipe"),
+  );
   await page.getByRole("button", { name: "Generate Shopping List" }).click();
+  expect((await previewRequest).postDataJSON()).toEqual({
+    recipeId: 101,
+    targetServings: 2,
+    excludeStaples: false,
+  });
 
   await expect(page).toHaveURL(/\/ShoppingList$/);
   await expect(

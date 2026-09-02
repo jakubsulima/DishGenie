@@ -1,10 +1,12 @@
 package org.jakub.backendapi.services;
 
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.jakub.backendapi.dto.RecipeDto;
 import org.jakub.backendapi.dto.RecipeResponseDto;
 import org.jakub.backendapi.entities.Enums.Role;
 import org.jakub.backendapi.entities.Enums.RecipeVisibility;
+import org.jakub.backendapi.entities.Enums.ContentLocale;
 import org.jakub.backendapi.entities.Ingredient;
 import org.jakub.backendapi.entities.Recipe;
 import org.jakub.backendapi.entities.RecipeIngredient;
@@ -43,13 +45,20 @@ public class RecipeService {
     private final IngredientRepository ingredientRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
     private final RecipeMapper recipeMapper;
+    private final IngredientNormalizationService ingredientNormalizationService;
 
     public RecipeService(RecipeRepository recipeRepository, UserRepository userRepository, IngredientRepository ingredientRepository, RecipeIngredientRepository recipeIngredientRepository, RecipeMapper recipeMapper) {
+        this(recipeRepository, userRepository, ingredientRepository, recipeIngredientRepository, recipeMapper, null);
+    }
+
+    @Autowired
+    public RecipeService(RecipeRepository recipeRepository, UserRepository userRepository, IngredientRepository ingredientRepository, RecipeIngredientRepository recipeIngredientRepository, RecipeMapper recipeMapper, IngredientNormalizationService ingredientNormalizationService) {
         this.recipeRepository = recipeRepository;
         this.userRepository = userRepository;
         this.ingredientRepository = ingredientRepository;
         this.recipeIngredientRepository = recipeIngredientRepository;
         this.recipeMapper = recipeMapper;
+        this.ingredientNormalizationService = ingredientNormalizationService;
     }
 
     @Transactional
@@ -115,11 +124,22 @@ public class RecipeService {
     }
 
     @Transactional
+    public Page<RecipeDto> getAllRecipes(Pageable pageable, String requesterEmail, ContentLocale locale) {
+        if (locale == null) {
+            return getAllRecipes(pageable, requesterEmail);
+        }
+        Page<Long> recipeIds = isAdmin(requesterEmail)
+                ? recipeRepository.findRecipeIdsByLocale(locale, pageable)
+                : recipeRepository.findRecipeIdsByVisibilityAndLocale(RecipeVisibility.PUBLIC, locale, pageable);
+        return mapRecipeIdPage(recipeIds, pageable);
+    }
+
+    @Transactional
     public Recipe saveRecipe(RecipeDto recipeDto, String login) {
         User user = userRepository.findByEmailForUpdate(login)
                 .orElseThrow(() -> new AppException("User not found", HttpStatus.NOT_FOUND));
 
-        recipeRepository.findByNameAndUser(recipeDto.getName(), user)
+        recipeRepository.findByNameAndUserAndLocale(recipeDto.getName(), user, recipeDto.getLocale())
                 .ifPresent(existing -> {
                     throw new AppException("Recipe '" + recipeDto.getName() + "' already exists for user '" + login + "'", HttpStatus.CONFLICT);
                 });
@@ -159,6 +179,29 @@ public class RecipeService {
                 : userRepository.findById(userId)
                         .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
         Page<Long> recipeIds = recipeRepository.findRecipeIdsByUser(user, pageable);
+        return mapRecipeIdPage(recipeIds, pageable);
+    }
+
+    public Page<RecipeDto> findRecipesByUserId(
+            long userId,
+            Pageable pageable,
+            String requesterEmail,
+            ContentLocale locale
+    ) {
+        if (locale == null) {
+            return findRecipesByUserId(userId, pageable, requesterEmail);
+        }
+        User requester = userRepository.findByEmail(requesterEmail)
+                .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
+        boolean canReadRecipes = Objects.equals(requester.getId(), userId) || requester.getRole() == Role.ADMIN;
+        if (!canReadRecipes) {
+            throw new AppException("You do not have permission to view this user's recipes", HttpStatus.FORBIDDEN);
+        }
+        User user = Objects.equals(requester.getId(), userId)
+                ? requester
+                : userRepository.findById(userId)
+                .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
+        Page<Long> recipeIds = recipeRepository.findRecipeIdsByUserAndLocale(user, locale, pageable);
         return mapRecipeIdPage(recipeIds, pageable);
     }
 
@@ -210,6 +253,7 @@ public class RecipeService {
         recipe.setName(recipeDto.getName());
         recipe.setDescription(recipeDto.getDescription());
         recipe.setTimeToPrepare(recipeDto.getTimeToPrepare());
+        recipe.setLocale(recipeDto.getLocale());
         if (recipeDto.getServings() > 0) {
             recipe.setServings(recipeDto.getServings());
         }
@@ -262,34 +306,62 @@ public class RecipeService {
 
         recipeDto.getIngredients().forEach(dto -> {
             String originalName = requireIngredientName(dto.getName());
-            String normalizedName = normalizeIngredientName(originalName);
+            String normalizedName = ingredientNormalizationService == null
+                    ? normalizeIngredientName(originalName)
+                    : ingredientNormalizationService.canonicalName(originalName);
             normalizedToOriginalName.putIfAbsent(normalizedName, originalName);
         });
 
-        Map<String, Ingredient> ingredientsByNormalizedName = ingredientRepository
-                .findAllByLowerNameIn(normalizedToOriginalName.keySet())
-                .stream()
-                .collect(Collectors.toMap(
-                        ingredient -> normalizeIngredientName(ingredient.getName()),
-                        Function.identity(),
-                        (first, second) -> first,
-                        LinkedHashMap::new
-                ));
+        Map<String, Ingredient> ingredientsByNormalizedName;
+        if (ingredientNormalizationService == null) {
+            ingredientsByNormalizedName = ingredientRepository.findAllByLowerNameIn(normalizedToOriginalName.keySet())
+                    .stream()
+                    .collect(Collectors.toMap(
+                            ingredient -> normalizeIngredientName(ingredient.getName()),
+                            Function.identity(),
+                            (first, second) -> first,
+                            LinkedHashMap::new
+                    ));
+        } else {
+            ingredientsByNormalizedName = new LinkedHashMap<>();
+            for (Map.Entry<String, String> entry : normalizedToOriginalName.entrySet()) {
+                IngredientNormalizationService.Resolution resolution = ingredientNormalizationService.resolve(
+                        entry.getValue(), recipeDto.getLocale().name());
+                Ingredient ingredient = resolution.isResolved() ? resolution.ingredient() : null;
+                if (ingredient != null) {
+                    ingredientsByNormalizedName.put(entry.getKey(), ingredient);
+                }
+            }
+        }
 
         List<Ingredient> missingIngredients = normalizedToOriginalName.entrySet().stream()
                 .filter(entry -> !ingredientsByNormalizedName.containsKey(entry.getKey()))
-                .map(entry -> new Ingredient(null, entry.getValue(), new ArrayList<>()))
+                .map(entry -> {
+                    Ingredient ingredient = new Ingredient(null, entry.getValue(), new ArrayList<>());
+                    if (ingredientNormalizationService != null) {
+                        ingredient.setCanonicalName(ingredientNormalizationService.canonicalName(entry.getValue()));
+                    }
+                    return ingredient;
+                })
                 .collect(Collectors.toCollection(ArrayList::new));
 
         if (!missingIngredients.isEmpty()) {
             ingredientRepository.saveAll(missingIngredients).forEach(ingredient ->
-                    ingredientsByNormalizedName.put(normalizeIngredientName(ingredient.getName()), ingredient)
+                    ingredientsByNormalizedName.put(
+                            ingredientNormalizationService == null
+                                    ? normalizeIngredientName(ingredient.getName())
+                                    : ingredientNormalizationService.canonicalName(ingredient.getName()),
+                            ingredient
+                    )
             );
         }
 
         return recipeDto.getIngredients().stream()
                 .map(dto -> {
-                    String normalizedName = normalizeIngredientName(requireIngredientName(dto.getName()));
+                    String originalName = requireIngredientName(dto.getName());
+                    String normalizedName = ingredientNormalizationService == null
+                            ? normalizeIngredientName(originalName)
+                            : ingredientNormalizationService.canonicalName(originalName);
                     Ingredient ingredient = ingredientsByNormalizedName.get(normalizedName);
 
                     if (ingredient == null) {
@@ -301,6 +373,7 @@ public class RecipeService {
                     recipeIngredient.setIngredient(ingredient);
                     recipeIngredient.setAmount(dto.getAmount());
                     recipeIngredient.setUnit(dto.getUnit());
+                    recipeIngredient.setDisplayName(dto.getName().trim());
                     return recipeIngredient;
                 })
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -354,6 +427,36 @@ public class RecipeService {
                     RecipeVisibility.PUBLIC,
                     pageable
             );
+        }
+        return mapRecipeIdPage(recipeIds, pageable);
+    }
+
+    @Transactional
+    public Page<RecipeDto> searchRecipes(
+            String searchTerm,
+            Pageable pageable,
+            String requesterEmail,
+            ContentLocale locale
+    ) {
+        if (locale == null) {
+            return searchRecipes(searchTerm, pageable, requesterEmail);
+        }
+        String normalizedSearchTerm = searchTerm == null ? "" : searchTerm.trim();
+        if (!StringUtils.hasText(normalizedSearchTerm)) {
+            return Page.empty(pageable);
+        }
+        Optional<User> requester = StringUtils.hasText(requesterEmail)
+                ? userRepository.findByEmail(requesterEmail)
+                : Optional.empty();
+        Page<Long> recipeIds;
+        if (requester.map(user -> user.getRole() == Role.ADMIN).orElse(false)) {
+            recipeIds = recipeRepository.searchRecipeIdsByLocale(normalizedSearchTerm, locale, pageable);
+        } else if (requester.isPresent()) {
+            recipeIds = recipeRepository.searchRecipeIdsByUserAndLocale(
+                    normalizedSearchTerm, requester.get(), locale, pageable);
+        } else {
+            recipeIds = recipeRepository.searchRecipeIdsByVisibilityAndLocale(
+                    normalizedSearchTerm, RecipeVisibility.PUBLIC, locale, pageable);
         }
         return mapRecipeIdPage(recipeIds, pageable);
     }

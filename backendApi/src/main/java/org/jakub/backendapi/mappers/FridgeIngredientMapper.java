@@ -14,6 +14,7 @@ public interface FridgeIngredientMapper {
 
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "ingredient", ignore = true)
     FridgeIngredient toFridgeIngredient(FridgeIngredientDto fridgeIngredientDto);
 
     default FridgeIngredient toFridgeIngredientWithUser(FridgeIngredientDto fridgeIngredientDto, User user) {

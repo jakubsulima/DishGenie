@@ -181,6 +181,10 @@ describe("HomePage chooser", () => {
     expect(screen.getByRole("button", { name: "tomatoes" })).toBeInTheDocument();
     expect(screen.getByText("Recent dinners")).toBeInTheDocument();
     await waitFor(() => expect(apiClient).toHaveBeenCalled());
+    expect(apiClient).toHaveBeenCalledWith(
+      expect.stringContaining("locale=en"),
+      false,
+    );
     expect(
       screen.queryByText("Get 3 realistic options"),
     ).not.toBeInTheDocument();

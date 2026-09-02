@@ -30,6 +30,10 @@ public class ShoppingListCoverageService {
             List<RecipeIngredientDto> recipeIngredients,
             List<FridgeIngredientDto> fridgeItems
     ) {
+        return findCoverage(recipeIngredients, fridgeItems).missing();
+    }
+
+    public Coverage findCoverage(List<RecipeIngredientDto> recipeIngredients, List<FridgeIngredientDto> fridgeItems) {
         Map<String, List<FridgeIngredientDto>> fridgeItemsByName = new HashMap<>();
 
         for (FridgeIngredientDto fridgeItem : safeFridgeItems(fridgeItems)) {
@@ -42,6 +46,8 @@ public class ShoppingListCoverageService {
         }
 
         List<ShoppingListGenerationItemDto> missingIngredients = new ArrayList<>();
+        List<ShoppingListGenerationItemDto> unresolvedIngredients = new ArrayList<>();
+        List<String> availableIngredients = new ArrayList<>();
 
         for (RecipeIngredientDto ingredient : safeRecipeIngredients(recipeIngredients)) {
             String normalizedName = unitConversionService.normalizeIngredientName(ingredient.getName());
@@ -58,6 +64,7 @@ public class ShoppingListCoverageService {
             Double requiredAmount = ingredient.getAmount() > 0 ? ingredient.getAmount() : null;
             UnitConversionService.NormalizedUnit requiredUnit = unitConversionService.normalize(ingredient.getUnit()).orElse(null);
             if (requiredAmount == null || requiredUnit == null) {
+                unresolvedIngredients.add(toShoppingListItem(ingredient.getName(), ingredient.getAmount(), ingredient.getUnit()));
                 continue;
             }
 
@@ -89,13 +96,18 @@ public class ShoppingListCoverageService {
                 continue;
             }
 
-            if (!hasCompatibleMeasuredItem && !hasUnmeasuredMatch) {
-                missingIngredients.add(toShoppingListItem(ingredient.getName(), ingredient.getAmount(), ingredient.getUnit()));
+            if (hasCompatibleMeasuredItem || hasUnmeasuredMatch) {
+                availableIngredients.add(ingredient.getName());
+            } else if (!hasCompatibleMeasuredItem && !hasUnmeasuredMatch) {
+                unresolvedIngredients.add(toShoppingListItem(ingredient.getName(), ingredient.getAmount(), ingredient.getUnit()));
             }
         }
 
-        return missingIngredients;
+        return new Coverage(availableIngredients, missingIngredients, unresolvedIngredients);
     }
+
+    public record Coverage(List<String> available, List<ShoppingListGenerationItemDto> missing,
+                           List<ShoppingListGenerationItemDto> unresolved) {}
 
     private List<RecipeIngredientDto> safeRecipeIngredients(List<RecipeIngredientDto> recipeIngredients) {
         return recipeIngredients == null ? List.of() : recipeIngredients;

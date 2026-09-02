@@ -11,6 +11,7 @@ const LanguageProbe = () => {
   return (
     <div>
       <p>{t("Home")}</p>
+      <p>{t("Polish recipe")}</p>
       <button type="button" onClick={() => setLocale("pl")}>
         Polski
       </button>
@@ -35,5 +36,6 @@ describe("LanguageProvider", () => {
     expect(screen.getByText("pl")).toBeInTheDocument();
     expect(localStorage.getItem("dishGenie.locale")).toBe("pl");
     expect(document.documentElement.lang).toBe("pl");
+    expect(screen.getByText("Przepis po polsku")).toBeInTheDocument();
   });
 });

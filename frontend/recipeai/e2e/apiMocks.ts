@@ -461,10 +461,16 @@ export const mockAuthenticatedRecipesApi = async (page: Page) => {
       return;
     }
 
-    if (method === "POST" && endpoint === "shoppingList/generate-from-recipe") {
-      await fulfillJson(route, [
-        { name: "Pasta", amount: 180, unit: "g" },
-      ]);
+    if (
+      method === "POST" &&
+      endpoint === "v2/shopping-list/preview-from-recipe"
+    ) {
+      await fulfillJson(route, {
+        missing: [{ name: "Pasta", amount: 180, unit: "g" }],
+        available: ["Tomato", "Basil"],
+        unresolved: [],
+        targetServings: 2,
+      });
       return;
     }
 

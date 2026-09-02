@@ -24,12 +24,19 @@ public class FridgeService {
     private final UserRepository userRepository;
     private final FridgeIngredientMapper fridgeIngredientMapper;
     private final UserService userService;
+    private final IngredientNormalizationService ingredientNormalizationService;
 
     public FridgeService(FridgeIngredientRepository fridgeIngredientRepository, UserRepository userRepository, FridgeIngredientMapper fridgeIngredientMapper, UserService userService) {
+        this(fridgeIngredientRepository, userRepository, fridgeIngredientMapper, userService, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public FridgeService(FridgeIngredientRepository fridgeIngredientRepository, UserRepository userRepository, FridgeIngredientMapper fridgeIngredientMapper, UserService userService, IngredientNormalizationService ingredientNormalizationService) {
         this.fridgeIngredientRepository = fridgeIngredientRepository;
         this.userRepository = userRepository;
         this.fridgeIngredientMapper = fridgeIngredientMapper;
         this.userService = userService;
+        this.ingredientNormalizationService = ingredientNormalizationService;
     }
 
     public List<FridgeIngredientDto> getFridgeIngredients(String email) {
@@ -58,10 +65,12 @@ public class FridgeService {
         if (!mergeCandidates.isEmpty()) {
             FridgeIngredient existingIngredient = mergeCandidates.get(0);
             existingIngredient.setAmount(mergeAmounts(existingIngredient.getAmount(), fridgeIngredientDto.getAmount()));
+            attachCanonicalIngredient(existingIngredient, ingredientName);
             return fridgeIngredientRepository.save(existingIngredient);
         }
 
         FridgeIngredient fridgeIngredient = fridgeIngredientMapper.toFridgeIngredientWithUser(fridgeIngredientDto, user);
+        attachCanonicalIngredient(fridgeIngredient, ingredientName);
         return fridgeIngredientRepository.save(fridgeIngredient);
     }
 
@@ -135,6 +144,7 @@ public class FridgeService {
 
         if (mergeTarget != null) {
             mergeTarget.setAmount(mergeAmounts(mergeTarget.getAmount(), amount));
+            attachCanonicalIngredient(mergeTarget, ingredientName);
             fridgeIngredientRepository.deleteById(id);
             return fridgeIngredientRepository.save(mergeTarget);
         }
@@ -143,8 +153,19 @@ public class FridgeService {
         fridgeIngredient.setExpirationDate(fridgeIngredientDto.getExpirationDate());
         fridgeIngredient.setAmount(amount);
         fridgeIngredient.setUnit(unit);
+        attachCanonicalIngredient(fridgeIngredient, ingredientName);
 
         return fridgeIngredientRepository.save(fridgeIngredient);
+    }
+
+    private void attachCanonicalIngredient(FridgeIngredient fridgeIngredient, String name) {
+        if (ingredientNormalizationService == null) {
+            return;
+        }
+        IngredientNormalizationService.Resolution resolution = ingredientNormalizationService.resolve(name);
+        if (resolution.isResolved()) {
+            fridgeIngredient.setIngredient(resolution.ingredient());
+        }
     }
 
     private Unit parseUnit(String unit) {

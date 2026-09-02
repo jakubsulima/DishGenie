@@ -3,6 +3,7 @@ package org.jakub.backendapi.repositories;
 import org.jakub.backendapi.entities.Recipe;
 import org.jakub.backendapi.entities.User;
 import org.jakub.backendapi.entities.Enums.RecipeVisibility;
+import org.jakub.backendapi.entities.Enums.ContentLocale;
 import org.jakub.backendapi.repositories.projections.RecipeSitemapEntry;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,10 +32,15 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     Optional<Recipe> findByNameAndUser(String name, User user);
 
+    Optional<Recipe> findByNameAndUserAndLocale(String name, User user, ContentLocale locale);
+
     @Query("""
             SELECT r.id FROM Recipe r
             """)
     Page<Long> findRecipeIds(Pageable pageable);
+
+    @Query("SELECT r.id FROM Recipe r WHERE r.locale = :locale")
+    Page<Long> findRecipeIdsByLocale(@Param("locale") ContentLocale locale, Pageable pageable);
 
     @Query("""
             SELECT r.id FROM Recipe r
@@ -42,17 +48,38 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             """)
     Page<Long> findRecipeIdsByVisibility(@Param("visibility") RecipeVisibility visibility, Pageable pageable);
 
+    @Query("SELECT r.id FROM Recipe r WHERE r.visibility = :visibility AND r.locale = :locale")
+    Page<Long> findRecipeIdsByVisibilityAndLocale(
+            @Param("visibility") RecipeVisibility visibility,
+            @Param("locale") ContentLocale locale,
+            Pageable pageable
+    );
+
     @Query("""
             SELECT r.id FROM Recipe r
             WHERE r.user = :user
             """)
     Page<Long> findRecipeIdsByUser(@Param("user") User user, Pageable pageable);
 
+    @Query("SELECT r.id FROM Recipe r WHERE r.user = :user AND r.locale = :locale")
+    Page<Long> findRecipeIdsByUserAndLocale(
+            @Param("user") User user,
+            @Param("locale") ContentLocale locale,
+            Pageable pageable
+    );
+
     @Query("""
             SELECT r.id FROM Recipe r
             WHERE LOWER(r.name) LIKE LOWER(CONCAT(:searchTerm, '%'))
             """)
     Page<Long> searchRecipeIds(@Param("searchTerm") String searchTerm, Pageable pageable);
+
+    @Query("SELECT r.id FROM Recipe r WHERE r.locale = :locale AND LOWER(r.name) LIKE LOWER(CONCAT(:searchTerm, '%'))")
+    Page<Long> searchRecipeIdsByLocale(
+            @Param("searchTerm") String searchTerm,
+            @Param("locale") ContentLocale locale,
+            Pageable pageable
+    );
 
     @Query("""
             SELECT r.id FROM Recipe r
@@ -67,12 +94,38 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     @Query("""
             SELECT r.id FROM Recipe r
+            WHERE r.visibility = :visibility
+              AND r.locale = :locale
+              AND LOWER(r.name) LIKE LOWER(CONCAT(:searchTerm, '%'))
+            """)
+    Page<Long> searchRecipeIdsByVisibilityAndLocale(
+            @Param("searchTerm") String searchTerm,
+            @Param("visibility") RecipeVisibility visibility,
+            @Param("locale") ContentLocale locale,
+            Pageable pageable
+    );
+
+    @Query("""
+            SELECT r.id FROM Recipe r
             WHERE r.user = :user
               AND LOWER(r.name) LIKE LOWER(CONCAT(:searchTerm, '%'))
             """)
     Page<Long> searchRecipeIdsByUser(
             @Param("searchTerm") String searchTerm,
             @Param("user") User user,
+            Pageable pageable
+    );
+
+    @Query("""
+            SELECT r.id FROM Recipe r
+            WHERE r.user = :user
+              AND r.locale = :locale
+              AND LOWER(r.name) LIKE LOWER(CONCAT(:searchTerm, '%'))
+            """)
+    Page<Long> searchRecipeIdsByUserAndLocale(
+            @Param("searchTerm") String searchTerm,
+            @Param("user") User user,
+            @Param("locale") ContentLocale locale,
             Pageable pageable
     );
 

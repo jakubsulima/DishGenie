@@ -9,7 +9,9 @@ group = 'org.jakub' // use all lowercase to match folder structure
 version = '0.0.1-SNAPSHOT'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 ext['spring-security.version'] = '6.5.9'
@@ -45,6 +47,12 @@ dependencies {
 tasks.withType(JavaCompile) {
     options.annotationProcessorPath = configurations.annotationProcessor
     options.compilerArgs += ['-parameters']
+}
+
+tasks.withType(Test).configureEach {
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 springBoot {
