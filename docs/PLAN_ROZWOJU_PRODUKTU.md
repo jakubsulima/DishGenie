@@ -78,6 +78,8 @@ Najważniejsza ścieżka użytkownika:
 
 Każdy etap powinien zostać wydany jako mała, mierzalna wersja. Kolejny etap zaczyna się dopiero po spełnieniu bramy jakości poprzedniego.
 
+Szczegółowy plan wykonawczy dla Etapów 0–3 znajduje się w [PLAN_WDROZENIA_ETAPOW_0_3.md](PLAN_WDROZENIA_ETAPOW_0_3.md).
+
 ### Etap 0 — pomiar i stabilna baza jakości
 
 **Cel:** móc bezpiecznie oceniać kolejne zmiany.
@@ -401,4 +403,3 @@ Jeżeli prace mają zacząć się od razu, pierwsze trzy samodzielne zakresy to:
 1. **Prywatny zapis przepisu:** migracja widoczności, filtrowanie wszystkich publicznych odczytów, status w bibliotece i publikacja/wycofanie wraz z testami uprawnień.
 2. **Porcje i konwersje:** trwałe `servings`, wspólny serwis jednostek, przeliczanie składników i testy agregacji.
 3. **Jedna strukturalna rekomendacja:** nowy payload frontendu, `PRIORITIZE` + `MINIMIZE`, deterministyczne „masz/brakuje” i wyjaśnienie w UI. Dopiero po jakości tego przekroju należy generować pełne siedem dni.
-

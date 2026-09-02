@@ -81,6 +81,31 @@ class DatabaseMigrationIT {
                 Integer.class
         );
         assertThat(privacyConstraint).isEqualTo(1);
+
+        Integer canonicalIngredientColumns = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM information_schema.columns " +
+                        "WHERE table_name = 'ingredient' " +
+                        "AND column_name IN ('canonical_name', 'is_staple')",
+                Integer.class
+        );
+        assertThat(canonicalIngredientColumns).isEqualTo(2);
+        Integer aliasTable = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM information_schema.tables WHERE table_name = 'ingredient_alias'",
+                Integer.class
+        );
+        assertThat(aliasTable).isEqualTo(1);
+        Integer localeConstraints = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM pg_constraint " +
+                        "WHERE conname IN ('ingredient_alias_locale_check', 'recipe_content_locale_check')",
+                Integer.class
+        );
+        assertThat(localeConstraints).isEqualTo(2);
+        String recipeLocaleDefault = jdbcTemplate.queryForObject(
+                "SELECT column_default FROM information_schema.columns " +
+                        "WHERE table_name = 'recipe' AND column_name = 'content_locale'",
+                String.class
+        );
+        assertThat(recipeLocaleDefault).contains("en");
     }
 
     @Test

@@ -843,12 +843,55 @@ public class GeminiService {
         ObjectNode coverage = recipeNode.putObject("fridgeCoverage");
         coverage.set("available", available);
         coverage.set("missing", objectMapper.valueToTree(missing));
+        coverage.set("unresolved", objectMapper.valueToTree(
+                shoppingListCoverageService.findCoverage(recipeIngredients, safeFridgeItems).unresolved()));
+        long measuredItems = recipeIngredients.stream()
+                .filter(item -> item.getAmount() > 0 && shoppingListCoverageService.findCoverage(
+                        List.of(item), safeFridgeItems).unresolved().isEmpty())
+                .count();
+        long coveredItems = recipeIngredients.stream()
+                .filter(item -> arrayContains(available, item.getName()))
+                .count();
+        coverage.put("coverageRatio", measuredItems == 0 ? 0d : (double) coveredItems / measuredItems);
+        ArrayNode reasonCodes = objectMapper.createArrayNode();
+        if (usesNonExpiredExpiringItem(recipeIngredients, safeFridgeItems)) {
+            reasonCodes.add("USES_EXPIRING_ITEM");
+        }
+        if (missing.isEmpty()) {
+            reasonCodes.add("HIGH_FRIDGE_COVERAGE");
+        } else if (available.size() > 0) {
+            reasonCodes.add("LOW_SHOPPING_NEED");
+        }
+        coverage.set("reasonCodes", reasonCodes);
         coverage.put("explanation", buildCoverageExplanation(
                 recipeIngredients,
                 safeFridgeItems,
                 missingNames,
                 requestedLocale
         ));
+    }
+
+    private boolean arrayContains(ArrayNode values, String expected) {
+        for (JsonNode value : values) {
+            if (value.asText().equals(expected)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean usesNonExpiredExpiringItem(
+            List<RecipeIngredientDto> recipeIngredients,
+            List<FridgeIngredientDto> fridgeItems
+    ) {
+        java.time.LocalDate today = java.time.LocalDate.now();
+        return fridgeItems.stream().anyMatch(fridgeItem ->
+                fridgeItem != null
+                        && fridgeItem.getExpirationDate() != null
+                        && !fridgeItem.getExpirationDate().isBefore(today)
+                        && recipeIngredients.stream().anyMatch(ingredient ->
+                        normalizeIngredientName(ingredient.getName())
+                                .equals(normalizeIngredientName(fridgeItem.getName()))));
     }
 
     String buildCoverageExplanation(

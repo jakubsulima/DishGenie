@@ -105,6 +105,36 @@ describe("RecipePage", () => {
     expect(generateRecipe).not.toHaveBeenCalled();
   });
 
+  test("keeps and displays the recipe content language when saving", async () => {
+    renderRecipePage({
+      pathname: "/Recipe",
+      state: {
+        existingRecipe: {
+          name: "Zupa pomidorowa",
+          title: "Zupa pomidorowa",
+          locale: "pl",
+          ingredients: [{ name: "Pomidor", amount: 4, unit: "szt." }],
+          instructions: ["Ugotuj pomidory"],
+          timeToPrepare: "30 min",
+        },
+      },
+    });
+
+    expect(await screen.findByText("Polish recipe")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Save Recipe" }));
+
+    await waitFor(() => {
+      expect(apiClient).toHaveBeenCalledWith(
+        "addRecipe",
+        true,
+        expect.objectContaining({
+          name: "Zupa pomidorowa",
+          locale: "pl",
+        }),
+      );
+    });
+  });
+
   test("generates recipes from a search prompt", async () => {
     vi.mocked(generateRecipe).mockResolvedValue({
       recipes: [

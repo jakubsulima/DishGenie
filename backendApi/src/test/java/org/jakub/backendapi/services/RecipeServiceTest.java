@@ -5,6 +5,7 @@ import org.jakub.backendapi.dto.RecipeIngredientDto;
 import org.jakub.backendapi.dto.RecipeNutritionDto;
 import org.jakub.backendapi.entities.Enums.Role;
 import org.jakub.backendapi.entities.Enums.RecipeVisibility;
+import org.jakub.backendapi.entities.Enums.ContentLocale;
 import org.jakub.backendapi.entities.Ingredient;
 import org.jakub.backendapi.entities.Recipe;
 import org.jakub.backendapi.entities.RecipeIngredient;
@@ -33,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -356,7 +358,8 @@ class RecipeServiceTest {
 
         Ingredient egg = new Ingredient(9L, "Egg", List.of());
         when(userRepository.findByEmailForUpdate("owner@example.com")).thenReturn(Optional.of(owner));
-        when(recipeRepository.findByNameAndUser("Private recipe", owner)).thenReturn(Optional.empty());
+        when(recipeRepository.findByNameAndUserAndLocale("Private recipe", owner, ContentLocale.en))
+                .thenReturn(Optional.empty());
         when(recipeMapper.toRecipeWithUser(request, owner)).thenReturn(recipe);
         when(ingredientRepository.findAllByLowerNameIn(any())).thenReturn(List.of(egg));
         when(recipeRepository.save(recipe)).thenReturn(recipe);
@@ -367,6 +370,52 @@ class RecipeServiceTest {
         assertEquals(RecipeVisibility.PRIVATE, recipe.getVisibility());
         assertEquals(RecipeVisibility.PRIVATE, result.getVisibility());
         assertEquals(42L, result.getId());
+    }
+
+    @Test
+    void saveRecipe_shouldUseCanonicalNormalizationForFinalIngredientLookup() {
+        User owner = new User();
+        owner.setId(7L);
+        owner.setEmail("owner@example.com");
+
+        RecipeDto request = new RecipeDto();
+        request.setName("Herb soup");
+        request.setIngredients(List.of(new RecipeIngredientDto("Fresh  Herbs", 10, "GRAMS")));
+        request.setInstructions(List.of("Cook"));
+
+        Recipe recipe = new Recipe();
+        recipe.setUser(owner);
+        IngredientNormalizationService normalizationService = mock(IngredientNormalizationService.class);
+        when(normalizationService.canonicalName("Fresh  Herbs")).thenReturn("fresh herbs");
+        when(normalizationService.resolve("Fresh  Herbs", "en")).thenReturn(
+                new IngredientNormalizationService.Resolution(
+                        IngredientNormalizationService.Status.UNRESOLVED,
+                        null,
+                        "Fresh  Herbs",
+                        List.of()
+                )
+        );
+        RecipeService normalizedRecipeService = new RecipeService(
+                recipeRepository,
+                userRepository,
+                ingredientRepository,
+                recipeIngredientRepository,
+                recipeMapper,
+                normalizationService
+        );
+
+        when(userRepository.findByEmailForUpdate("owner@example.com")).thenReturn(Optional.of(owner));
+        when(recipeRepository.findByNameAndUserAndLocale("Herb soup", owner, ContentLocale.en))
+                .thenReturn(Optional.empty());
+        when(recipeMapper.toRecipeWithUser(request, owner)).thenReturn(recipe);
+        when(ingredientRepository.saveAll(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(recipeRepository.save(recipe)).thenReturn(recipe);
+
+        Recipe saved = normalizedRecipeService.saveRecipe(request, "owner@example.com");
+
+        assertEquals(1, saved.getRecipeIngredients().size());
+        assertEquals("fresh herbs", saved.getRecipeIngredients().get(0).getIngredient().getCanonicalName());
+        assertEquals("Fresh  Herbs", saved.getRecipeIngredients().get(0).getDisplayName());
     }
 
     @Test
@@ -384,6 +433,20 @@ class RecipeServiceTest {
 
         verify(recipeRepository).findRecipeIdsByVisibility(RecipeVisibility.PUBLIC, pageable);
         verify(recipeRepository, never()).findRecipeIds(pageable);
+    }
+
+    @Test
+    void getAllRecipes_shouldFilterPublicRecipesByRequestedLocale() {
+        PageRequest pageable = PageRequest.of(0, 10);
+        Page<Long> recipeIds = new PageImpl<>(List.of(), pageable, 0);
+        when(recipeRepository.findRecipeIdsByVisibilityAndLocale(
+                RecipeVisibility.PUBLIC, ContentLocale.pl, pageable)).thenReturn(recipeIds);
+
+        recipeService.getAllRecipes(pageable, null, ContentLocale.pl);
+
+        verify(recipeRepository).findRecipeIdsByVisibilityAndLocale(
+                RecipeVisibility.PUBLIC, ContentLocale.pl, pageable);
+        verify(recipeRepository, never()).findRecipeIdsByVisibility(RecipeVisibility.PUBLIC, pageable);
     }
 
     @Test

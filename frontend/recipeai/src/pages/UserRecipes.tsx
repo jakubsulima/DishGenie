@@ -24,7 +24,7 @@ const Recipes = () => {
   const [draftSearchTerm, setDraftSearchTerm] = useState<string>("");
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState<string>("");
   const [retryNonce, setRetryNonce] = useState(0);
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
 
   const RECIPES_PER_PAGE = 9;
   const GUEST_RECIPES_LIMIT = 10;
@@ -36,8 +36,8 @@ const Recipes = () => {
       setIsLoading(true);
       setError("");
       const endpoint = isGuest
-        ? `getAllRecipes?page=0&size=${GUEST_RECIPES_LIMIT}&sort=id,desc`
-        : `getAllRecipes?page=${currentPage}&size=${RECIPES_PER_PAGE}`;
+        ? `getAllRecipes?page=0&size=${GUEST_RECIPES_LIMIT}&sort=id,desc&locale=${locale}`
+        : `getAllRecipes?page=${currentPage}&size=${RECIPES_PER_PAGE}&locale=${locale}`;
       const response = await apiClient<Partial<PagedRecipesResponse>>(
         endpoint,
         false,
@@ -53,7 +53,7 @@ const Recipes = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [GUEST_RECIPES_LIMIT, RECIPES_PER_PAGE, currentPage, isGuest, t]);
+  }, [GUEST_RECIPES_LIMIT, RECIPES_PER_PAGE, currentPage, isGuest, locale, t]);
 
   const searchRecipes = useCallback(
     async (term: string) => {
@@ -67,7 +67,7 @@ const Recipes = () => {
         const response = await apiClient<Partial<PagedRecipesResponse>>(
           `searchRecipes/${encodeURIComponent(
             term,
-          )}?page=${currentPage}&size=${RECIPES_PER_PAGE}&sort=id,desc`,
+          )}?page=${currentPage}&size=${RECIPES_PER_PAGE}&sort=id,desc&locale=${locale}`,
           false,
         );
         const paged =
@@ -85,7 +85,7 @@ const Recipes = () => {
         setIsLoading(false);
       }
     },
-    [RECIPES_PER_PAGE, currentPage, t],
+    [RECIPES_PER_PAGE, currentPage, locale, t],
   );
 
   const handleSearch = () => {
@@ -121,7 +121,7 @@ const Recipes = () => {
           setIsLoading(true);
           setError("");
           const response = await apiClient<PagedRecipesResponse>(
-            `getUserRecipes/${user.id}?page=${currentPage}&size=${RECIPES_PER_PAGE}&sort=id,desc`,
+            `getUserRecipes/${user.id}?page=${currentPage}&size=${RECIPES_PER_PAGE}&sort=id,desc&locale=${locale}`,
             false,
           );
           setRecipes(response.content);
@@ -146,6 +146,7 @@ const Recipes = () => {
     fetchAllRecipes,
     searchRecipes,
     retryNonce,
+    locale,
     t,
   ]);
 
@@ -299,6 +300,7 @@ const Recipes = () => {
                     title={recipe.name}
                     timeToPrepare={recipe.timeToPrepare}
                     visibility={user ? recipe.visibility : undefined}
+                    locale={recipe.locale}
                   />
                 </div>
               ))}

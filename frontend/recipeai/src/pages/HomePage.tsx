@@ -5,7 +5,7 @@ import { useUser } from "../context/context";
 import { useLanguage } from "../context/languageContext";
 import { captureEvent } from "../lib/posthog";
 import { savePendingRecipeSearch } from "../lib/pendingRecipeIntent";
-import { apiClient } from "../lib/hooks";
+import { apiClient, type RecipeGenerationOptions } from "../lib/hooks";
 import { landingFaqs } from "../lib/landingContent";
 import { featuredRecipes } from "../lib/featuredRecipes";
 import ButtonsForm from "../components/ButtonsForm";
@@ -147,6 +147,7 @@ const recipeConstraints = [
 const mealTypes = ["Dinner", "Lunch", "Breakfast", "Snack"];
 const LOGGED_IN_HOME_ONBOARDING_PREFIX = "dishGenie:homeOnboardingSeen";
 const RECENT_RECIPE_LIMIT = 3;
+const GENERATED_RECIPES_REQUEST_COUNT = 3;
 
 const getLoggedInHomeOnboardingKey = (userId: number) =>
   `${LOGGED_IN_HOME_ONBOARDING_PREFIX}:${userId}`;
@@ -307,7 +308,8 @@ const HomePage = () => {
   const navigate = useNavigate();
   const { fridgeItems } = useFridge();
   const { user } = useUser();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const [selectedServings, setSelectedServings] = useState(2);
 
   useEffect(() => {
     if (!user?.id) {
@@ -334,7 +336,7 @@ const HomePage = () => {
 
       try {
         const response = await apiClient<PagedRecipesResponse>(
-          `getUserRecipes/${user.id}?page=0&size=${RECENT_RECIPE_LIMIT}&sort=id,desc`,
+          `getUserRecipes/${user.id}?page=0&size=${RECENT_RECIPE_LIMIT}&sort=id,desc&locale=${locale}`,
           false,
         );
 
@@ -359,7 +361,7 @@ const HomePage = () => {
     return () => {
       isMounted = false;
     };
-  }, [user?.id]);
+  }, [locale, user?.id]);
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia(
@@ -566,8 +568,38 @@ const HomePage = () => {
     return finalSearch;
   };
 
+  const buildGenerationOptions = (searchValue = search): RecipeGenerationOptions => {
+    const timeValue = tradeoffValues.time;
+    const effortValue = tradeoffValues.effort;
+    const moodValue = tradeoffValues.mood;
+    const flavorValue = tradeoffValues.flavor;
+    const pantryValue = tradeoffValues.pantry;
+    const noShopping = selectedConstraints.includes("No shopping");
+
+    return {
+      requestText: searchValue.trim() || "random recipe",
+      locale,
+      count: GENERATED_RECIPES_REQUEST_COUNT,
+      servings: selectedServings,
+      fridgePolicy: pantryValue <= 25 ? "PRIORITIZE" : "SUGGEST",
+      shoppingPolicy: noShopping ? "NONE" : "MINIMIZE",
+      mustUseFridgeItemIds: [],
+      preferences: {
+        mealType: selectedMealType
+          ? selectedMealType.toUpperCase() as RecipeGenerationOptions["preferences"]["mealType"]
+          : "ANY",
+        maxMinutes: timeValue <= 25 ? 20 : timeValue >= 75 ? 60 : undefined,
+        effort: effortValue <= 25 ? "LOW" : effortValue >= 75 ? "HIGH" : "MEDIUM",
+        mood: moodValue <= 25 ? "COMFORTING" : moodValue >= 75 ? "FRESH" : "ANY",
+        flavor: flavorValue >= 75 ? "SPICY" : "ANY",
+        constraints: selectedConstraints,
+      },
+    };
+  };
+
   const startRecipeFlow = (searchValue = search, cta: string) => {
     const finalSearch = buildRecipeSearch(searchValue);
+    const generationOptions = buildGenerationOptions(searchValue);
     const adjustedTradeoffCount = Object.entries(tradeoffValues).filter(
       ([, value]) => value !== 50,
     ).length;
@@ -585,12 +617,12 @@ const HomePage = () => {
     });
 
     if (!user) {
-      savePendingRecipeSearch(finalSearch);
+      savePendingRecipeSearch(finalSearch, generationOptions);
       navigate("/login", {
         state: {
           from: {
             pathname: "/Recipe",
-            state: { search: finalSearch },
+            state: { search: finalSearch, generationOptions },
           },
         },
       });
@@ -598,7 +630,7 @@ const HomePage = () => {
     }
 
     setIsNavigating(true);
-    navigate("Recipe", { state: { search: finalSearch } });
+    navigate("Recipe", { state: { search: finalSearch, generationOptions } });
   };
 
   const handleSearch = () => {
@@ -906,6 +938,22 @@ const HomePage = () => {
                           })}
                         </div>
                       </section>
+                      <label className="flex items-center justify-between gap-4 rounded-xl border border-primary/10 bg-background p-3 text-sm font-extrabold text-text">
+                        <span>{t("People")}</span>
+                        <input
+                          aria-label={t("People")}
+                          type="number"
+                          min={1}
+                          max={100}
+                          value={selectedServings}
+                          onChange={(event) =>
+                            setSelectedServings(
+                              Math.max(1, Math.min(100, Number(event.target.value) || 1)),
+                            )
+                          }
+                          className="w-20 rounded-lg border border-primary/20 bg-secondary px-3 py-2 text-center text-text focus:outline-none focus:ring-2 focus:ring-accent"
+                        />
+                      </label>
                       <section>
                         <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.12em] text-text/45">
                           {t("Stackable needs")}
@@ -1088,6 +1136,15 @@ const HomePage = () => {
                       {recipe.timeToPrepare && (
                         <p className="mt-1 text-xs font-semibold text-text/50">
                           {recipe.timeToPrepare}
+                        </p>
+                      )}
+                      {recipe.locale && (
+                        <p className="mt-1 text-[11px] font-semibold text-text/45">
+                          {t(
+                            recipe.locale === "pl"
+                              ? "Polish recipe"
+                              : "English recipe",
+                          )}
                         </p>
                       )}
                     </Link>

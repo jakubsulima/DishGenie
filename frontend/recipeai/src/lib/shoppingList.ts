@@ -305,7 +305,21 @@ export const fetchShoppingList = async (): Promise<ShoppingListItem[]> => {
 
 export const generateShoppingListFromRecipe = async (
   ingredients: ShoppingItemInput[],
+  options: { recipeId?: string | number; targetServings?: number; excludeStaples?: boolean } = {},
 ): Promise<ShoppingListGenerationItem[]> => {
+  if (options.recipeId !== undefined) {
+    const response = await apiClient<{
+      missing?: ShoppingListGenerationItem[];
+      available?: string[];
+      unresolved?: ShoppingListGenerationItem[];
+    }>("v2/shopping-list/preview-from-recipe", true, {
+      recipeId: Number(options.recipeId),
+      targetServings: options.targetServings ?? 2,
+      excludeStaples: options.excludeStaples ?? false,
+    });
+    return normalizeShoppingListGenerationItems(response?.missing);
+  }
+
   const response = await apiClient("shoppingList/generate-from-recipe", true, {
     ingredients: ingredients.map((ingredient) => ({
       name: ingredient.name,

@@ -33,8 +33,9 @@ public class RecipeGenerationRequestDto {
     @JsonDeserialize(contentUsing = LegacyFridgeItemDeserializer.class)
     private List<@Valid FridgeIngredientDto> fridgeItems;
 
+    @NotNull(message = "Locale is required")
     @Pattern(regexp = "en|pl", message = "Locale must be 'en' or 'pl'")
-    private String locale;
+    private String locale = "en";
 
     @Min(value = 1, message = "Recipe count must be between 1 and 5")
     @Max(value = 5, message = "Recipe count must be between 1 and 5")
@@ -214,6 +215,10 @@ public class RecipeGenerationRequestDto {
     @JsonIgnore
     public boolean hasValidMandatoryFridgeItems() {
         List<Long> ids = mustUseFridgeItemIds();
+        // v2 resolves fridge items on the server, so an omitted client list is valid.
+        if (fridgeItems == null || fridgeItems.isEmpty()) {
+            return new HashSet<>(ids).size() == ids.size();
+        }
         Set<Long> availableIds = new HashSet<>();
         for (FridgeIngredientDto item : fridgeItems()) {
             if (item != null && item.getId() != null) {

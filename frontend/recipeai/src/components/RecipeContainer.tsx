@@ -7,6 +7,7 @@ interface RecipeContainerProps {
   timeToPrepare: string;
   to?: string;
   visibility?: "PRIVATE" | "PUBLIC";
+  locale?: "en" | "pl";
 }
 
 const RecipeContainer = ({
@@ -15,6 +16,7 @@ const RecipeContainer = ({
   timeToPrepare,
   to,
   visibility,
+  locale,
 }: RecipeContainerProps) => {
   const { t } = useLanguage();
   return (
@@ -30,6 +32,11 @@ const RecipeContainer = ({
             {visibility && (
               <span className="rounded-full border border-primary/15 bg-background px-2 py-0.5 text-[11px] font-medium text-text/60">
                 {t(visibility === "PUBLIC" ? "Public" : "Private")}
+              </span>
+            )}
+            {locale && (
+              <span className="rounded-full border border-primary/15 bg-background px-2 py-0.5 text-[11px] font-medium text-text/60">
+                {t(locale === "pl" ? "Polish recipe" : "English recipe")}
               </span>
             )}
           </div>

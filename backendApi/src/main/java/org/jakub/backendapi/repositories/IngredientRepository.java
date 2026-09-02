@@ -18,5 +18,6 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
 
     @Query("SELECT i FROM Ingredient i WHERE LOWER(i.name) IN :normalizedNames")
     List<Ingredient> findAllByLowerNameIn(@Param("normalizedNames") Collection<String> normalizedNames);
-}
 
+    List<Ingredient> findByCanonicalName(String canonicalName);
+}

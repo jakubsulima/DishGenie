@@ -1,11 +1,13 @@
 package org.jakub.backendapi.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.jakub.backendapi.dto.GenerateShoppingListFromRecipeRequestDto;
 import org.jakub.backendapi.dto.ShoppingListGenerationItemDto;
 import org.jakub.backendapi.dto.ShoppingListItemDto;
 import org.jakub.backendapi.services.ShoppingListGenerationService;
 import org.jakub.backendapi.services.ShoppingListService;
+import org.jakub.backendapi.services.RecipeShoppingPreviewService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,13 +20,16 @@ public class ShoppingListController {
 
     private final ShoppingListService shoppingListService;
     private final ShoppingListGenerationService shoppingListGenerationService;
+    private final RecipeShoppingPreviewService recipeShoppingPreviewService;
 
     public ShoppingListController(
             ShoppingListService shoppingListService,
-            ShoppingListGenerationService shoppingListGenerationService
+            ShoppingListGenerationService shoppingListGenerationService,
+            RecipeShoppingPreviewService recipeShoppingPreviewService
     ) {
         this.shoppingListService = shoppingListService;
         this.shoppingListGenerationService = shoppingListGenerationService;
+        this.recipeShoppingPreviewService = recipeShoppingPreviewService;
     }
 
     public record ReplaceShoppingListRequest(List<ShoppingListItemDto> items) {
@@ -54,5 +59,15 @@ public class ShoppingListController {
                 payload != null ? payload.getIngredients() : List.of()
         );
         return ResponseEntity.ok(items);
+    }
+
+    @PostMapping("/v2/shopping-list/preview-from-recipe")
+    public ResponseEntity<org.jakub.backendapi.dto.RecipeShoppingPreviewResponseDto> previewFromRecipe(
+            @Valid @RequestBody org.jakub.backendapi.dto.RecipeShoppingPreviewRequestDto payload,
+            HttpServletRequest request
+    ) {
+        return ResponseEntity.ok(recipeShoppingPreviewService.preview(
+                payload.getRecipeId(), payload.getTargetServings(), payload.isExcludeStaples(),
+                getLoginFromToken(request)));
     }
 }

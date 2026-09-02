@@ -18,6 +18,12 @@ public class Ingredient {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Column(name = "canonical_name")
+    private String canonicalName;
+
+    @Column(name = "is_staple", nullable = false)
+    private boolean staple;
+
     @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecipeIngredient> recipeIngredients = new ArrayList<>();
 
@@ -45,6 +51,14 @@ public class Ingredient {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getCanonicalName() { return canonicalName; }
+
+    public void setCanonicalName(String canonicalName) { this.canonicalName = canonicalName; }
+
+    public boolean isStaple() { return staple; }
+
+    public void setStaple(boolean staple) { this.staple = staple; }
 
     public List<RecipeIngredient> getRecipeIngredients() {
         return recipeIngredients;

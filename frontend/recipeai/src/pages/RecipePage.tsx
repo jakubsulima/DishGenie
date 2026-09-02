@@ -4,6 +4,7 @@ import {
   generateRecipe,
   deleteClient,
   cleanAiJsonString,
+  type RecipeGenerationOptions,
 } from "../lib/hooks";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useFridge } from "../context/fridgeContext.tsx";
@@ -35,11 +36,15 @@ export interface RecipeData {
   instructions: string[];
   timeToPrepare: string;
   servings?: number;
+  locale?: "en" | "pl";
   visibility?: "PRIVATE" | "PUBLIC";
   canManage?: boolean;
   fridgeCoverage?: {
     available?: string[];
     missing?: RecipeIngredient[];
+    unresolved?: RecipeIngredient[];
+    coverageRatio?: number;
+    reasonCodes?: string[];
     explanation?: string;
   };
   nutrition?: {
@@ -188,7 +193,10 @@ const getRecipeOptionHighlights = (
   return highlights.slice(0, 2);
 };
 
-const normalizeGeneratedRecipes = (raw: unknown): RecipeData[] => {
+const normalizeGeneratedRecipes = (
+  raw: unknown,
+  fallbackLocale: "en" | "pl" = "en",
+): RecipeData[] => {
   const rawRecord = asRecord(raw);
   const rawRecipes = rawRecord?.recipes;
   const candidates: unknown[] = Array.isArray(raw)
@@ -201,10 +209,12 @@ const normalizeGeneratedRecipes = (raw: unknown): RecipeData[] => {
 
   return candidates
     .map((candidateValue, index: number) => {
-      const candidate = asRecord(candidateValue);
+      const candidateWrapper = asRecord(candidateValue);
+      const candidate = asRecord(candidateWrapper?.recipe) ?? candidateWrapper;
       if (!candidate) {
         return null;
       }
+      const wrapperCoverage = asRecord(candidateWrapper?.fridgeCoverage);
 
       const name =
         typeof candidate.name === "string" && candidate.name.trim()
@@ -284,13 +294,17 @@ const normalizeGeneratedRecipes = (raw: unknown): RecipeData[] => {
           typeof candidate.servings === "number" && candidate.servings > 0
             ? candidate.servings
             : 2,
+        locale:
+          candidate.locale === "pl" || candidate.locale === "en"
+            ? candidate.locale
+            : fallbackLocale,
         visibility:
           candidate.visibility === "PRIVATE" || candidate.visibility === "PUBLIC"
             ? candidate.visibility
             : undefined,
         canManage: candidate.canManage === true,
         fridgeCoverage: (() => {
-          const coverage = asRecord(candidate.fridgeCoverage);
+          const coverage = wrapperCoverage ?? asRecord(candidate.fridgeCoverage);
           if (!coverage) {
             return undefined;
           }
@@ -315,9 +329,27 @@ const normalizeGeneratedRecipes = (raw: unknown): RecipeData[] => {
                 })
                 .filter((value): value is RecipeIngredient => value !== null)
             : [];
+          const unresolved = Array.isArray(coverage.unresolved)
+            ? coverage.unresolved
+                .map((value) => {
+                  const item = asRecord(value);
+                  if (!item || typeof item.name !== "string") return null;
+                  return {
+                    name: item.name,
+                    amount: typeof item.amount === "number" || typeof item.amount === "string" ? item.amount : null,
+                    unit: typeof item.unit === "string" ? item.unit : "",
+                  };
+                })
+                .filter((value): value is RecipeIngredient => value !== null)
+            : [];
           return {
             available,
             missing,
+            unresolved,
+            coverageRatio: typeof coverage.coverageRatio === "number" ? coverage.coverageRatio : undefined,
+            reasonCodes: Array.isArray(coverage.reasonCodes)
+              ? coverage.reasonCodes.filter((value): value is string => typeof value === "string")
+              : undefined,
             explanation:
               typeof coverage.explanation === "string"
                 ? coverage.explanation
@@ -355,11 +387,17 @@ const normalizeGeneratedRecipes = (raw: unknown): RecipeData[] => {
     );
 };
 
-const parseGeneratedRecipeResponse = (response: unknown): RecipeData[] => {
+const parseGeneratedRecipeResponse = (
+  response: unknown,
+  fallbackLocale: "en" | "pl",
+): RecipeData[] => {
   try {
     const jsonString = cleanAiJsonString(response);
     const parsedData = JSON.parse(jsonString);
-    const generatedRecipes = normalizeGeneratedRecipes(parsedData);
+    const generatedRecipes = normalizeGeneratedRecipes(
+      parsedData,
+      fallbackLocale,
+    );
 
     if (!generatedRecipes.length) {
       throw new Error();
@@ -384,7 +422,10 @@ const RecipePage = () => {
   const { user } = useUser();
   const { t, locale } = useLanguage();
 
-  const { search, existingRecipe } = location.state || {};
+  const routeState = location.state && typeof location.state === "object"
+    ? (location.state as { search?: string; existingRecipe?: RecipeData; generationOptions?: RecipeGenerationOptions })
+    : {};
+  const { search, existingRecipe, generationOptions } = routeState;
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [recipeData, setRecipeData] = useState<RecipeData | null>(null);
   const [recipeOptions, setRecipeOptions] = useState<RecipeData[]>([]);
@@ -399,21 +440,26 @@ const RecipePage = () => {
   const [saveStatus, setSaveStatus] = useState<
     "idle" | "saving" | "saved" | "error"
   >("idle");
+  const [targetServings, setTargetServings] = useState<number | null>(null);
 
   const currentRecipeIdentifierRef = useRef<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const applyGeneratedRecipeResponse = useCallback(
     (response: unknown, identifier: string) => {
-      const generatedRecipes = parseGeneratedRecipeResponse(response);
+      const generatedRecipes = parseGeneratedRecipeResponse(
+        response,
+        generationOptions?.locale ?? locale,
+      );
 
       setRecipeOptions(generatedRecipes);
       setSelectedRecipeIndex(0);
       setRecipeData(generatedRecipes[0]);
+      setTargetServings(generatedRecipes[0].servings ?? 2);
       setSaveStatus("idle");
       currentRecipeIdentifierRef.current = identifier;
     },
-    [],
+    [generationOptions?.locale, locale],
   );
 
   const resolveGenerationErrorMessage = (error: unknown) => {
@@ -466,12 +512,23 @@ const RecipePage = () => {
   }, [isLoading, locale, location.pathname, recipeData, recipeId]);
 
   useEffect(() => {
+    if (recipeData && targetServings === null) {
+      setTargetServings(recipeData.servings ?? 2);
+    }
+  }, [recipeData, targetServings]);
+
+  useEffect(() => {
     const loadRecipe = async () => {
       if (existingRecipe) {
+        const localizedExistingRecipe = {
+          ...existingRecipe,
+          locale: existingRecipe.locale ?? locale,
+        };
         setRecipeOptions([]);
         setSelectedRecipeIndex(0);
         setSaveStatus("idle");
-        setRecipeData(existingRecipe);
+        setRecipeData(localizedExistingRecipe);
+        setTargetServings(localizedExistingRecipe.servings ?? 2);
         setIsLoading(false);
         setError("");
         return;
@@ -483,7 +540,10 @@ const RecipePage = () => {
             setIsLoading(true);
             setError("");
             const response = await apiClient(`getRecipe/${recipeId}`, false);
-            const normalizedRecipe = normalizeGeneratedRecipes(response)[0];
+            const normalizedRecipe = normalizeGeneratedRecipes(
+              response,
+              locale,
+            )[0];
             if (!normalizedRecipe) {
               throw new Error("Failed to load recipe.");
             }
@@ -491,6 +551,7 @@ const RecipePage = () => {
             setSelectedRecipeIndex(0);
             setSaveStatus("idle");
             setRecipeData(normalizedRecipe);
+            setTargetServings(normalizedRecipe.servings ?? 2);
             currentRecipeIdentifierRef.current = recipeId;
           } catch (err: unknown) {
             console.error("Error fetching recipe:", err);
@@ -535,12 +596,20 @@ const RecipePage = () => {
 
               let response: unknown;
               try {
-                response = await generateRecipe(
-                  search,
-                  fridgeIngredients,
-                  controller.signal,
-                  GENERATED_RECIPES_REQUEST_COUNT,
-                );
+                response = generationOptions
+                  ? await generateRecipe(
+                      search,
+                      fridgeIngredients,
+                      controller.signal,
+                      GENERATED_RECIPES_REQUEST_COUNT,
+                      { structured: true, generationOptions },
+                    )
+                  : await generateRecipe(
+                      search,
+                      fridgeIngredients,
+                      controller.signal,
+                      GENERATED_RECIPES_REQUEST_COUNT,
+                    );
               } catch (generationError: unknown) {
                 if (isAbortError(generationError) && timedOut) {
                   throw new Error(
@@ -553,7 +622,10 @@ const RecipePage = () => {
               }
 
               applyGeneratedRecipeResponse(response, search);
-              const generatedRecipes = parseGeneratedRecipeResponse(response);
+              const generatedRecipes = parseGeneratedRecipeResponse(
+                response,
+                generationOptions?.locale ?? locale,
+              );
               captureEvent("recipe_generation_succeeded", {
                 generatedRecipeCount: generatedRecipes.length,
                 fridgeItemCount: fridgeIngredients.length,
@@ -597,6 +669,8 @@ const RecipePage = () => {
     getFridgeItemNames,
     generationRetryKey,
     user,
+    generationOptions,
+    locale,
   ]);
 
   const handleRetryGeneration = () => {
@@ -615,6 +689,7 @@ const RecipePage = () => {
 
     setSelectedRecipeIndex(index);
     setRecipeData(recipeOptions[index]);
+    setTargetServings(recipeOptions[index].servings ?? 2);
     setSaveStatus("idle");
     setError("");
   };
@@ -639,6 +714,7 @@ const RecipePage = () => {
         instructions: recipeData.instructions,
         nutrition: recipeData.nutrition,
         servings: recipeData.servings ?? 2,
+        locale: recipeData.locale ?? generationOptions?.locale ?? locale,
       });
       captureEvent("recipe_saved", {
         ingredientCount: recipeData.ingredients.length,
@@ -691,16 +767,26 @@ const RecipePage = () => {
 
     setError("");
 
+    const baseServings = recipeData.servings ?? 2;
+    const selectedServings = targetServings ?? baseServings;
     const recipeIngredientsPayload = recipeData.ingredients.map((ingredient) => ({
       name: ingredient.name,
-      amount: ingredient.amount,
+      amount:
+        typeof ingredient.amount === "number"
+          ? Number((ingredient.amount * selectedServings / baseServings).toFixed(4))
+          : ingredient.amount,
       unit: ingredient.unit,
     }));
 
     try {
       setIsGeneratingShoppingList(true);
-      const sourceIngredients =
-        await generateShoppingListFromRecipe(recipeIngredientsPayload);
+      const sourceIngredients = recipeId
+        ? await generateShoppingListFromRecipe(recipeIngredientsPayload, {
+            recipeId,
+            targetServings: selectedServings,
+            excludeStaples: false,
+          })
+        : await generateShoppingListFromRecipe(recipeIngredientsPayload);
 
       addShoppingItems(
         sourceIngredients.map((ingredient) => ({
@@ -739,6 +825,17 @@ const RecipePage = () => {
           : "bg-yellow-400 hover:bg-yellow-300"
       }`
     : "mobile-soft-press inline-flex w-full items-center justify-center rounded-xl border border-yellow-400 bg-yellow-50 px-4 py-3 font-semibold text-yellow-950 transition-colors hover:bg-yellow-100";
+
+  const displayedIngredients = recipeData
+    ? recipeData.ingredients.map((ingredient) => ({
+        ...ingredient,
+        amount:
+          typeof ingredient.amount === "number"
+            ? Number((ingredient.amount * (targetServings ?? recipeData.servings ?? 2) /
+                (recipeData.servings ?? 2)).toFixed(2))
+            : ingredient.amount,
+      }))
+    : [];
 
   const handleDelete = async () => {
     if (!recipeId) return;
@@ -924,7 +1021,42 @@ const RecipePage = () => {
                   {t(recipeData.visibility === "PUBLIC" ? "Public" : "Private")}
                 </span>
               )}
+              <span className="rounded-full border border-primary/15 bg-background px-3 py-1.5 text-sm text-text/75">
+                {t(
+                  recipeData.locale === "pl"
+                    ? "Polish recipe"
+                    : "English recipe",
+                )}
+              </span>
             </div>
+          </div>
+        </section>
+
+        <section className="mt-4 flex items-center justify-between rounded-2xl border border-primary/10 bg-secondary px-4 py-3">
+          <div>
+            <h2 className="text-sm font-semibold text-text">{t("Servings")}</h2>
+            <p className="text-xs text-text/60">
+              {t("Base recipe: {count}", { count: recipeData.servings ?? 2 })}
+            </p>
+          </div>
+          <div className="flex items-center gap-2" aria-label={t("Servings") }>
+            <button
+              type="button"
+              aria-label={t("Decrease servings")}
+              disabled={(targetServings ?? recipeData.servings ?? 2) <= 1}
+              onClick={() => setTargetServings((current) => Math.max(1, (current ?? recipeData.servings ?? 2) - 1))}
+              className="h-9 w-9 rounded-full border border-primary/20 bg-background text-lg font-bold text-text disabled:opacity-40"
+            >−</button>
+            <span className="min-w-8 text-center font-bold text-text">
+              {targetServings ?? recipeData.servings ?? 2}
+            </span>
+            <button
+              type="button"
+              aria-label={t("Increase servings")}
+              disabled={(targetServings ?? recipeData.servings ?? 2) >= 100}
+              onClick={() => setTargetServings((current) => Math.min(100, (current ?? recipeData.servings ?? 2) + 1))}
+              className="h-9 w-9 rounded-full border border-primary/20 bg-background text-lg font-bold text-text disabled:opacity-40"
+            >+</button>
           </div>
         </section>
 
@@ -951,9 +1083,28 @@ const RecipePage = () => {
                         .map((ingredient) => `${ingredient.name} · ${ingredient.amount ?? "?"} ${ingredient.unit}`.trim())
                         .join(", ")
                     : t("Nothing — shopping is optional")}
-                </p>
+                  </p>
               </div>
+              {recipeData.fridgeCoverage.unresolved?.length ? (
+                <div className="sm:col-span-2">
+                  <h2 className="text-sm font-semibold uppercase tracking-wide text-text/60">
+                    {t("To check")}
+                  </h2>
+                  <p className="mt-2 text-sm text-text/85">
+                    {recipeData.fridgeCoverage.unresolved
+                      .map((ingredient) => ingredient.name)
+                      .join(", ")}
+                  </p>
+                </div>
+              ) : null}
             </div>
+            {typeof recipeData.fridgeCoverage.coverageRatio === "number" && (
+              <p className="mt-3 text-xs font-semibold text-text/60">
+                {t("Fridge coverage: {percent}%", {
+                  percent: Math.round(recipeData.fridgeCoverage.coverageRatio * 100),
+                })}
+              </p>
+            )}
             {recipeData.fridgeCoverage.explanation && (
               <p className="mt-4 rounded-xl border border-accent/25 bg-accent/10 px-3 py-2 text-sm text-text/80">
                 <span className="font-semibold">{t("Why it fits")}:</span>{" "}
@@ -1069,7 +1220,7 @@ const RecipePage = () => {
                 {t("Ingredients")}
               </h2>
               <ul className="space-y-2.5">
-                {(recipeData.ingredients || []).map((ingredient, index) => (
+                {displayedIngredients.map((ingredient, index) => (
                   <li
                     key={index}
                     className="flex items-center justify-between rounded-lg border border-primary/10 bg-background px-3 py-2 text-text"

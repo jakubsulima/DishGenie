@@ -30,14 +30,14 @@ describe("UserRecipes search flow", () => {
         };
       }
 
-      if (url === "searchRecipes/pasta?page=0&size=9&sort=id,desc") {
+      if (url === "searchRecipes/pasta?page=0&size=9&sort=id,desc&locale=en") {
         return {
           content: [{ id: "9", name: "Pasta soup", timeToPrepare: "20 min" }],
           totalPages: 2,
         };
       }
 
-      if (url === "searchRecipes/pasta?page=1&size=9&sort=id,desc") {
+      if (url === "searchRecipes/pasta?page=1&size=9&sort=id,desc&locale=en") {
         return {
           content: [{ id: "10", name: "Pasta bake", timeToPrepare: "30 min" }],
           totalPages: 2,
@@ -56,6 +56,10 @@ describe("UserRecipes search flow", () => {
     );
 
     expect(await screen.findByText("Saved recipe")).toBeInTheDocument();
+    expect(apiClient).toHaveBeenCalledWith(
+      expect.stringContaining("locale=en"),
+      false,
+    );
     vi.mocked(apiClient).mockClear();
 
     fireEvent.change(screen.getByPlaceholderText("Search recipes by name..."), {
@@ -70,7 +74,7 @@ describe("UserRecipes search flow", () => {
 
     await waitFor(() => {
       expect(apiClient).toHaveBeenCalledWith(
-        "searchRecipes/pasta?page=0&size=9&sort=id,desc",
+        "searchRecipes/pasta?page=0&size=9&sort=id,desc&locale=en",
         false,
       );
     });
@@ -98,7 +102,7 @@ describe("UserRecipes search flow", () => {
 
     await waitFor(() => {
       expect(apiClient).toHaveBeenCalledWith(
-        "searchRecipes/pasta?page=1&size=9&sort=id,desc",
+        "searchRecipes/pasta?page=1&size=9&sort=id,desc&locale=en",
         false,
       );
     });

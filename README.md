@@ -254,6 +254,10 @@ The app will be available through nginx on http://localhost.
 ```bash
 cd backendApi
 
+# Verify the Java runtime before running Gradle (the project requires Java 17)
+java -version
+./gradlew -version
+
 # Run with H2 in-memory database (for testing)
 ./gradlew bootRun
 

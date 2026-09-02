@@ -30,6 +30,10 @@ public class FridgeIngredient {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "ingredient_id")
+    private Ingredient ingredient;
+
     public FridgeIngredient() {
     }
 
@@ -89,6 +93,10 @@ public class FridgeIngredient {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public Ingredient getIngredient() { return ingredient; }
+
+    public void setIngredient(Ingredient ingredient) { this.ingredient = ingredient; }
 
     @Override
     public boolean equals(Object o) {

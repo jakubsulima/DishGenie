@@ -22,6 +22,9 @@ public class RecipeIngredient {
     @Column(nullable = false)
     private double amount;
 
+    @Column(name = "display_name")
+    private String displayName;
+
     @Column(nullable = false)
     private String unit;
 
@@ -67,6 +70,10 @@ public class RecipeIngredient {
     public void setAmount(double amount) {
         this.amount = amount;
     }
+
+    public String getDisplayName() { return displayName; }
+
+    public void setDisplayName(String displayName) { this.displayName = displayName; }
 
     public String getUnit() {
         return unit;

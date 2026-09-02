@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import org.jakub.backendapi.entities.Enums.RecipeVisibility;
+import org.jakub.backendapi.entities.Enums.ContentLocale;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,8 @@ public class RecipeDto {
     @Min(value = 1, message = "Servings must be at least 1")
     @Max(value = 100, message = "Servings must not exceed 100")
     private int servings = 2;
+    @NotNull(message = "Recipe locale is required")
+    private ContentLocale locale = ContentLocale.en;
     private RecipeVisibility visibility;
     private boolean canManage;
 
@@ -113,6 +117,14 @@ public class RecipeDto {
         this.servings = servings;
     }
 
+    public ContentLocale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(ContentLocale locale) {
+        this.locale = locale == null ? ContentLocale.en : locale;
+    }
+
     public RecipeVisibility getVisibility() {
         return visibility;
     }
@@ -142,7 +154,8 @@ public class RecipeDto {
                 && Objects.equals(instructions, recipeDto.instructions)
                 && Objects.equals(description, recipeDto.description)
                 && Objects.equals(timeToPrepare, recipeDto.timeToPrepare)
-                && Objects.equals(nutrition, recipeDto.nutrition);
+                && Objects.equals(nutrition, recipeDto.nutrition)
+                && locale == recipeDto.locale;
     }
 
     @Override
@@ -156,6 +169,7 @@ public class RecipeDto {
                 timeToPrepare,
                 nutrition,
                 servings,
+                locale,
                 canManage
         );
     }
@@ -171,6 +185,7 @@ public class RecipeDto {
                 ", timeToPrepare='" + timeToPrepare + '\'' +
                 ", nutrition=" + nutrition +
                 ", servings=" + servings +
+                ", locale=" + locale +
                 ", canManage=" + canManage +
                 '}';
     }

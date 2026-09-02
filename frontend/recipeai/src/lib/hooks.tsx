@@ -71,6 +71,24 @@ interface RecipeGenerationFridgeItem {
   unit?: string;
 }
 
+export type RecipeGenerationOptions = {
+  requestText: string;
+  locale: "en" | "pl";
+  count: number;
+  servings: number;
+  fridgePolicy: "IGNORE" | "SUGGEST" | "PRIORITIZE";
+  shoppingPolicy: "ALLOWED" | "MINIMIZE" | "NONE";
+  mustUseFridgeItemIds: number[];
+  preferences: {
+    mealType?: "BREAKFAST" | "LUNCH" | "DINNER" | "SNACK" | "DESSERT" | "ANY";
+    maxMinutes?: number;
+    effort?: "LOW" | "MEDIUM" | "HIGH";
+    mood?: "FRESH" | "COMFORTING" | "LIGHT" | "HEARTY" | "ANY";
+    flavor?: "BALANCED" | "SPICY" | "SWEET" | "SAVORY" | "TANGY" | "ANY";
+    constraints?: string[];
+  };
+};
+
 type RecipeGenerationFridgeInput = string[] | RecipeGenerationFridgeItem[];
 
 const getStructuredFridgeItems = (
@@ -97,24 +115,28 @@ const requestRecipeGeneration = async (
   requestedCount: number,
   structured: boolean,
   signal?: AbortSignal,
+  generationOptions?: RecipeGenerationOptions,
 ): Promise<unknown> => {
   await ensureCsrfToken();
   const structuredFridgeItems = getStructuredFridgeItems(productsFridge);
-  const useStructuredPayload = structured || structuredFridgeItems !== null;
+  const useStructuredPayload = structured || generationOptions !== undefined;
+  const structuredPayload = {
+    requestText: generationOptions?.requestText ?? prompt,
+    locale: generationOptions?.locale ?? getRecipeGenerationLocale(),
+    count: generationOptions?.count ?? requestedCount,
+    servings: generationOptions?.servings ?? 2,
+    fridgePolicy: generationOptions?.fridgePolicy ?? "PRIORITIZE",
+    shoppingPolicy: generationOptions?.shoppingPolicy ?? "MINIMIZE",
+    mustUseFridgeItemIds: generationOptions?.mustUseFridgeItemIds ?? [],
+    preferences: generationOptions?.preferences ?? { mealType: "ANY" },
+  };
+  const legacyStructuredPayload = {
+    ...structuredPayload,
+    fridgeItems: structuredFridgeItems ?? productsFridge,
+  };
   const payload = useStructuredPayload
     ? {
-        requestText: prompt,
-        fridgeItems: structuredFridgeItems ?? productsFridge,
-        locale: getRecipeGenerationLocale(),
-        count: requestedCount,
-        servings: 2,
-        fridgePolicy: "PRIORITIZE",
-        shoppingPolicy: "MINIMIZE",
-        mustUseFridgeItemIds: [],
-        preferences: {
-          mealType: "ANY",
-          servings: 2,
-        },
+        ...structuredPayload,
       }
     : {
         prompt,
@@ -122,13 +144,21 @@ const requestRecipeGeneration = async (
         locale: getRecipeGenerationLocale(),
         count: requestedCount,
       };
-  const result = await axios.post(
-    `${API_URL}generateRecipe`,
-    payload,
-    { signal },
-  );
-
-  return result.data;
+  try {
+    const result = await axios.post(
+      `${API_URL}${useStructuredPayload ? "v2/recipes/generate" : "generateRecipe"}`,
+      payload,
+      { signal },
+    );
+    return result.data;
+  } catch (error) {
+    // Keep a one-release fallback while the v2 endpoint is rolled out.
+    if (!useStructuredPayload || !axios.isAxiosError(error) || error.response?.status !== 404) {
+      throw error;
+    }
+    const fallback = await axios.post(`${API_URL}generateRecipe`, legacyStructuredPayload, { signal });
+    return fallback.data;
+  }
 };
 
 const buildGenerationKey = (
@@ -136,21 +166,22 @@ const buildGenerationKey = (
   productsFridge: RecipeGenerationFridgeInput,
   requestedCount: number,
   structured: boolean,
+  generationOptions?: RecipeGenerationOptions,
 ) =>
   (() => {
     const structuredFridgeItems = getStructuredFridgeItems(productsFridge);
-    const useStructuredPayload = structured || structuredFridgeItems !== null;
+    const useStructuredPayload = structured || generationOptions !== undefined;
     return JSON.stringify(
       useStructuredPayload
         ? {
-            requestText: prompt,
-            locale: getRecipeGenerationLocale(),
-            count: requestedCount,
-            servings: 2,
-            fridgePolicy: "PRIORITIZE",
-            shoppingPolicy: "MINIMIZE",
-            mustUseFridgeItemIds: [],
-            preferences: { mealType: "ANY", servings: 2 },
+            requestText: generationOptions?.requestText ?? prompt,
+            locale: generationOptions?.locale ?? getRecipeGenerationLocale(),
+            count: generationOptions?.count ?? requestedCount,
+            servings: generationOptions?.servings ?? 2,
+            fridgePolicy: generationOptions?.fridgePolicy ?? "PRIORITIZE",
+            shoppingPolicy: generationOptions?.shoppingPolicy ?? "MINIMIZE",
+            mustUseFridgeItemIds: generationOptions?.mustUseFridgeItemIds ?? [],
+            preferences: generationOptions?.preferences ?? { mealType: "ANY" },
             fridgeItems: structuredFridgeItems ?? productsFridge,
           }
         : {
@@ -171,7 +202,7 @@ export const generateRecipe = async function (
   productsFridge: RecipeGenerationFridgeInput,
   signal?: AbortSignal,
   count: number = 1,
-  options: { structured?: boolean } = {},
+  options: { structured?: boolean; generationOptions?: RecipeGenerationOptions } = {},
 ) {
   try {
     const normalizedCount = Math.max(1, Math.min(5, Math.floor(count)));
@@ -186,6 +217,7 @@ export const generateRecipe = async function (
         normalizedCount,
         structured,
         signal,
+        options.generationOptions,
       );
     }
 
@@ -194,6 +226,7 @@ export const generateRecipe = async function (
       productsFridge,
       normalizedCount,
       structured,
+      options.generationOptions,
     );
 
     if (!inFlightRecipeRequests.has(requestKey)) {
@@ -203,6 +236,7 @@ export const generateRecipe = async function (
         normalizedCount,
         structured,
         signal,
+        options.generationOptions,
       ).finally(() => {
         inFlightRecipeRequests.delete(requestKey);
       });
