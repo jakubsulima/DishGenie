@@ -1,6 +1,6 @@
 import { waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { generateRecipe } from "../src/lib/hooks";
+import { generateRecipe, lookupProductByBarcode } from "../src/lib/hooks";
 
 const { axiosMock } = vi.hoisted(() => ({
   axiosMock: {
@@ -91,5 +91,34 @@ describe("generateRecipe", () => {
     resolvers.forEach((resolve) => resolve({ data: { name: "Test Recipe" } }));
     await expect(englishRequest).resolves.toEqual({ name: "Test Recipe" });
     await expect(polishRequest).resolves.toEqual({ name: "Test Recipe" });
+  });
+});
+
+describe("lookupProductByBarcode", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    document.cookie = "XSRF-TOKEN=test-token; path=/";
+  });
+
+  it("treats an unknown barcode response as an empty product", async () => {
+    axiosMock.isAxiosError.mockReturnValue(true);
+    axiosMock.get.mockRejectedValue({
+      response: { status: 404, data: {} },
+      message: "Not found",
+    });
+
+    await expect(lookupProductByBarcode("0000000000000")).resolves.toBeNull();
+  });
+
+  it("keeps network failures distinguishable from an unknown barcode", async () => {
+    axiosMock.isAxiosError.mockReturnValue(true);
+    axiosMock.get.mockRejectedValue({
+      request: {},
+      message: "Network unavailable",
+    });
+
+    await expect(lookupProductByBarcode("5901234123457")).rejects.toMatchObject({
+      isNetworkError: true,
+    });
   });
 });

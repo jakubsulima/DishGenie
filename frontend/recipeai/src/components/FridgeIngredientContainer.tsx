@@ -14,6 +14,9 @@ interface Props {
   remove: () => void;
   unit: unitType;
   amount?: string | number;
+  stockState?: "IN_STOCK" | "LOW";
+  onQuickAction?: (action: "DECREMENT" | "MARK_LOW" | "FINISH") => void;
+  quickActionLoading?: boolean;
   onUpdateItem: (id: number, item: UpdateFridgeIngredientInput) => Promise<void>;
 }
 
@@ -62,6 +65,9 @@ const FridgeIngredientContainer = ({
   expirationDate,
   unit,
   amount,
+  stockState = "IN_STOCK",
+  onQuickAction = () => undefined,
+  quickActionLoading = false,
   remove,
   onUpdateItem,
 }: Props) => {
@@ -147,6 +153,7 @@ const FridgeIngredientContainer = ({
   return (
     <div className="group w-full rounded-xl border border-primary/10 bg-background p-3.5 shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col justify-center min-h-[4rem]">
       {!isEditing ? (
+        <>
         <div className="flex items-center justify-between gap-3">
           <div className="flex flex-col flex-1 min-w-0">
             <h1 className="font-semibold text-text truncate leading-tight">
@@ -210,6 +217,38 @@ const FridgeIngredientContainer = ({
             </button>
           </div>
         </div>
+        <div className="mt-3 grid grid-cols-2 gap-2 border-t border-primary/10 pt-3 sm:grid-cols-3" aria-label={t("Quick actions")}>
+          {unit === "pcs" && Number(normalizedAmount) >= 1 && (
+            <button
+              type="button"
+              onClick={() => onQuickAction("DECREMENT")}
+              disabled={quickActionLoading}
+              className="rounded-lg border border-primary/15 bg-secondary px-2 py-2 text-xs font-semibold text-text transition-colors hover:border-accent/45 hover:bg-accent/10 disabled:cursor-not-allowed disabled:opacity-50"
+              aria-label={t("Use 1 {name}", { name })}
+            >
+              {t("Use 1")}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => onQuickAction("MARK_LOW")}
+            disabled={quickActionLoading}
+            className="rounded-lg border border-primary/15 bg-secondary px-2 py-2 text-xs font-semibold text-text transition-colors hover:border-accent/45 hover:bg-accent/10 disabled:cursor-not-allowed disabled:opacity-50"
+            aria-label={t(stockState === "LOW" ? "Mark as enough" : "Mark as low")}
+          >
+            {t(stockState === "LOW" ? "Enough" : "Low")}
+          </button>
+          <button
+            type="button"
+            onClick={() => onQuickAction("FINISH")}
+            disabled={quickActionLoading}
+            className="rounded-lg border border-primary/15 bg-secondary px-2 py-2 text-xs font-semibold text-text transition-colors hover:border-accent/45 hover:bg-accent/10 disabled:cursor-not-allowed disabled:opacity-50"
+            aria-label={t("Finish {name}", { name })}
+          >
+            {t("Finished")}
+          </button>
+        </div>
+        </>
       ) : (
         <div className="flex flex-col gap-3">
           <div className="grid grid-cols-1 gap-3">

@@ -10,6 +10,12 @@ import {
 } from "../lib/shoppingList";
 import ErrorAlert from "../components/ErrorAlert";
 import { useLanguage } from "../context/languageContext";
+import ShoppingToFridgeReview from "../components/ShoppingToFridgeReview";
+import type { FridgeOperationReviewChange } from "../components/FridgeOperationReview";
+import { applyFridgeOperation, createFridgeOperationId } from "../lib/fridgeOperations";
+import FridgeOperationSuccess from "../components/FridgeOperationSuccess";
+import { toShoppingToFridgeChange } from "../lib/shoppingToFridge";
+import { captureEvent } from "../lib/posthog";
 
 const areItemsEqual = (a: ShoppingListItem[], b: ShoppingListItem[]) =>
   getShoppingListFingerprint(a) === getShoppingListFingerprint(b);
@@ -69,6 +75,14 @@ const ShoppingList = () => {
   const isSyncReadyRef = useRef(false);
   const syncRequestVersionRef = useRef(0);
   const lastSyncedFingerprintRef = useRef("");
+  const operationIdRef = useRef<string | null>(null);
+  const sourceReferenceRef = useRef<string | null>(null);
+  const [reviewChanges, setReviewChanges] = useState<FridgeOperationReviewChange[]>([]);
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [importError, setImportError] = useState("");
+  const [importSuccess, setImportSuccess] = useState(false);
+  const reviewOpenedAtRef = useRef<number | null>(null);
 
   useEffect(() => {
     let disposed = false;
@@ -250,6 +264,120 @@ const ShoppingList = () => {
     setItems((prev) => prev.map((item) => ({ ...item, checked: true })));
   };
 
+  const openShoppingToFridgeReview = async () => {
+    try {
+      if (syncTimeoutRef.current) {
+        window.clearTimeout(syncTimeoutRef.current);
+      }
+      ++syncRequestVersionRef.current;
+      setIsSyncing(true);
+      setSyncError("");
+      const syncedItems = await syncShoppingList(items);
+      lastSyncedFingerprintRef.current = getShoppingListFingerprint(syncedItems);
+      setItems(syncedItems);
+      writeShoppingList(syncedItems);
+      const checkedItems = syncedItems.filter((item) => item.checked);
+      setReviewChanges(checkedItems.map(toShoppingToFridgeChange));
+      operationIdRef.current = createFridgeOperationId();
+      sourceReferenceRef.current = createFridgeOperationId();
+      reviewOpenedAtRef.current = Date.now();
+      captureEvent("shopping_to_fridge_review_opened", {
+        itemCount: checkedItems.length,
+      });
+      setImportError("");
+      setImportSuccess(false);
+      setIsReviewOpen(true);
+    } catch {
+      setImportError("Could not prepare the fridge import. Try again.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const updateReviewChange = (updated: FridgeOperationReviewChange) => {
+    setReviewChanges((previous) =>
+      previous.map((change) => {
+        if (change.key !== updated.key) {
+          return change;
+        }
+        if (updated.amount !== change.amount && updated.quantityAccuracy === change.quantityAccuracy) {
+          return { ...updated, quantityAccuracy: updated.amount ? "EXACT" : "UNKNOWN" };
+        }
+        return updated;
+      }),
+    );
+  };
+
+  const confirmShoppingToFridgeImport = async () => {
+    const selectedChanges = reviewChanges.filter((change) => change.selected);
+    if (selectedChanges.length === 0 || isImporting) {
+      return;
+    }
+
+    const operationId = operationIdRef.current ?? createFridgeOperationId();
+    operationIdRef.current = operationId;
+    try {
+      setIsImporting(true);
+      setImportError("");
+      const response = await applyFridgeOperation({
+        operationId,
+        source: "SHOPPING_LIST",
+        sourceReference: sourceReferenceRef.current ?? operationId,
+        changes: selectedChanges.map((change) => ({
+          type: "ADD",
+          clientChangeId: change.clientChangeId ?? change.key,
+          name: change.name,
+          amount: change.amount ? Number(change.amount) : undefined,
+          unit: change.unit || undefined,
+          quantityAccuracy: change.quantityAccuracy,
+        })),
+      });
+
+      captureEvent("shopping_to_fridge_confirmed", {
+        itemCount: selectedChanges.length,
+        correctionCount: selectedChanges.filter(
+          (change) =>
+            change.quantityAccuracy !== "ESTIMATED" ||
+            change.amount !== change.originalAmount,
+        ).length,
+        durationMs: reviewOpenedAtRef.current
+          ? Date.now() - reviewOpenedAtRef.current
+          : undefined,
+      });
+
+      const importedIds = new Set(
+        response.appliedChanges
+          .map((change) => change.clientChangeId)
+          .filter((id): id is string => Boolean(id)),
+      );
+      const remainingItems = items.filter((item) => !importedIds.has(item.id));
+      operationIdRef.current = null;
+      sourceReferenceRef.current = null;
+      setItems(remainingItems);
+      writeShoppingList(remainingItems);
+      setReviewChanges(remainingItems.filter((item) => item.checked).map(toShoppingToFridgeChange));
+      setImportSuccess(importedIds.size > 0);
+      if (remainingItems.length === 0 || remainingItems.every((item) => !item.checked)) {
+        setIsReviewOpen(false);
+      }
+      try {
+        const syncedItems = await syncShoppingList(remainingItems);
+        lastSyncedFingerprintRef.current = getShoppingListFingerprint(syncedItems);
+        setItems(syncedItems);
+        writeShoppingList(syncedItems);
+      } catch {
+        setSyncError("Could not sync the remaining list. It is still saved locally.");
+      }
+    } catch {
+      captureEvent("shopping_to_fridge_failed", {
+        itemCount: selectedChanges.length,
+      });
+      setImportError("Could not update the fridge. No list items were removed.");
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
   const completedCount = items.length - remainingCount;
   const allChecked = items.length > 0 && items.every((item) => item.checked);
 
@@ -281,6 +409,51 @@ const ShoppingList = () => {
         className="mb-4"
         onAutoHide={() => setSyncError("")}
       />
+
+      {importError && (
+        <ErrorAlert
+          message={t(importError)}
+          compact
+          className="mb-4"
+          onAutoHide={() => setImportError("")}
+        />
+      )}
+
+      {importSuccess && <FridgeOperationSuccess />}
+
+      {completedCount > 0 && (
+        <button
+          type="button"
+          onClick={openShoppingToFridgeReview}
+          disabled={isSyncing}
+          className="mb-5 w-full rounded-xl bg-accent px-4 py-3 font-semibold text-text shadow-sm transition-colors hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {t("Finish shopping")}
+        </button>
+      )}
+
+      {isReviewOpen && (
+        <section className="mb-5 rounded-2xl border border-accent/30 bg-secondary p-4 sm:p-5" aria-label={t("What to add to the fridge?")}>
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-bold text-text">{t("What to add to the fridge?")}</h2>
+              <p className="mt-1 text-sm text-text/60">{t("Review the items before updating your fridge.")}</p>
+            </div>
+            <button type="button" onClick={() => setIsReviewOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-text/70 hover:bg-background">
+              {t("Cancel")}
+            </button>
+          </div>
+          <ShoppingToFridgeReview items={reviewChanges} onChange={updateReviewChange} />
+          <button
+            type="button"
+            onClick={confirmShoppingToFridgeImport}
+            disabled={isImporting || reviewChanges.every((change) => !change.selected)}
+            className="mt-4 w-full rounded-xl bg-primary px-4 py-3 font-semibold text-background disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {t(isImporting ? "Updating fridge..." : "Add selected to fridge")}
+          </button>
+        </section>
+      )}
 
       <div className="mb-5 rounded-2xl border border-primary/10 bg-secondary p-4 sm:p-5">
         <label className="mb-2 block text-sm font-medium text-text">
@@ -353,6 +526,7 @@ const ShoppingList = () => {
                       type="checkbox"
                       checked={item.checked}
                       onChange={() => toggleItem(item.id)}
+                      aria-label={t("Mark {name} as bought", { name: item.name })}
                       className="h-4 w-4 rounded border-primary/30 accent-accent focus:ring-2 focus:ring-accent/50"
                     />
                     <span

@@ -151,6 +151,7 @@ type FridgeItem = {
   expirationDate: string | null;
   amount?: string | number;
   unit: string;
+  stockState?: "IN_STOCK" | "LOW";
 };
 
 const UNIT_ABBREVIATIONS: Record<string, string> = {
@@ -506,6 +507,7 @@ export const mockAuthenticatedFridgeApi = async (
       unit: "pcs",
     },
   ];
+  const operationSnapshots = new Map<string, FridgeItem[]>();
 
   await page.route("**/api/**", async (route) => {
     const endpoint = getEndpoint(route);
@@ -517,8 +519,95 @@ export const mockAuthenticatedFridgeApi = async (
       return;
     }
 
+    if (method === "GET" && endpoint.startsWith("v2/fridge/barcodes/")) {
+      const barcode = endpoint.replace("v2/fridge/barcodes/", "");
+      const barcodeProducts: Record<string, { name: string; brand: string }> = {
+        "5901234123457": { name: "Oat Drink", brand: "Kitchen Brand" },
+        "4000000000001": { name: "Granola", brand: "Pantry Brand" },
+      };
+      const product = barcodeProducts[barcode];
+      if (!product) {
+        await fulfillJson(route, { message: "Product not found" }, 404);
+        return;
+      }
+      await fulfillJson(route, {
+        barcode,
+        ...product,
+      });
+      return;
+    }
+
     if (method === "GET" && endpoint === "getFridgeIngredients") {
       await fulfillJson(route, fridgeItems);
+      return;
+    }
+
+    if (method === "POST" && endpoint.startsWith("v2/fridge/operations/") && endpoint.endsWith("/undo")) {
+      const originalOperationId = endpoint
+        .replace("v2/fridge/operations/", "")
+        .replace(/\/undo$/, "");
+      const snapshot = operationSnapshots.get(originalOperationId);
+      if (snapshot) {
+        fridgeItems = snapshot;
+      }
+      await fulfillJson(route, {
+        operationId: "undo-operation",
+        status: "APPLIED",
+        appliedChanges: [],
+        skippedChanges: [],
+        currentItems: fridgeItems,
+      });
+      return;
+    }
+
+    if (method === "POST" && endpoint === "v2/fridge/operations") {
+      const payload = route.request().postDataJSON() as {
+        operationId?: string;
+        changes?: Array<{
+          type?: "ADD" | "DECREMENT" | "FINISH" | "MARK_LOW";
+          fridgeItemId?: number;
+          stockState?: "IN_STOCK" | "LOW";
+          amount?: string | number;
+          clientChangeId?: string;
+          name?: string;
+          barcode?: string | null;
+          unit?: string;
+        }>;
+      };
+      operationSnapshots.set(payload.operationId ?? "", fridgeItems.map((item) => ({ ...item })));
+      for (const change of payload.changes ?? []) {
+        const itemIndex = fridgeItems.findIndex((item) => item.id === change.fridgeItemId);
+        if (change.type === "DECREMENT" && itemIndex >= 0) {
+          const nextAmount = Number(fridgeItems[itemIndex].amount ?? 0) - Number(change.amount ?? 0);
+          fridgeItems = nextAmount <= 0
+            ? fridgeItems.filter((item) => item.id !== change.fridgeItemId)
+            : fridgeItems.map((item, index) => index === itemIndex ? { ...item, amount: nextAmount } : item);
+        } else if (change.type === "FINISH" && itemIndex >= 0) {
+          fridgeItems = fridgeItems.filter((item) => item.id !== change.fridgeItemId);
+        } else if (change.type === "MARK_LOW" && itemIndex >= 0) {
+          fridgeItems[itemIndex].stockState = change.stockState ?? "LOW";
+        } else if (change.type === "ADD") {
+          fridgeItems.push({
+            id: Math.max(0, ...fridgeItems.map((item) => item.id)) + 1,
+            name: String(change.name ?? "Unknown ingredient"),
+            expirationDate: null,
+            amount: change.amount,
+            unit: normalizeFridgeUnit(change.unit),
+          });
+        }
+      }
+      await fulfillJson(route, {
+        operationId: payload.operationId,
+        status: "APPLIED",
+        appliedChanges: (payload.changes ?? []).map((change) => ({
+          type: "ADD",
+          clientChangeId: change.clientChangeId,
+          status: "APPLIED",
+          fridgeItemId: fridgeItems.at(-1)?.id,
+        })),
+        skippedChanges: [],
+        currentItems: [],
+      });
       return;
     }
 
@@ -808,6 +897,27 @@ export const mockShoppingListApi = async (page: Page) => {
       };
       shoppingItems = Array.isArray(payload.items) ? payload.items : [];
       await fulfillJson(route, shoppingItems);
+      return;
+    }
+
+    if (method === "POST" && endpoint === "v2/fridge/operations") {
+      const payload = route.request().postDataJSON() as {
+        operationId?: string;
+        changes?: Array<{ clientChangeId?: string }>;
+      };
+      const changes = Array.isArray(payload.changes) ? payload.changes : [];
+      await fulfillJson(route, {
+        operationId: payload.operationId,
+        status: "APPLIED",
+        appliedChanges: changes.map((change) => ({
+          type: "ADD",
+          clientChangeId: change.clientChangeId,
+          fridgeItemId: 42,
+          status: "APPLIED",
+        })),
+        skippedChanges: [],
+        currentItems: [],
+      });
       return;
     }
 

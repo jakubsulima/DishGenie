@@ -23,3 +23,18 @@ test("user can add, check, and clear shopping list items", async ({ page }) => {
   await page.getByRole("button", { name: /clear checked/i }).click();
   await expect(page.getByText("Your shopping list is empty.")).toBeVisible();
 });
+
+test("user can import checked shopping items into the fridge after review", async ({ page }) => {
+  await mockShoppingListApi(page);
+  await page.goto("/ShoppingList");
+
+  await page.getByLabel("Mark Tomatoes as bought").check();
+  await page.getByRole("button", { name: "Finish shopping" }).click();
+
+  await expect(
+    page.getByRole("heading", { name: "What to add to the fridge?" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Add selected to fridge" }).click();
+
+  await expect(page.getByText("Your shopping list is empty.")).toBeVisible();
+});

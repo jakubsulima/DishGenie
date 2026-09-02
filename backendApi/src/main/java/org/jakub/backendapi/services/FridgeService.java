@@ -46,6 +46,12 @@ public class FridgeService {
 
     @Transactional
     public FridgeIngredient addFridgeIngredient(FridgeIngredientDto fridgeIngredientDto, String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException("User not found", HttpStatus.NOT_FOUND));
+        return addFridgeIngredientForUser(fridgeIngredientDto, user);
+    }
+
+    @Transactional
+    public FridgeIngredient addFridgeIngredientForUser(FridgeIngredientDto fridgeIngredientDto, User user) {
         String ingredientName = requireIngredientName(fridgeIngredientDto.getName());
         fridgeIngredientDto.setName(ingredientName);
 
@@ -54,8 +60,6 @@ public class FridgeService {
         if (fridgeIngredientDto.getAmount() != null && fridgeIngredientDto.getAmount() <= 0) {
             throw new AppException("Amount must be positive", HttpStatus.BAD_REQUEST);
         }
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException("User not found", HttpStatus.NOT_FOUND));
-
         List<FridgeIngredient> mergeCandidates = fridgeIngredientRepository.findMergeCandidates(
                 user.getId(),
                 ingredientName,
@@ -168,7 +172,7 @@ public class FridgeService {
         }
     }
 
-    private Unit parseUnit(String unit) {
+    Unit parseUnit(String unit) {
         if (unit == null) {
             return null;
         }
@@ -188,7 +192,7 @@ public class FridgeService {
         throw new AppException("Invalid unit value provided: " + unit, HttpStatus.BAD_REQUEST);
     }
 
-    private String requireIngredientName(String ingredientName) {
+    String requireIngredientName(String ingredientName) {
         if (!StringUtils.hasText(ingredientName)) {
             throw new AppException("Ingredient name cannot be empty", HttpStatus.BAD_REQUEST);
         }

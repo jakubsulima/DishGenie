@@ -17,6 +17,11 @@ export interface FridgeIngredient {
   expirationDate: string | null;
   amount?: string | number;
   unit: unitType;
+  source?: "MANUAL" | "SHOPPING_LIST" | "BARCODE_SCAN" | "QUICK_ADJUSTMENT" | "COOKED_RECIPE";
+  quantityAccuracy?: "EXACT" | "ESTIMATED" | "UNKNOWN";
+  barcode?: string | null;
+  stockState?: "IN_STOCK" | "LOW";
+  lastConfirmedAt?: string | null;
 }
 
 export interface AddFridgeIngredientInput {

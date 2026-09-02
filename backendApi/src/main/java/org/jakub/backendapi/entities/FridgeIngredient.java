@@ -2,8 +2,12 @@ package org.jakub.backendapi.entities;
 
 import jakarta.persistence.*;
 import org.jakub.backendapi.entities.Enums.Unit;
+import org.jakub.backendapi.entities.Enums.FridgeOperationSource;
+import org.jakub.backendapi.entities.Enums.FridgeStockState;
+import org.jakub.backendapi.entities.Enums.QuantityAccuracy;
 
 import java.time.LocalDate;
+import java.time.Instant;
 import java.util.Objects;
 
 @Entity
@@ -33,6 +37,24 @@ public class FridgeIngredient {
     @ManyToOne
     @JoinColumn(name = "ingredient_id")
     private Ingredient ingredient;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private FridgeOperationSource source = FridgeOperationSource.MANUAL;
+
+    @Column(name = "quantity_accuracy", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private QuantityAccuracy quantityAccuracy = QuantityAccuracy.UNKNOWN;
+
+    @Column(length = 64)
+    private String barcode;
+
+    @Column(name = "stock_state", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private FridgeStockState stockState = FridgeStockState.IN_STOCK;
+
+    @Column(name = "last_confirmed_at")
+    private Instant lastConfirmedAt;
 
     public FridgeIngredient() {
     }
@@ -97,6 +119,26 @@ public class FridgeIngredient {
     public Ingredient getIngredient() { return ingredient; }
 
     public void setIngredient(Ingredient ingredient) { this.ingredient = ingredient; }
+
+    public FridgeOperationSource getSource() { return source; }
+
+    public void setSource(FridgeOperationSource source) { this.source = source; }
+
+    public QuantityAccuracy getQuantityAccuracy() { return quantityAccuracy; }
+
+    public void setQuantityAccuracy(QuantityAccuracy quantityAccuracy) { this.quantityAccuracy = quantityAccuracy; }
+
+    public String getBarcode() { return barcode; }
+
+    public void setBarcode(String barcode) { this.barcode = barcode; }
+
+    public FridgeStockState getStockState() { return stockState; }
+
+    public void setStockState(FridgeStockState stockState) { this.stockState = stockState; }
+
+    public Instant getLastConfirmedAt() { return lastConfirmedAt; }
+
+    public void setLastConfirmedAt(Instant lastConfirmedAt) { this.lastConfirmedAt = lastConfirmedAt; }
 
     @Override
     public boolean equals(Object o) {

@@ -2,6 +2,10 @@ package org.jakub.backendapi.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.jakub.backendapi.dto.FridgeIngredientDto;
+import org.jakub.backendapi.dto.BarcodeProductDto;
+import org.jakub.backendapi.dto.FridgeInventoryOperationRequestDto;
+import org.jakub.backendapi.dto.FridgeInventoryOperationResponseDto;
+import org.jakub.backendapi.dto.FridgeInventoryUndoRequestDto;
 import org.jakub.backendapi.dto.UserDto;
 import org.jakub.backendapi.entities.FridgeIngredient;
 import org.jakub.backendapi.mappers.FridgeIngredientMapper;
@@ -15,10 +19,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,15 +38,46 @@ public class FridgeController {
     private final FridgeIngredientMapper fridgeIngredientMapper;
     private final GeminiService geminiService;
     private final RateLimitService rateLimitService;
+    private final org.jakub.backendapi.services.FridgeInventoryOperationService fridgeInventoryOperationService;
+    private final org.jakub.backendapi.services.BarcodeLookupService barcodeLookupService;
 
     @Value("${security.trusted-proxy-ips:}")
     private String trustedProxyIps;
 
-    public FridgeController(FridgeService fridgeService, FridgeIngredientMapper fridgeIngredientMapper, GeminiService geminiService, RateLimitService rateLimitService) {
+    public FridgeController(FridgeService fridgeService, FridgeIngredientMapper fridgeIngredientMapper, GeminiService geminiService, RateLimitService rateLimitService, org.jakub.backendapi.services.FridgeInventoryOperationService fridgeInventoryOperationService, org.jakub.backendapi.services.BarcodeLookupService barcodeLookupService) {
         this.fridgeService = fridgeService;
         this.fridgeIngredientMapper = fridgeIngredientMapper;
         this.geminiService = geminiService;
         this.rateLimitService = rateLimitService;
+        this.fridgeInventoryOperationService = fridgeInventoryOperationService;
+        this.barcodeLookupService = barcodeLookupService;
+    }
+
+    @GetMapping("/v2/fridge/barcodes/{barcode}")
+    public ResponseEntity<BarcodeProductDto> lookupBarcode(@PathVariable String barcode) {
+        Optional<BarcodeProductDto> product = barcodeLookupService.lookup(barcode);
+        return product.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/v2/fridge/operations")
+    public ResponseEntity<FridgeInventoryOperationResponseDto> applyInventoryOperation(
+            @Valid @RequestBody FridgeInventoryOperationRequestDto operation,
+            HttpServletRequest request
+    ) {
+        return ResponseEntity.ok(fridgeInventoryOperationService.apply(operation, getLoginFromToken(request)));
+    }
+
+    @PostMapping("/v2/fridge/operations/{operationId}/undo")
+    public ResponseEntity<FridgeInventoryOperationResponseDto> undoInventoryOperation(
+            @PathVariable String operationId,
+            @Valid @RequestBody FridgeInventoryUndoRequestDto undo,
+            HttpServletRequest request
+    ) {
+        return ResponseEntity.ok(fridgeInventoryOperationService.undo(
+                operationId,
+                undo.getOperationId(),
+                getLoginFromToken(request)
+        ));
     }
 
     @GetMapping("/getFridgeIngredients")

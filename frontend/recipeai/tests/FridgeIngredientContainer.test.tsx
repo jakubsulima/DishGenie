@@ -3,6 +3,29 @@ import { describe, expect, test, vi } from "vitest";
 import FridgeIngredientContainer from "../src/components/FridgeIngredientContainer";
 
 describe("FridgeIngredientContainer", () => {
+  test("exposes quick actions for a known piece count", () => {
+    const onQuickAction = vi.fn();
+
+    render(
+      <FridgeIngredientContainer
+        id={7}
+        name="Eggs"
+        expirationDate={null}
+        amount={2}
+        unit="pcs"
+        onQuickAction={onQuickAction}
+        remove={vi.fn()}
+        onUpdateItem={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Use 1 Eggs" }));
+    fireEvent.click(screen.getByRole("button", { name: "Finish Eggs" }));
+
+    expect(onQuickAction).toHaveBeenNthCalledWith(1, "DECREMENT");
+    expect(onQuickAction).toHaveBeenNthCalledWith(2, "FINISH");
+  });
+
   test("edits all displayed fridge item fields inline", async () => {
     const updateItem = vi.fn().mockResolvedValue(undefined);
 

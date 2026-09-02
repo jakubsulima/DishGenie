@@ -7,9 +7,13 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
+import org.jakub.backendapi.entities.Enums.FridgeOperationSource;
+import org.jakub.backendapi.entities.Enums.FridgeStockState;
+import org.jakub.backendapi.entities.Enums.QuantityAccuracy;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.time.Instant;
 
 public class FridgeIngredientDto {
     @Positive(message = "Fridge item ID must be positive")
@@ -30,6 +34,16 @@ public class FridgeIngredientDto {
             message = "Fridge item unit is invalid"
     )
     private String unit;
+
+    private FridgeOperationSource source;
+
+    private QuantityAccuracy quantityAccuracy;
+
+    private String barcode;
+
+    private FridgeStockState stockState;
+
+    private Instant lastConfirmedAt;
 
     public FridgeIngredientDto() {
     }
@@ -111,6 +125,26 @@ public class FridgeIngredientDto {
         String trimmedUnit = unit.trim();
         this.unit = trimmedUnit.isEmpty() ? null : trimmedUnit;
     }
+
+    public FridgeOperationSource getSource() { return source; }
+
+    public void setSource(FridgeOperationSource source) { this.source = source; }
+
+    public QuantityAccuracy getQuantityAccuracy() { return quantityAccuracy; }
+
+    public void setQuantityAccuracy(QuantityAccuracy quantityAccuracy) { this.quantityAccuracy = quantityAccuracy; }
+
+    public String getBarcode() { return barcode; }
+
+    public void setBarcode(String barcode) { this.barcode = barcode; }
+
+    public FridgeStockState getStockState() { return stockState; }
+
+    public void setStockState(FridgeStockState stockState) { this.stockState = stockState; }
+
+    public Instant getLastConfirmedAt() { return lastConfirmedAt; }
+
+    public void setLastConfirmedAt(Instant lastConfirmedAt) { this.lastConfirmedAt = lastConfirmedAt; }
 
     @Override
     public boolean equals(Object o) {

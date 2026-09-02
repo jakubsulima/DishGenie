@@ -56,6 +56,15 @@ class SecurityRoutesIntegrationTest {
     }
 
     @Test
+    void fridgeOperationsRemainProtectedWithoutAuthentication() throws Exception {
+        mockMvc.perform(post("/v2/fridge/operations")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"operationId\":\"d2719c62-f9d2-4ad7-8d4e-5b77e9f9de29\",\"source\":\"QUICK_ADJUSTMENT\",\"changes\":[{\"type\":\"FINISH\",\"fridgeItemId\":1}]}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void recipePublicationRemainsProtectedWithoutAuthentication() throws Exception {
         mockMvc.perform(post("/publishRecipe/42").with(csrf()))
                 .andExpect(status().isUnauthorized());
