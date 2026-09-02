@@ -7,7 +7,7 @@ import {
   isPostHogConfigured,
 } from "./runtimeConfig";
 
-export type AnalyticsEventName =
+type AnalyticsEventName =
   | "$pageview"
   | "marketing_cta_click"
   | "auth_login_success"
@@ -30,9 +30,9 @@ export type AnalyticsEventName =
   | "meal_plan_slot_cooked"
   | "meal_plan_slot_skipped";
 
-export type AnalyticsProperties = Record<string, unknown>;
+type AnalyticsProperties = Record<string, unknown>;
 
-export const FORBIDDEN_ANALYTICS_PROPERTIES = new Set([
+const FORBIDDEN_ANALYTICS_PROPERTIES = new Set([
   "prompt",
   "requestText",
   "fridgeItems",

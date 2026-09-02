@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react";
 
-export type Locale = "en" | "pl";
+type Locale = "en" | "pl";
 
 const STORAGE_KEY = "dishGenie.locale";
 
