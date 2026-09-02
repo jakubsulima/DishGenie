@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AddFridgeIngredientInput,
+  FridgeIngredient,
   UpdateFridgeIngredientInput,
   unitType,
   useFridge,
@@ -15,6 +16,15 @@ import BarcodeScanner from "../components/BarcodeScanner";
 import ReceiptScanner from "../components/ReceiptScanner";
 import ErrorAlert from "../components/ErrorAlert";
 import { useLanguage } from "../context/languageContext";
+import FridgeOperationReview, {
+  type FridgeOperationReviewChange,
+} from "../components/FridgeOperationReview";
+import FridgeOperationSuccess from "../components/FridgeOperationSuccess";
+import {
+  applyFridgeOperation,
+  createFridgeOperationId,
+  undoFridgeOperation,
+} from "../lib/fridgeOperations";
 
 const parseBackendDate = (dateString: string) => {
   const [day, month, year] = dateString.split("-");
@@ -27,6 +37,22 @@ const getErrorMessage = (error: unknown, fallback: string) => {
   }
   return fallback;
 };
+
+const createBarcodeReviewChange = (
+  barcode: string,
+  name: string,
+  error?: string,
+): FridgeOperationReviewChange => ({
+  key: barcode,
+  clientChangeId: barcode,
+  name,
+  amount: "1",
+  unit: "pcs",
+  quantityAccuracy: "EXACT",
+  selected: true,
+  barcode,
+  ...(error ? { error } : {}),
+});
 
 const EXPIRED_BANNER_STORAGE_PREFIX = "recipeai.expiredBannerDismissed";
 
@@ -42,6 +68,8 @@ export const Fridge = () => {
     addFridgeItemsBatch,
     removeFridgeItem,
     updateFridgeItem,
+    refreshFridgeItems,
+    setFridgeItems,
   } = useFridge();
 
   const [newItem, setNewItem] = useState<string>("");
@@ -55,7 +83,19 @@ export const Fridge = () => {
   const [isBarcodeScannerOpen, setIsBarcodeScannerOpen] = useState(false);
   const [isReceiptScannerOpen, setIsReceiptScannerOpen] = useState(false);
   const [showExpiredBanner, setShowExpiredBanner] = useState(false);
-  const isBarcodeAddInFlight = useRef(false);
+  const barcodeOperationIdRef = useRef<string | null>(null);
+  const barcodeSessionReferenceRef = useRef<string | null>(null);
+  const barcodeQueueRef = useRef<string[]>([]);
+  const barcodeChangesRef = useRef<FridgeOperationReviewChange[]>([]);
+  const barcodeProcessingRef = useRef(false);
+  const barcodeDrainRef = useRef<Promise<void> | null>(null);
+  const [barcodeReviewChanges, setBarcodeReviewChanges] = useState<FridgeOperationReviewChange[]>([]);
+  const [isBarcodeReviewOpen, setIsBarcodeReviewOpen] = useState(false);
+  const [isBarcodeImporting, setIsBarcodeImporting] = useState(false);
+  const [barcodeImportSuccess, setBarcodeImportSuccess] = useState(false);
+  const [barcodeScannedCount, setBarcodeScannedCount] = useState(0);
+  const [quickUndo, setQuickUndo] = useState<{ operationId: string } | null>(null);
+  const [isUndoing, setIsUndoing] = useState(false);
 
   const expiredItems = useMemo(() => {
     const today = new Date();
@@ -203,40 +243,303 @@ export const Fridge = () => {
     }
   };
 
-  const handleBarcodeDetected = async (barcode: string) => {
-    if (isBarcodeAddInFlight.current) {
+  const setBarcodeChanges = (
+    update:
+      | FridgeOperationReviewChange[]
+      | ((previous: FridgeOperationReviewChange[]) => FridgeOperationReviewChange[]),
+  ) => {
+    setBarcodeReviewChanges((previous) => {
+      const next = typeof update === "function" ? update(previous) : update;
+      barcodeChangesRef.current = next;
+      return next;
+    });
+  };
+
+  const processBarcodeQueue = async (): Promise<void> => {
+    if (barcodeProcessingRef.current) {
+      return barcodeDrainRef.current ?? Promise.resolve();
+    }
+
+    barcodeProcessingRef.current = true;
+    const drain = (async () => {
+      setIsLoading(true);
+      try {
+        while (barcodeQueueRef.current.length > 0) {
+          const barcode = barcodeQueueRef.current.shift();
+          if (!barcode) {
+            continue;
+          }
+
+          const existing = barcodeChangesRef.current.find(
+            (change) => change.barcode === barcode,
+          );
+          if (existing) {
+            setBarcodeChanges((previous) =>
+              previous.map((change) =>
+                change.barcode === barcode
+                  ? { ...change, amount: String(Number(change.amount || "0") + 1) }
+                  : change,
+              ),
+            );
+            continue;
+          }
+
+          let product: Awaited<ReturnType<typeof lookupProductByBarcode>>;
+          try {
+            product = await lookupProductByBarcode(barcode);
+          } catch (lookupError) {
+            captureEvent("barcode_lookup_failed");
+            setBarcodeChanges((previous) => [
+              ...previous,
+              createBarcodeReviewChange(
+                barcode,
+                "",
+                getErrorMessage(
+                  lookupError,
+                  "Could not look up this product. Enter a name before adding.",
+                ),
+              ),
+            ]);
+            continue;
+          }
+          if (product) {
+            setBarcodeChanges((previous) => [
+              ...previous,
+              createBarcodeReviewChange(product.barcode, product.name),
+            ]);
+          } else {
+            captureEvent("barcode_lookup_failed");
+            setBarcodeChanges((previous) => [
+              ...previous,
+              createBarcodeReviewChange(
+                barcode,
+                "",
+                "Product not found. Enter a name before adding.",
+              ),
+            ]);
+          }
+        }
+      } finally {
+        setIsLoading(false);
+        barcodeProcessingRef.current = false;
+      }
+    })();
+    barcodeDrainRef.current = drain;
+    return drain;
+  };
+
+  const startBarcodeSession = () => {
+    barcodeQueueRef.current = [];
+    barcodeChangesRef.current = [];
+    barcodeOperationIdRef.current = null;
+    barcodeSessionReferenceRef.current = createFridgeOperationId();
+    setBarcodeScannedCount(0);
+    setBarcodeReviewChanges([]);
+    setBarcodeImportSuccess(false);
+    setError("");
+    setIsBarcodeScannerOpen(true);
+    captureEvent("barcode_session_started");
+  };
+
+  const handleBarcodeDetected = (barcode: string) => {
+    barcodeQueueRef.current.push(barcode);
+    setBarcodeScannedCount((count) => count + 1);
+    captureEvent("barcode_detected");
+    void processBarcodeQueue();
+  };
+
+  const finishBarcodeSession = async () => {
+    await (barcodeDrainRef.current ?? Promise.resolve());
+    setIsBarcodeScannerOpen(false);
+    if (barcodeChangesRef.current.length === 0) {
+      return;
+    }
+    setBarcodeImportSuccess(false);
+    setIsBarcodeReviewOpen(true);
+  };
+
+  const cancelBarcodeSession = () => {
+    barcodeQueueRef.current = [];
+    barcodeChangesRef.current = [];
+    setBarcodeReviewChanges([]);
+    setIsBarcodeScannerOpen(false);
+  };
+
+  const quickAdjustItem = async (
+    item: FridgeIngredient,
+    action: "DECREMENT" | "MARK_LOW" | "FINISH",
+  ) => {
+    if (isLoading || isUndoing) {
       return;
     }
 
-    isBarcodeAddInFlight.current = true;
-    setError("");
+    const operationId = createFridgeOperationId();
+    const previousItems = fridgeItems;
+    const nextItems: FridgeIngredient[] =
+      action === "FINISH"
+        ? previousItems.filter((current) => current.id !== item.id)
+        : previousItems.flatMap((current) => {
+            if (current.id !== item.id) {
+              return [current];
+            }
+            if (action === "DECREMENT") {
+              const nextAmount = Number(current.amount) - 1;
+              return nextAmount <= 0
+                ? []
+                : [{ ...current, amount: nextAmount }];
+            }
+            return [
+              {
+                ...current,
+                stockState: (current.stockState === "LOW" ? "IN_STOCK" : "LOW") as FridgeIngredient["stockState"],
+              },
+            ];
+          });
+    setFridgeItems(nextItems);
     setIsLoading(true);
+    setError("");
     try {
-      const productName = await lookupProductByBarcode(barcode);
-      if (!productName) {
-        setError("Barcode scanned, but no product name was found.");
-        return;
-      }
-
-      await addFridgeItem({
-        name: productName,
-        expirationDate: null,
-        unit: "",
-        amount: "",
+      await applyFridgeOperation({
+        operationId,
+        source: "QUICK_ADJUSTMENT",
+        changes: [
+          {
+            type: action,
+            fridgeItemId: item.id,
+            amount: action === "DECREMENT" ? 1 : undefined,
+            stockState:
+              action === "MARK_LOW"
+                ? item.stockState === "LOW"
+                  ? "IN_STOCK"
+                  : "LOW"
+                : undefined,
+            quantityAccuracy: "EXACT",
+          },
+        ],
       });
-      captureEvent("fridge_item_added_barcode", {
-        source: "barcode",
-      });
+      await refreshFridgeItems();
+      setQuickUndo({ operationId });
+      captureEvent("fridge_quick_adjusted", { action });
     } catch (err: unknown) {
-      setError(
-        getErrorMessage(
-          err,
-          "Could not fetch product details for this barcode.",
-        ),
-      );
+      setFridgeItems(previousItems);
+      captureEvent("fridge_quick_adjust_failed", { action });
+      setError(getErrorMessage(err, "Could not update the fridge."));
     } finally {
       setIsLoading(false);
-      isBarcodeAddInFlight.current = false;
+    }
+  };
+
+  const undoLastQuickOperation = async () => {
+    if (!quickUndo || isUndoing) {
+      return;
+    }
+
+    setIsUndoing(true);
+    setError("");
+    try {
+      await undoFridgeOperation(quickUndo.operationId, createFridgeOperationId());
+      await refreshFridgeItems();
+      setQuickUndo(null);
+      captureEvent("fridge_operation_undone");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Could not undo the fridge update."));
+    } finally {
+      setIsUndoing(false);
+    }
+  };
+
+  const confirmBarcodeImport = async () => {
+    const selectedChanges = barcodeReviewChanges.filter((item) => item.selected);
+    if (selectedChanges.length === 0 || isBarcodeImporting) {
+      return;
+    }
+
+    const invalidKeys = new Set(
+      selectedChanges
+        .filter((change) => !change.name.trim())
+        .map((change) => change.key),
+    );
+    if (invalidKeys.size > 0) {
+      setBarcodeChanges((previous) =>
+        previous.map((change) =>
+          invalidKeys.has(change.key)
+            ? { ...change, error: "Product name is required." }
+            : change,
+        ),
+      );
+      setError("Product name is required for some products.");
+    }
+
+    const validChanges = selectedChanges.filter((change) => !invalidKeys.has(change.key));
+    if (validChanges.length === 0) {
+      return;
+    }
+
+    const operationId = barcodeOperationIdRef.current ?? createFridgeOperationId();
+    barcodeOperationIdRef.current = operationId;
+    setIsBarcodeImporting(true);
+    setError("");
+    try {
+      const response = await applyFridgeOperation({
+        operationId,
+        source: "BARCODE_SCAN",
+        sourceReference: barcodeSessionReferenceRef.current ?? operationId,
+        changes: validChanges.map((change) => ({
+            type: "ADD",
+            clientChangeId: change.clientChangeId ?? change.key,
+            name: change.name,
+            amount: change.amount ? Number(change.amount) : undefined,
+            unit: change.unit || undefined,
+            barcode: change.barcode,
+            quantityAccuracy: change.quantityAccuracy,
+          })),
+      });
+      await refreshFridgeItems();
+      barcodeOperationIdRef.current = null;
+      const responseHasNoDetails =
+        response.appliedChanges.length === 0 && response.skippedChanges.length === 0;
+      const appliedIds = new Set(
+        responseHasNoDetails
+          ? validChanges.map((change) => change.clientChangeId ?? change.key)
+          : response.appliedChanges.map(
+              (change) => change.clientChangeId ?? String(change.fridgeItemId ?? ""),
+            ),
+      );
+      const remainingChanges = barcodeReviewChanges
+        .filter((change) => !appliedIds.has(change.clientChangeId ?? change.key))
+        .map((change) => {
+          if (invalidKeys.has(change.key)) {
+            return { ...change, error: "Product name is required." };
+          }
+          const skipped = response.skippedChanges.find(
+            (result) =>
+              (result.clientChangeId ?? String(result.fridgeItemId ?? "")) ===
+              (change.clientChangeId ?? change.key),
+          );
+          return skipped
+            ? { ...change, error: skipped.reason ?? "This product could not be added." }
+            : change;
+        });
+
+      setBarcodeChanges(remainingChanges);
+      if (remainingChanges.some((change) => change.selected)) {
+        setBarcodeImportSuccess(false);
+        setIsBarcodeReviewOpen(true);
+        setError("Some products still need your attention.");
+      } else {
+        barcodeSessionReferenceRef.current = null;
+        setBarcodeImportSuccess(true);
+        setIsBarcodeReviewOpen(false);
+        captureEvent("barcode_session_confirmed", {
+          productCount: validChanges.length,
+          quantityAccuracies: validChanges.map((change) => change.quantityAccuracy),
+        });
+      }
+    } catch (err: unknown) {
+      captureEvent("barcode_session_confirm_failed");
+      setError(getErrorMessage(err, "Could not add barcode product."));
+    } finally {
+      setIsBarcodeImporting(false);
     }
   };
 
@@ -314,6 +617,58 @@ export const Fridge = () => {
         <div className="w-full space-y-4">
           <ErrorAlert message={displayError ? t(displayError) : ""} onAutoHide={() => setError("")} />
 
+          {barcodeImportSuccess && <FridgeOperationSuccess />}
+          {quickUndo && (
+            <FridgeOperationSuccess
+              message={isUndoing ? "Undoing fridge update..." : "Fridge updated"}
+              onUndo={undoLastQuickOperation}
+            />
+          )}
+
+          {isBarcodeReviewOpen && (
+            <section
+              className="rounded-2xl border border-accent/30 bg-secondary p-4 sm:p-5"
+              aria-label={t("Review barcode session")}
+            >
+              <div className="mb-4 flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-bold text-text">{t("Review barcode session")}</h2>
+                  <p className="mt-1 text-sm text-text/60">
+                    {t("Check the product name before adding it to your fridge.")}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsBarcodeReviewOpen(false)}
+                  className="rounded-lg px-3 py-2 text-sm font-medium text-text/70 hover:bg-background"
+                >
+                  {t("Cancel")}
+                </button>
+              </div>
+              <FridgeOperationReview
+                changes={barcodeReviewChanges}
+                onChange={(change) =>
+                  setBarcodeChanges((previous) =>
+                    previous.map((current) =>
+                      current.key === change.key ? change : current,
+                    ),
+                  )
+                }
+              />
+              <button
+                type="button"
+                onClick={confirmBarcodeImport}
+                disabled={
+                  isBarcodeImporting ||
+                  !barcodeReviewChanges.some((change) => change.selected)
+                }
+                className="mt-4 w-full rounded-xl bg-primary px-4 py-3 font-semibold text-background disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {t(isBarcodeImporting ? "Adding barcode product..." : "Add product to fridge")}
+              </button>
+            </section>
+          )}
+
           {showExpiredBanner && expiredItems.length > 0 && (
             <div className="rounded-2xl border border-amber-300/60 bg-amber-100/80 p-4 text-sm text-amber-950 shadow-sm">
               <div className="flex items-start justify-between gap-3">
@@ -348,7 +703,7 @@ export const Fridge = () => {
 
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
               <button
-                onClick={() => setIsBarcodeScannerOpen(true)}
+                onClick={startBarcodeSession}
                 className="mobile-soft-press flex min-h-16 flex-col items-center justify-center rounded-xl border border-accent/35 bg-background px-3 py-2 text-center transition-colors hover:bg-accent/20"
               >
                 <span className="text-sm font-semibold text-text">
@@ -405,12 +760,16 @@ export const Fridge = () => {
           fridgeItems={fridgeItems}
           removeItem={removeItem}
           updateItem={updateItem}
+          quickAdjustItem={quickAdjustItem}
+          quickActionLoading={isLoading || isUndoing}
         />
       </div>
 
       <BarcodeScanner
         isOpen={isBarcodeScannerOpen}
-        onClose={() => setIsBarcodeScannerOpen(false)}
+        onClose={cancelBarcodeSession}
+        onFinishScanning={finishBarcodeSession}
+        detectedCount={barcodeScannedCount}
         onBarcodeDetected={handleBarcodeDetected}
       />
 

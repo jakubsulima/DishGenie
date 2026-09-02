@@ -10,12 +10,16 @@ interface FridgeDisplayProps {
   fridgeItems: FridgeIngredient[];
   removeItem: (id: number) => void;
   updateItem: (id: number, item: UpdateFridgeIngredientInput) => Promise<void>;
+  quickAdjustItem: (item: FridgeIngredient, action: "DECREMENT" | "MARK_LOW" | "FINISH") => void;
+  quickActionLoading?: boolean;
 }
 
 const FridgeDisplay: React.FC<FridgeDisplayProps> = ({
   fridgeItems,
   removeItem,
   updateItem,
+  quickAdjustItem,
+  quickActionLoading,
 }) => {
   const { t } = useLanguage();
   const sortedItems = useMemo(
@@ -59,6 +63,9 @@ const FridgeDisplay: React.FC<FridgeDisplayProps> = ({
               expirationDate={item.expirationDate}
               amount={item.amount || ""}
               unit={item.unit}
+              stockState={item.stockState}
+              onQuickAction={(action) => quickAdjustItem(item, action)}
+              quickActionLoading={quickActionLoading}
               remove={() => removeItem(item.id)}
               onUpdateItem={updateItem}
             />

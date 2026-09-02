@@ -464,6 +464,42 @@ const polishTranslations: Record<string, string> = {
   "Rest for 5 minutes, then finish with basil and a squeeze of lemon.":
     "Odstaw na 5 minut, a następnie dodaj bazylię i skrop sokiem z cytryny.",
   "Shopping list": "Lista zakupów",
+  "Review fridge changes": "Przejrzyj zmiany w lodówce",
+  "Include {name}": "Uwzględnij: {name}",
+  "Quantity accuracy": "Dokładność ilości",
+  Exact: "Dokładna",
+  Estimated: "Przybliżona",
+  Unknown: "Nieznana",
+  "Fridge updated": "Lodówka zaktualizowana",
+  Undo: "Cofnij",
+  "Undoing fridge update...": "Cofanie aktualizacji lodówki…",
+  "Quick actions": "Szybkie akcje",
+  "Use 1": "Zużyj 1",
+  "Use 1 {name}": "Zużyj 1: {name}",
+  "Mark as low": "Oznacz jako mało",
+  "Mark as enough": "Oznacz jako wystarczająco",
+  Low: "Mało",
+  Enough: "Wystarczająco",
+  Finished: "Skończone",
+  "Finish {name}": "Oznacz jako skończone: {name}",
+  "Product name is required.": "Nazwa produktu jest wymagana.",
+  "Product not found. Enter a name before adding.":
+    "Nie znaleziono produktu. Wpisz nazwę przed dodaniem.",
+  "Finish shopping": "Zakończ zakupy",
+  "Mark {name} as bought": "Oznacz {name} jako kupione",
+  "What to add to the fridge?": "Co dodać do lodówki?",
+  "Review the items before updating your fridge.":
+    "Przejrzyj produkty przed zaktualizowaniem lodówki.",
+  "Add selected to fridge": "Dodaj wybrane do lodówki",
+  "Updating fridge...": "Aktualizowanie lodówki…",
+  "Could not prepare the fridge import. Try again.":
+    "Nie udało się przygotować importu do lodówki. Spróbuj ponownie.",
+  "Could not update the fridge. No list items were removed.":
+    "Nie udało się zaktualizować lodówki. Nie usunięto pozycji z listy.",
+  "Could not sync the remaining list. It is still saved locally.":
+    "Nie udało się zsynchronizować pozostałej listy. Nadal jest zapisana lokalnie.",
+  "Estimated amount": "Przybliżona ilość: {amount}",
+  estimated: "przybliżona",
   "Keep your next recipe run organized and check items as you shop.":
     "Uporządkuj zakupy do kolejnego przepisu i odznaczaj produkty w sklepie.",
   "{count} left": "Pozostało: {count}",
@@ -580,6 +616,14 @@ const polishTranslations: Record<string, string> = {
   "Analytics: off": "Analityka: wyłączona",
   "Privacy settings": "Ustawienia prywatności",
   "Scan Barcode": "Skanuj kod kreskowy",
+  "Review barcode product": "Sprawdź produkt z kodu kreskowego",
+  "Review barcode session": "Sprawdź sesję skanowania",
+  "Finish scanning": "Zakończ skanowanie",
+  "{count} scanned": "Zeskanowano: {count}",
+  "Check the product name before adding it to your fridge.":
+    "Sprawdź nazwę produktu przed dodaniem go do lodówki.",
+  "Adding barcode product...": "Dodawanie produktu z kodu kreskowego…",
+  "Add product to fridge": "Dodaj produkt do lodówki",
   "Place the barcode inside the frame for fast detection.":
     "Umieść kod kreskowy w ramce, aby szybko go odczytać.",
   "Supports EAN and UPC formats": "Obsługuje formaty EAN i UPC",

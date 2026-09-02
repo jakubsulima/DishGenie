@@ -7,6 +7,8 @@ import { useLanguage } from "../context/languageContext";
 interface BarcodeScannerProps {
   isOpen: boolean;
   onClose: () => void;
+  onFinishScanning: () => void;
+  detectedCount: number;
   onBarcodeDetected: (barcode: string) => void;
 }
 
@@ -67,16 +69,23 @@ const getStartScannerError = (error: unknown): string => {
 const BarcodeScanner = ({
   isOpen,
   onClose,
+  onFinishScanning,
+  detectedCount,
   onBarcodeDetected,
 }: BarcodeScannerProps) => {
   const { t } = useLanguage();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const controlsRef = useRef<ScannerControls | null>(null);
-  const hasDetectedRef = useRef(false);
+  const onBarcodeDetectedRef = useRef(onBarcodeDetected);
+  const lastDetectedRef = useRef<{ barcode: string; at: number } | null>(null);
 
   const [manualBarcode, setManualBarcode] = useState("");
   const [error, setError] = useState("");
   const [isStarting, setIsStarting] = useState(false);
+
+  useEffect(() => {
+    onBarcodeDetectedRef.current = onBarcodeDetected;
+  }, [onBarcodeDetected]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -97,7 +106,7 @@ const BarcodeScanner = ({
       controlsRef.current = null;
     }
 
-    hasDetectedRef.current = false;
+    lastDetectedRef.current = null;
 
     if (videoRef.current) {
       const mediaStream = videoRef.current.srcObject as MediaStream | null;
@@ -117,7 +126,7 @@ const BarcodeScanner = ({
     const startScanner = async () => {
       setError("");
       setIsStarting(true);
-      hasDetectedRef.current = false;
+      lastDetectedRef.current = null;
 
       if (!navigator.mediaDevices?.getUserMedia) {
         setError(t("Your browser does not support camera access."));
@@ -164,23 +173,24 @@ const BarcodeScanner = ({
               (
                 result: Result | undefined,
                 scanError: unknown,
-                activeControls: ScannerControls,
               ) => {
-                if (hasDetectedRef.current) {
-                  return;
-                }
-
                 if (result) {
                   const scannedBarcode = result.getText().trim();
                   if (!scannedBarcode) {
                     return;
                   }
 
-                  hasDetectedRef.current = true;
-                  activeControls.stop();
-                  controlsRef.current = null;
-                  onBarcodeDetected(scannedBarcode);
-                  onClose();
+                  const now = Date.now();
+                  const lastDetected = lastDetectedRef.current;
+                  if (
+                    lastDetected?.barcode === scannedBarcode &&
+                    now - lastDetected.at < 1500
+                  ) {
+                    return;
+                  }
+
+                  lastDetectedRef.current = { barcode: scannedBarcode, at: now };
+                  onBarcodeDetectedRef.current(scannedBarcode);
                   return;
                 }
 
@@ -222,7 +232,7 @@ const BarcodeScanner = ({
       isCancelled = true;
       stopScanner();
     };
-  }, [isOpen, onBarcodeDetected, onClose, t]);
+  }, [isOpen, t]);
 
   const handleManualSubmit = () => {
     const trimmed = manualBarcode.trim();
@@ -230,7 +240,7 @@ const BarcodeScanner = ({
       return;
     }
     onBarcodeDetected(trimmed);
-    onClose();
+    setManualBarcode("");
   };
 
   if (!isOpen) {
@@ -289,6 +299,11 @@ const BarcodeScanner = ({
                 {t("Starting camera...")}
               </span>
             )}
+            {detectedCount > 0 && (
+              <span className="rounded-full bg-accent/20 px-3 py-1 font-medium text-text">
+                {t("{count} scanned", { count: detectedCount })}
+              </span>
+            )}
           </div>
 
           <ErrorAlert
@@ -318,6 +333,15 @@ const BarcodeScanner = ({
               </button>
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={onFinishScanning}
+            disabled={isStarting}
+            className="mobile-soft-press mt-4 w-full rounded-lg bg-primary px-4 py-3 font-semibold text-background transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {t("Finish scanning")}
+          </button>
         </div>
       </div>
     </div>

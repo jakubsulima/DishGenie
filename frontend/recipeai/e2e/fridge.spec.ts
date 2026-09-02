@@ -18,6 +18,122 @@ test("authenticated user can add an ingredient to the fridge", async ({
   await expect(page.getByText("2 items")).toBeVisible();
 });
 
+test("barcode lookup opens a review before adding the product", async ({ page }) => {
+  await mockAuthenticatedFridgeApi(page);
+  await page.goto("/Fridge");
+
+  await page.getByRole("button", { name: /scan barcode/i }).click();
+  await page.getByPlaceholder("e.g. 5901234123457").fill("5901234123457");
+  await page.getByRole("button", { name: "Use Code" }).click();
+  await page.getByRole("button", { name: "Finish scanning" }).click();
+
+  await expect(
+    page.getByRole("heading", { name: "Review barcode session" }),
+  ).toBeVisible();
+  await expect(page.getByRole("textbox", { name: "Item name" })).toHaveValue("Oat Drink");
+
+  await page.getByRole("button", { name: "Add product to fridge" }).click();
+
+  await expect(page.getByRole("heading", { name: "Oat Drink" })).toBeVisible();
+});
+
+test("unknown barcode stays in the review and can be named manually", async ({ page }) => {
+  await mockAuthenticatedFridgeApi(page);
+  await page.goto("/Fridge");
+
+  await page.getByRole("button", { name: /scan barcode/i }).click();
+  await page.getByPlaceholder("e.g. 5901234123457").fill("0000000000000");
+  await page.getByRole("button", { name: "Use Code" }).click();
+  await page.getByRole("button", { name: "Finish scanning" }).click();
+
+  await expect(page.getByText("Product not found. Enter a name before adding.")).toBeVisible();
+  await page.getByRole("textbox", { name: "Item name" }).fill("Unknown snack");
+  await page.getByRole("button", { name: "Add product to fridge" }).click();
+
+  await expect(page.getByRole("heading", { name: "Unknown snack" })).toBeVisible();
+});
+
+test("scanning multiple products submits edited selected items together", async ({ page }) => {
+  await mockAuthenticatedFridgeApi(page);
+  await page.goto("/Fridge");
+
+  await page.getByRole("button", { name: /scan barcode/i }).click();
+  const barcodeInput = page.getByPlaceholder("e.g. 5901234123457");
+  await barcodeInput.fill("5901234123457");
+  await page.getByRole("button", { name: "Use Code" }).click();
+  await barcodeInput.fill("4000000000001");
+  await page.getByRole("button", { name: "Use Code" }).click();
+  await page.getByRole("button", { name: "Finish scanning" }).click();
+
+  await expect(page.getByRole("textbox", { name: "Item name" }).nth(0)).toHaveValue("Oat Drink");
+  await expect(page.getByRole("textbox", { name: "Item name" }).nth(1)).toHaveValue("Granola");
+  await page.getByRole("textbox", { name: "Item name" }).nth(0).fill("Edited Oat Drink");
+  await page.getByRole("checkbox", { name: "Include Granola" }).uncheck();
+  await page.getByRole("button", { name: "Add product to fridge" }).click();
+
+  await expect(page.getByRole("heading", { name: "Edited Oat Drink" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Granola" })).not.toBeVisible();
+});
+
+test("quickly uses one piece and can undo the operation", async ({ page }) => {
+  await mockAuthenticatedFridgeApi(page, [
+    {
+      id: 8,
+      name: "Eggs",
+      expirationDate: null,
+      amount: 2,
+      unit: "pcs",
+    },
+  ]);
+  await page.goto("/Fridge");
+
+  await page.getByRole("button", { name: "Use 1 Eggs" }).click();
+  await expect(page.getByText("1 pcs")).toBeVisible();
+
+  await page.getByRole("button", { name: "Undo" }).click();
+  await expect(page.getByText("2 pcs")).toBeVisible();
+});
+
+test("marks an item low and can undo the stock-state change", async ({ page }) => {
+  await mockAuthenticatedFridgeApi(page, [
+    {
+      id: 8,
+      name: "Eggs",
+      expirationDate: null,
+      amount: 2,
+      unit: "pcs",
+      stockState: "IN_STOCK",
+    },
+  ]);
+  await page.goto("/Fridge");
+
+  await page.getByRole("button", { name: "Mark as low" }).click();
+  await expect(page.getByRole("button", { name: "Mark as enough" })).toBeVisible();
+  await page.getByRole("button", { name: "Undo" }).click();
+  await expect(page.getByRole("button", { name: "Mark as low" })).toBeVisible();
+});
+
+test("finishes an item and restores the full position with undo", async ({ page }) => {
+  await mockAuthenticatedFridgeApi(page, [
+    {
+      id: 9,
+      name: "Yogurt",
+      expirationDate: "20-05-2026",
+      amount: 1,
+      unit: "l",
+      stockState: "LOW",
+    },
+  ]);
+  await page.goto("/Fridge");
+
+  await page.getByRole("button", { name: "Finish Yogurt" }).click();
+  await expect(page.getByText("No ingredients in your inventory")).toBeVisible();
+  await page.getByRole("button", { name: "Undo" }).click();
+  await expect(page.getByRole("heading", { name: "Yogurt" })).toBeVisible();
+  await expect(page.getByText("1 l")).toBeVisible();
+  await expect(page.getByText("Exp: 20-05-26")).toBeVisible();
+});
+
 test("user can edit fridge item fields inline on mobile", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await mockAuthenticatedFridgeApi(page, [

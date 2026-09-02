@@ -283,36 +283,31 @@ export const cleanAiJsonString = (response: unknown): string => {
   return jsonString;
 };
 
+interface BarcodeProduct {
+  barcode: string;
+  name: string;
+  brand?: string | null;
+}
+
 export const lookupProductByBarcode = async (
   barcode: string,
-): Promise<string | null> => {
+): Promise<BarcodeProduct | null> => {
   const normalized = barcode.trim();
   if (!normalized) {
     return null;
   }
 
-  const response = await axios.get(
-    `https://world.openfoodfacts.org/api/v0/product/${encodeURIComponent(
-      normalized,
-    )}.json`,
-    {
-      withCredentials: false,
-    },
-  );
-
-  const responseData = asRecord(response.data);
-  const product = asRecord(responseData?.product);
-  const productName = product?.product_name;
-  const productNameEn = product?.product_name_en;
-  const genericName = product?.generic_name;
-
-  const name =
-    (typeof productName === "string" ? productName.trim() : "") ||
-    (typeof productNameEn === "string" ? productNameEn.trim() : "") ||
-    (typeof genericName === "string" ? genericName.trim() : "") ||
-    null;
-
-  return name;
+  try {
+    return await apiClient<BarcodeProduct>(
+      `v2/fridge/barcodes/${encodeURIComponent(normalized)}`,
+      false,
+    );
+  } catch (error) {
+    if (getErrorStatus(error) === 404) {
+      return null;
+    }
+    throw error;
+  }
 };
 
 axios.defaults.headers.common["Content-Type"] = "application/json";
