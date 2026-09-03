@@ -300,6 +300,15 @@ const polishTranslations: Record<string, string> = {
   "Increase servings": "Zwiększ liczbę porcji",
   "To check": "Do sprawdzenia",
   "Fridge coverage: {percent}%": "Pokrycie lodówki: {percent}%",
+  "Fridge match": "Dopasowanie do lodówki",
+  "Ready from your fridge: {count}": "Z lodówki: {count}",
+  "{percent}% covered": "{percent}% składników masz",
+  "Already on hand": "Masz pod ręką",
+  "Still needed": "Jeszcze potrzebne",
+  "No confident matches yet": "Brak pewnych dopasowań",
+  "Nothing else needed": "Nic więcej nie potrzeba",
+  "Amounts to check": "Ilości do sprawdzenia",
+  "Recipe note": "Dlaczego ten pomysł",
   "{count} ingredients": "Składniki: {count}",
   "{count} steps": "Kroki: {count}",
   "Choose One Of {count} Different Recipes":
@@ -471,6 +480,18 @@ const polishTranslations: Record<string, string> = {
   Estimated: "Przybliżona",
   Unknown: "Nieznana",
   "Fridge updated": "Lodówka zaktualizowana",
+  Cooked: "Ugotowano",
+  "Cooked ✓": "Ugotowano ✓",
+  "Use matching ingredients from the fridge":
+    "Odejmij pasujące składniki z lodówki",
+  "Fridge updated after cooking.": "Lodówka zaktualizowana po gotowaniu.",
+  "No matching fridge ingredients with known amounts.":
+    "Nie znaleziono w lodówce pasujących składników ze znaną ilością.",
+  "No matching ingredients found in the fridge.":
+    "Nie znaleziono pasujących składników w lodówce.",
+  "Could not update the fridge after cooking.":
+    "Nie udało się zaktualizować lodówki po gotowaniu.",
+  "Fridge update undone.": "Cofnięto aktualizację lodówki.",
   Undo: "Cofnij",
   "Undoing fridge update...": "Cofanie aktualizacji lodówki…",
   "Quick actions": "Szybkie akcje",
@@ -478,6 +499,7 @@ const polishTranslations: Record<string, string> = {
   "Use 1 {name}": "Zużyj 1: {name}",
   "Mark as low": "Oznacz jako mało",
   "Mark as enough": "Oznacz jako wystarczająco",
+  Plenty: "Dużo",
   Low: "Mało",
   Enough: "Wystarczająco",
   Finished: "Skończone",
@@ -490,6 +512,10 @@ const polishTranslations: Record<string, string> = {
   "What to add to the fridge?": "Co dodać do lodówki?",
   "Review the items before updating your fridge.":
     "Przejrzyj produkty przed zaktualizowaniem lodówki.",
+  "Checked items are ready to add. Edit details only if needed.":
+    "Zaznaczone produkty są gotowe. Edytuj szczegóły tylko w razie potrzeby.",
+  "Checked items": "Zaznaczone produkty",
+  Done: "Gotowe",
   "Add selected to fridge": "Dodaj wybrane do lodówki",
   "Updating fridge...": "Aktualizowanie lodówki…",
   "Could not prepare the fridge import. Try again.":
@@ -500,8 +526,8 @@ const polishTranslations: Record<string, string> = {
     "Nie udało się zsynchronizować pozostałej listy. Nadal jest zapisana lokalnie.",
   "Estimated amount": "Przybliżona ilość: {amount}",
   estimated: "przybliżona",
-  "Keep your next recipe run organized and check items as you shop.":
-    "Uporządkuj zakupy do kolejnego przepisu i odznaczaj produkty w sklepie.",
+  "Check off products as you shop, then use Finish shopping to add them to your fridge.":
+    "Zaznaczaj kupione produkty, a na końcu wybierz „Zakończ zakupy”, aby dodać je do lodówki.",
   "{count} left": "Pozostało: {count}",
   "{count} completed": "Ukończono: {count}",
   "Syncing...": "Synchronizacja…",

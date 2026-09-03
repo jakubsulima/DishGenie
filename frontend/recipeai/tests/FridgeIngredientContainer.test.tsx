@@ -20,10 +20,36 @@ describe("FridgeIngredientContainer", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Use 1 Eggs" }));
-    fireEvent.click(screen.getByRole("button", { name: "Finish Eggs" }));
-
     expect(onQuickAction).toHaveBeenNthCalledWith(1, "DECREMENT");
-    expect(onQuickAction).toHaveBeenNthCalledWith(2, "FINISH");
+    expect(screen.getByRole("button", { name: "Mark as low" })).toHaveTextContent(
+      "Plenty",
+    );
+    expect(
+      screen.queryByRole("button", { name: "Finish Eggs" }),
+    ).not.toBeInTheDocument();
+  });
+
+  test("shows a compact low stock pill and lets the user mark it as enough", () => {
+    const onQuickAction = vi.fn();
+
+    render(
+      <FridgeIngredientContainer
+        id={7}
+        name="Eggs"
+        expirationDate={null}
+        amount=""
+        unit=""
+        stockState="LOW"
+        onQuickAction={onQuickAction}
+        remove={vi.fn()}
+        onUpdateItem={vi.fn()}
+      />,
+    );
+
+    const stockButton = screen.getByRole("button", { name: "Mark as enough" });
+    expect(stockButton).toHaveTextContent("Low");
+    fireEvent.click(stockButton);
+    expect(onQuickAction).toHaveBeenCalledWith("MARK_LOW");
   });
 
   test("edits all displayed fridge item fields inline", async () => {
@@ -48,8 +74,9 @@ describe("FridgeIngredientContainer", () => {
     fireEvent.change(screen.getByLabelText("Amount"), {
       target: { value: "750" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Unit l" }));
-    fireEvent.click(screen.getByRole("button", { name: "ml" }));
+    fireEvent.change(screen.getByLabelText("Unit l"), {
+      target: { value: "ml" },
+    });
     fireEvent.change(screen.getByLabelText("Expiration"), {
       target: { value: "2026-05-21" },
     });
@@ -132,9 +159,9 @@ describe("FridgeIngredientContainer", () => {
     const fieldRow = amountInput.closest(".grid");
 
     expect(fieldRow).toHaveClass(
-      "grid-cols-[5rem_3.5rem_minmax(0,1fr)]",
+      "grid-cols-[4.5rem_4rem_minmax(0,1fr)]",
     );
-    expect(screen.getByRole("button", { name: "Unit l" })).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "Unit l" })).toBeInTheDocument();
     expect(screen.getByLabelText("Expiration")).toBeInTheDocument();
   });
 
@@ -154,5 +181,40 @@ describe("FridgeIngredientContainer", () => {
     expect(screen.getByText("1 l")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /edit milk/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /remove milk/i })).toBeInTheDocument();
+  });
+
+  test("omits empty optional details from the compact row", () => {
+    render(
+      <FridgeIngredientContainer
+        id={7}
+        name="Milk"
+        expirationDate={null}
+        amount=""
+        unit=""
+        remove={vi.fn()}
+        onUpdateItem={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole("group", { name: "Milk" })).toBeInTheDocument();
+    expect(screen.queryByText("No amount")).not.toBeInTheDocument();
+  });
+
+  test("removes an item from the visible trash action", () => {
+    const remove = vi.fn();
+    render(
+      <FridgeIngredientContainer
+        id={7}
+        name="Milk"
+        expirationDate={null}
+        amount=""
+        unit=""
+        remove={remove}
+        onUpdateItem={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /remove milk/i }));
+    expect(remove).toHaveBeenCalledOnce();
   });
 });

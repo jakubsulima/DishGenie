@@ -25,4 +25,21 @@ class UnitConversionServiceTest {
 
         assertThat(service.areCompatible(grams, pieces)).isFalse();
     }
+
+    @Test
+    void matchesIngredientNamesWithSafeCulinaryQualifiers() {
+        assertThat(service.ingredientNamesMatch("olive", "olive oil")).isTrue();
+        assertThat(service.ingredientNamesMatch("tomato", "ripe tomatoes")).isTrue();
+        assertThat(service.ingredientNamesMatch("basil", "fresh basil leaves")).isTrue();
+        assertThat(service.ingredientNamesMatch("rice", "cooked rice")).isTrue();
+    }
+
+    @Test
+    void doesNotMatchNamesWhenTheExtraWordsChangeTheIngredient() {
+        assertThat(service.ingredientNamesMatch("chicken", "chicken broth")).isFalse();
+        assertThat(service.ingredientNamesMatch("tomato", "tomato paste")).isFalse();
+        assertThat(service.ingredientNamesMatch("oil", "olive oil")).isFalse();
+        assertThat(service.ingredientNamesMatch("pepper", "red pepper")).isFalse();
+        assertThat(service.ingredientNamesMatch("bean", "black beans")).isFalse();
+    }
 }

@@ -150,13 +150,23 @@ class GeminiServicePromptTest {
                 fridgeItems,
                 Set.of(),
                 "pl"
-        )).isEqualTo("Wykorzystuje składniki, które masz już w lodówce.");
+        )).isEqualTo("Masz już w lodówce: Szpinak.");
 
         assertThat(geminiService.buildCoverageExplanation(
                 ingredients,
                 List.of(),
                 Set.of("szpinak"),
                 "pl"
-        )).isEqualTo("Ten przepis wymaga składników, których nie ma obecnie na liście Twojej lodówki.");
+        )).isEqualTo("Pomysł odpowiada Twoim wyborom, a powyżej jasno widać, czego brakuje.");
+    }
+
+    @Test
+    void coverageExplanationRecognizesQualifiedIngredientNames() {
+        assertThat(geminiService.buildCoverageExplanation(
+                List.of(new RecipeIngredientDto("Olive oil", 30, "ml")),
+                List.of(new FridgeIngredientDto(12L, "olive", null, null, null)),
+                Set.of(),
+                "en"
+        )).isEqualTo("Already in your fridge: Olive oil.");
     }
 }

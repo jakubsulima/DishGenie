@@ -57,6 +57,31 @@ test("authenticated user can generate a shopping list from a recipe", async ({
   await expect(page.getByText("Pasta - 180 g")).toBeVisible();
 });
 
+test("authenticated user can mark a recipe cooked and update matching fridge items", async ({
+  page,
+}) => {
+  await mockAuthenticatedRecipesApi(page);
+  await page.goto("/Recipe/101");
+
+  const operationRequest = page.waitForRequest(
+    (request) =>
+      request.method() === "POST" &&
+      request.url().endsWith("/api/v2/fridge/operations"),
+  );
+  await page.getByRole("button", { name: /Cooked/i }).click();
+
+  expect((await operationRequest).postDataJSON()).toMatchObject({
+    source: "COOKED_RECIPE",
+    sourceReference: "101",
+    changes: [
+      { type: "DECREMENT", fridgeItemId: 21, amount: 200 },
+      { type: "DECREMENT", fridgeItemId: 22, amount: 12 },
+    ],
+  });
+  await expect(page.getByText("Fridge updated after cooking.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Cooked ✓" })).toBeDisabled();
+});
+
 test("authenticated user can search their saved recipes", async ({ page }) => {
   await mockAuthenticatedRecipesApi(page);
   await page.goto("/Recipes");

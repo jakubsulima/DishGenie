@@ -94,26 +94,26 @@ test("quickly uses one piece and can undo the operation", async ({ page }) => {
   await expect(page.getByText("2 pcs")).toBeVisible();
 });
 
-test("marks an item low and can undo the stock-state change", async ({ page }) => {
+test("shows stock, remove, and edit actions on an item without amount", async ({ page }) => {
   await mockAuthenticatedFridgeApi(page, [
     {
       id: 8,
       name: "Eggs",
       expirationDate: null,
-      amount: 2,
-      unit: "pcs",
+      amount: "",
+      unit: "",
       stockState: "IN_STOCK",
     },
   ]);
   await page.goto("/Fridge");
 
-  await page.getByRole("button", { name: "Mark as low" }).click();
-  await expect(page.getByRole("button", { name: "Mark as enough" })).toBeVisible();
-  await page.getByRole("button", { name: "Undo" }).click();
-  await expect(page.getByRole("button", { name: "Mark as low" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Mark as low" })).toContainText("Plenty");
+  await expect(page.getByRole("button", { name: "Finish Eggs" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Remove Eggs" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Edit Eggs" })).toBeVisible();
 });
 
-test("finishes an item and restores the full position with undo", async ({ page }) => {
+test("removes an item with the visible trash action", async ({ page }) => {
   await mockAuthenticatedFridgeApi(page, [
     {
       id: 9,
@@ -126,12 +126,9 @@ test("finishes an item and restores the full position with undo", async ({ page 
   ]);
   await page.goto("/Fridge");
 
-  await page.getByRole("button", { name: "Finish Yogurt" }).click();
+  await page.getByRole("button", { name: "Remove Yogurt" }).click();
   await expect(page.getByText("No ingredients in your inventory")).toBeVisible();
-  await page.getByRole("button", { name: "Undo" }).click();
-  await expect(page.getByRole("heading", { name: "Yogurt" })).toBeVisible();
-  await expect(page.getByText("1 l")).toBeVisible();
-  await expect(page.getByText("Exp: 20-05-26")).toBeVisible();
+  await expect(page.getByText("0 items")).toBeVisible();
 });
 
 test("user can edit fridge item fields inline on mobile", async ({ page }) => {
@@ -151,16 +148,16 @@ test("user can edit fridge item fields inline on mobile", async ({ page }) => {
   await page.getByRole("button", { name: /edit yogurt/i }).click();
 
   const amountInput = page.getByLabel("Amount");
-  const unitButton = page.getByRole("button", { name: "Unit l" });
+  const unitInput = page.getByRole("combobox", { name: "Unit l" });
   const expirationInput = page.getByLabel("Expiration");
 
   await expect(amountInput).toBeVisible();
-  await expect(unitButton).toBeVisible();
+  await expect(unitInput).toBeVisible();
   await expect(expirationInput).toBeVisible();
 
   const [amountBox, unitBox, expirationBox] = await Promise.all([
     amountInput.boundingBox(),
-    unitButton.boundingBox(),
+    unitInput.boundingBox(),
     expirationInput.boundingBox(),
   ]);
 
@@ -172,8 +169,7 @@ test("user can edit fridge item fields inline on mobile", async ({ page }) => {
 
   await page.getByLabel("Name").fill("Greek yogurt");
   await amountInput.fill("750");
-  await unitButton.click();
-  await page.getByRole("button", { name: "ml" }).click();
+  await unitInput.selectOption("ml");
   await expirationInput.fill("2026-05-21");
   await page.getByRole("button", { name: "Save" }).click();
 
