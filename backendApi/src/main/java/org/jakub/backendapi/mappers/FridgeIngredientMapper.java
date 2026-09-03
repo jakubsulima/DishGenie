@@ -1,6 +1,9 @@
 package org.jakub.backendapi.mappers;
 
 import org.jakub.backendapi.dto.FridgeIngredientDto;
+import org.jakub.backendapi.entities.Enums.FridgeOperationSource;
+import org.jakub.backendapi.entities.Enums.FridgeStockState;
+import org.jakub.backendapi.entities.Enums.QuantityAccuracy;
 import org.jakub.backendapi.entities.Enums.Unit;
 import org.jakub.backendapi.entities.FridgeIngredient;
 import org.jakub.backendapi.entities.User;
@@ -20,6 +23,15 @@ public interface FridgeIngredientMapper {
     default FridgeIngredient toFridgeIngredientWithUser(FridgeIngredientDto fridgeIngredientDto, User user) {
         FridgeIngredient fridgeIngredient = toFridgeIngredient(fridgeIngredientDto);
         fridgeIngredient.setUser(user);
+        if (fridgeIngredient.getSource() == null) {
+            fridgeIngredient.setSource(FridgeOperationSource.MANUAL);
+        }
+        if (fridgeIngredient.getQuantityAccuracy() == null) {
+            fridgeIngredient.setQuantityAccuracy(QuantityAccuracy.UNKNOWN);
+        }
+        if (fridgeIngredient.getStockState() == null) {
+            fridgeIngredient.setStockState(FridgeStockState.IN_STOCK);
+        }
         return fridgeIngredient;
     }
 
