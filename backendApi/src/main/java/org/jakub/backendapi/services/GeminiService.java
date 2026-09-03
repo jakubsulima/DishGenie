@@ -808,10 +808,6 @@ public class GeminiService {
     ) {
         List<FridgeIngredientDto> safeFridgeItems = fridgeItems == null ? List.of() : fridgeItems;
         List<RecipeIngredientDto> recipeIngredients = new ArrayList<>();
-        Set<String> fridgeNames = safeFridgeItems.stream()
-                .filter(item -> item != null && StringUtils.hasText(item.getName()))
-                .map(item -> normalizeIngredientName(item.getName()))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
 
         JsonNode ingredientsNode = recipeNode.path("ingredients");
         for (JsonNode ingredientNode : ingredientsNode) {
@@ -822,10 +818,11 @@ public class GeminiService {
             ));
         }
 
-        List<ShoppingListGenerationItemDto> missing = shoppingListCoverageService.findMissingItems(
+        ShoppingListCoverageService.Coverage coverageResult = shoppingListCoverageService.findCoverage(
                 recipeIngredients,
                 safeFridgeItems
         );
+        List<ShoppingListGenerationItemDto> missing = coverageResult.missing();
         Set<String> missingNames = missing.stream()
                 .map(ShoppingListGenerationItemDto::getName)
                 .map(this::normalizeIngredientName)
@@ -833,25 +830,26 @@ public class GeminiService {
 
         ArrayNode available = objectMapper.createArrayNode();
         Set<String> addedAvailable = new LinkedHashSet<>();
-        for (RecipeIngredientDto ingredient : recipeIngredients) {
-            String normalizedName = normalizeIngredientName(ingredient.getName());
-            if (fridgeNames.contains(normalizedName) && addedAvailable.add(normalizedName)) {
-                available.add(ingredient.getName());
+        for (String ingredientName : coverageResult.available()) {
+            String normalizedName = normalizeIngredientName(ingredientName);
+            if (addedAvailable.add(normalizedName)) {
+                available.add(ingredientName);
             }
         }
 
         ObjectNode coverage = recipeNode.putObject("fridgeCoverage");
         coverage.set("available", available);
         coverage.set("missing", objectMapper.valueToTree(missing));
-        coverage.set("unresolved", objectMapper.valueToTree(
-                shoppingListCoverageService.findCoverage(recipeIngredients, safeFridgeItems).unresolved()));
+        coverage.set("unresolved", objectMapper.valueToTree(coverageResult.unresolved()));
+        Set<String> unresolvedNames = coverageResult.unresolved().stream()
+                .map(ShoppingListGenerationItemDto::getName)
+                .map(this::normalizeIngredientName)
+                .collect(Collectors.toSet());
         long measuredItems = recipeIngredients.stream()
-                .filter(item -> item.getAmount() > 0 && shoppingListCoverageService.findCoverage(
-                        List.of(item), safeFridgeItems).unresolved().isEmpty())
+                .filter(item -> item.getAmount() > 0)
+                .filter(item -> !unresolvedNames.contains(normalizeIngredientName(item.getName())))
                 .count();
-        long coveredItems = recipeIngredients.stream()
-                .filter(item -> arrayContains(available, item.getName()))
-                .count();
+        long coveredItems = addedAvailable.size();
         coverage.put("coverageRatio", measuredItems == 0 ? 0d : (double) coveredItems / measuredItems);
         ArrayNode reasonCodes = objectMapper.createArrayNode();
         if (usesNonExpiredExpiringItem(recipeIngredients, safeFridgeItems)) {
@@ -871,15 +869,6 @@ public class GeminiService {
         ));
     }
 
-    private boolean arrayContains(ArrayNode values, String expected) {
-        for (JsonNode value : values) {
-            if (value.asText().equals(expected)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private boolean usesNonExpiredExpiringItem(
             List<RecipeIngredientDto> recipeIngredients,
             List<FridgeIngredientDto> fridgeItems
@@ -890,8 +879,8 @@ public class GeminiService {
                         && fridgeItem.getExpirationDate() != null
                         && !fridgeItem.getExpirationDate().isBefore(today)
                         && recipeIngredients.stream().anyMatch(ingredient ->
-                        normalizeIngredientName(ingredient.getName())
-                                .equals(normalizeIngredientName(fridgeItem.getName()))));
+                        shoppingListCoverageService.ingredientNamesMatch(
+                                ingredient.getName(), fridgeItem.getName())));
     }
 
     String buildCoverageExplanation(
@@ -908,7 +897,8 @@ public class GeminiService {
                 continue;
             }
             boolean used = recipeIngredients.stream().anyMatch(ingredient ->
-                    normalizeIngredientName(ingredient.getName()).equals(normalizeIngredientName(fridgeItem.getName()))
+                    shoppingListCoverageService.ingredientNamesMatch(
+                            ingredient.getName(), fridgeItem.getName())
             );
             if (used && (expiringDate == null || fridgeItem.getExpirationDate().isBefore(expiringDate))) {
                 expiringName = fridgeItem.getName();
@@ -930,20 +920,23 @@ public class GeminiService {
             }
         }
 
-        long availableCount = recipeIngredients.stream()
+        List<String> matchedNames = recipeIngredients.stream()
+                .filter(ingredient -> fridgeItems.stream()
+                        .filter(java.util.Objects::nonNull)
+                        .anyMatch(fridgeItem -> shoppingListCoverageService.ingredientNamesMatch(
+                                ingredient.getName(), fridgeItem.getName())))
                 .map(RecipeIngredientDto::getName)
-                .map(this::normalizeIngredientName)
-                .filter(name -> !missingNames.contains(name))
                 .distinct()
-                .count();
+                .limit(3)
+                .toList();
         if (polish) {
-            return availableCount > 0
-                    ? "Wykorzystuje składniki, które masz już w lodówce."
-                    : "Ten przepis wymaga składników, których nie ma obecnie na liście Twojej lodówki.";
+            return !matchedNames.isEmpty()
+                    ? "Masz już w lodówce: " + String.join(", ", matchedNames) + "."
+                    : "Pomysł odpowiada Twoim wyborom, a powyżej jasno widać, czego brakuje.";
         }
-        return availableCount > 0
-                ? "Uses ingredients already available in your fridge."
-                : "This recipe needs ingredients not currently listed in your fridge.";
+        return !matchedNames.isEmpty()
+                ? "Already in your fridge: " + String.join(", ", matchedNames) + "."
+                : "This idea follows your choices, with a clear view of what is still missing.";
     }
 
     private String normalizeIngredientName(String value) {

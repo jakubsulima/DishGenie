@@ -22,14 +22,23 @@ const shoppingItems = [
   },
 ];
 
-const { applyFridgeOperation, fetchShoppingList, readShoppingList, syncShoppingList, writeShoppingList } =
+const { applyFridgeOperation, fetchShoppingList, readShoppingList, refreshFridgeItems, syncShoppingList, writeShoppingList } =
   vi.hoisted(() => ({
     applyFridgeOperation: vi.fn(),
     fetchShoppingList: vi.fn(),
     readShoppingList: vi.fn(),
+    refreshFridgeItems: vi.fn(),
     syncShoppingList: vi.fn(),
     writeShoppingList: vi.fn(),
   }));
+
+vi.mock("../src/context/fridgeContext", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../src/context/fridgeContext")>();
+  return {
+    ...actual,
+    useFridge: () => ({ refreshFridgeItems }),
+  };
+});
 
 vi.mock("../src/lib/fridgeOperations", () => ({
   applyFridgeOperation,
@@ -51,6 +60,7 @@ describe("ShoppingList fridge import", () => {
     readShoppingList.mockReturnValue(shoppingItems);
     fetchShoppingList.mockResolvedValue(shoppingItems);
     syncShoppingList.mockImplementation(async (items) => items);
+    refreshFridgeItems.mockResolvedValue(undefined);
     applyFridgeOperation.mockResolvedValue({
       operationId: "operation-1",
       status: "APPLIED",
@@ -75,11 +85,26 @@ describe("ShoppingList fridge import", () => {
     );
 
     const finishButton = await screen.findByRole("button", { name: "Finish shopping" });
+    await waitFor(() => expect(fetchShoppingList).toHaveBeenCalledTimes(1));
+    expect(
+      screen.getByText(
+        "Check off products as you shop, then use Finish shopping to add them to your fridge.",
+      ),
+    ).toBeInTheDocument();
     expect(applyFridgeOperation).not.toHaveBeenCalled();
 
     fireEvent.click(finishButton);
     expect(await screen.findByRole("heading", { name: "What to add to the fridge?" })).toBeInTheDocument();
     expect(applyFridgeOperation).not.toHaveBeenCalled();
+    expect(screen.queryByRole("textbox", { name: "Item name" })).not.toBeInTheDocument();
+
+    const editButton = screen.getByRole("button", { name: "Edit Milk" });
+    expect(editButton).toHaveTextContent("Edit");
+    fireEvent.click(editButton);
+    expect(screen.getByRole("textbox", { name: "Item name" })).toHaveValue("Milk");
+    expect(screen.queryByRole("combobox", { name: "Quantity accuracy" })).not.toBeInTheDocument();
+    fireEvent.click(editButton);
+    expect(screen.queryByRole("textbox", { name: "Item name" })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Add selected to fridge" }));
 
@@ -101,6 +126,7 @@ describe("ShoppingList fridge import", () => {
     );
     expect(screen.queryByText("Milk - 2 pcs")).not.toBeInTheDocument();
     expect(screen.getByText("Bread")).toBeInTheDocument();
+    expect(refreshFridgeItems).toHaveBeenCalledTimes(1);
   });
 
   test("removes imported items while keeping unchecked items on the list", async () => {
@@ -110,7 +136,9 @@ describe("ShoppingList fridge import", () => {
       </LanguageProvider>,
     );
 
-    fireEvent.click(await screen.findByRole("button", { name: "Finish shopping" }));
+    const finishButton = await screen.findByRole("button", { name: "Finish shopping" });
+    await waitFor(() => expect(fetchShoppingList).toHaveBeenCalledTimes(1));
+    fireEvent.click(finishButton);
     fireEvent.click(await screen.findByRole("button", { name: "Add selected to fridge" }));
 
     await waitFor(() => expect(screen.queryByText("Milk - 2 pcs")).not.toBeInTheDocument());

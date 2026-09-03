@@ -6,10 +6,19 @@ import org.springframework.util.StringUtils;
 import java.text.Normalizer;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /** Canonical unit parsing shared by recipes, fridge coverage and shopping lists. */
 @Component
 public class UnitConversionService {
+
+    private static final Set<String> SAFE_INGREDIENT_QUALIFIERS = Set.of(
+            "fresh", "frozen", "dried", "dry", "ripe", "raw", "cooked", "uncooked",
+            "whole", "ground", "grated", "shredded", "chopped", "diced", "sliced",
+            "minced", "crushed", "peeled", "boneless", "skinless", "firm", "soft",
+            "extra", "virgin", "baby", "cherry", "leaf", "clove", "oil"
+    );
 
     public enum Dimension {
         MASS,
@@ -68,7 +77,72 @@ public class UnitConversionService {
         }
 
         String withoutAccents = Normalizer.normalize(rawName, Normalizer.Form.NFD)
-                .replaceAll("\\p{M}", "");
-        return withoutAccents.trim().toLowerCase(Locale.ROOT).replaceAll("\\s+", " ");
+                .replaceAll("\\p{M}", "")
+                .replace('ł', 'l')
+                .replace('Ł', 'L');
+        return withoutAccents.trim()
+                .toLowerCase(Locale.ROOT)
+                .replaceAll("[^a-z0-9]+", " ")
+                .replaceAll("\\s+", " ")
+                .trim();
+    }
+
+    /**
+     * Matches a base ingredient to a more descriptive recipe label, while
+     * rejecting additions that represent a different ingredient (for example
+     * chicken vs chicken broth or tomato vs tomato paste).
+     */
+    public boolean ingredientNamesMatch(String left, String right) {
+        Set<String> leftTokens = ingredientTokens(left);
+        Set<String> rightTokens = ingredientTokens(right);
+        if (leftTokens.isEmpty() || rightTokens.isEmpty()) {
+            return false;
+        }
+        if (leftTokens.equals(rightTokens)) {
+            return true;
+        }
+
+        Set<String> smaller;
+        Set<String> larger;
+        if (leftTokens.size() <= rightTokens.size() && rightTokens.containsAll(leftTokens)) {
+            smaller = leftTokens;
+            larger = rightTokens;
+        } else if (rightTokens.size() < leftTokens.size() && leftTokens.containsAll(rightTokens)) {
+            smaller = rightTokens;
+            larger = leftTokens;
+        } else {
+            return false;
+        }
+
+        return larger.stream()
+                .filter(token -> !smaller.contains(token))
+                .allMatch(SAFE_INGREDIENT_QUALIFIERS::contains);
+    }
+
+    private Set<String> ingredientTokens(String rawName) {
+        String normalized = normalizeIngredientName(rawName);
+        if (!StringUtils.hasText(normalized)) {
+            return Set.of();
+        }
+        return java.util.Arrays.stream(normalized.split(" "))
+                .map(this::singularizeIngredientToken)
+                .filter(StringUtils::hasText)
+                .collect(Collectors.toSet());
+    }
+
+    private String singularizeIngredientToken(String token) {
+        if ("leaves".equals(token)) {
+            return "leaf";
+        }
+        if (token.endsWith("oes") && token.length() > 4) {
+            return token.substring(0, token.length() - 2);
+        }
+        if (token.endsWith("ies") && token.length() > 4) {
+            return token.substring(0, token.length() - 3) + "y";
+        }
+        if (token.endsWith("s") && !token.endsWith("ss") && token.length() > 3) {
+            return token.substring(0, token.length() - 1);
+        }
+        return token;
     }
 }

@@ -10,6 +10,18 @@ import {
   generateShoppingListFromRecipe,
 } from "../src/lib/shoppingList";
 
+const {
+  applyFridgeOperation,
+  createFridgeOperationId,
+  refreshFridgeItems,
+  undoFridgeOperation,
+} = vi.hoisted(() => ({
+  applyFridgeOperation: vi.fn(),
+  createFridgeOperationId: vi.fn(),
+  refreshFridgeItems: vi.fn(),
+  undoFridgeOperation: vi.fn(),
+}));
+
 vi.mock("../src/lib/hooks", () => ({
   apiClient: vi.fn(),
   generateRecipe: vi.fn(),
@@ -29,6 +41,12 @@ vi.mock("../src/context/context", () => ({
 vi.mock("../src/lib/shoppingList", () => ({
   addShoppingItems: vi.fn(() => []),
   generateShoppingListFromRecipe: vi.fn(),
+}));
+
+vi.mock("../src/lib/fridgeOperations", () => ({
+  applyFridgeOperation,
+  createFridgeOperationId,
+  undoFridgeOperation,
 }));
 
 const LoginRouteProbe = () => {
@@ -74,7 +92,7 @@ describe("RecipePage", () => {
       addFridgeItemsBatch: vi.fn(),
       removeFridgeItem: vi.fn(),
       updateFridgeItem: vi.fn(),
-      refreshFridgeItems: vi.fn(),
+      refreshFridgeItems,
       getFridgeItemNames: vi.fn(() => ["egg", "milk"]),
     });
 
@@ -82,6 +100,24 @@ describe("RecipePage", () => {
     vi.mocked(generateRecipe).mockResolvedValue({});
     vi.mocked(deleteClient).mockResolvedValue({});
     vi.mocked(generateShoppingListFromRecipe).mockResolvedValue([]);
+    applyFridgeOperation.mockResolvedValue({
+      operationId: "cook-operation",
+      status: "APPLIED",
+      appliedChanges: [],
+      skippedChanges: [],
+      currentItems: [],
+    });
+    undoFridgeOperation.mockResolvedValue({
+      operationId: "undo-operation",
+      status: "APPLIED",
+      appliedChanges: [],
+      skippedChanges: [],
+      currentItems: [],
+    });
+    createFridgeOperationId
+      .mockReset()
+      .mockReturnValueOnce("cook-operation")
+      .mockReturnValueOnce("undo-operation");
   });
 
   test("renders an existing recipe from route state", async () => {
@@ -103,6 +139,38 @@ describe("RecipePage", () => {
     });
     expect(screen.getByText("Cook the eggs")).toBeInTheDocument();
     expect(generateRecipe).not.toHaveBeenCalled();
+  });
+
+  test("presents fridge matches as useful context instead of praising missing items", async () => {
+    renderRecipePage({
+      pathname: "/Recipe",
+      state: {
+        existingRecipe: {
+          name: "Olive rice",
+          title: "Olive rice",
+          ingredients: [
+            { name: "Olive oil", amount: 30, unit: "ml" },
+            { name: "Rice", amount: 200, unit: "g" },
+          ],
+          instructions: ["Cook"],
+          timeToPrepare: "20 min",
+          fridgeCoverage: {
+            available: ["Olive oil"],
+            missing: [{ name: "Rice", amount: 200, unit: "g" }],
+            unresolved: [],
+            coverageRatio: 0.5,
+            explanation: "Already in your fridge: Olive oil.",
+          },
+        },
+      },
+    });
+
+    expect(await screen.findByText("Fridge match")).toBeInTheDocument();
+    expect(screen.getByText("Ready from your fridge: 1")).toBeInTheDocument();
+    expect(screen.getByText("50% covered")).toBeInTheDocument();
+    expect(screen.getByText("✓ Olive oil")).toBeInTheDocument();
+    expect(screen.queryByText("Nothing from your fridge is needed")).not.toBeInTheDocument();
+    expect(screen.getByText(/Already in your fridge: Olive oil/)).toBeInTheDocument();
   });
 
   test("keeps and displays the recipe content language when saving", async () => {
@@ -251,6 +319,72 @@ describe("RecipePage", () => {
     });
 
     expect(await screen.findByText("Shopping List Page")).toBeInTheDocument();
+  });
+
+  test("marks a recipe cooked, consumes matching fridge amounts, and can undo", async () => {
+    vi.mocked(useFridge).mockReturnValue({
+      fridgeItems: [
+        { id: 8, name: "Tomatoes", expirationDate: null, amount: 500, unit: "g" },
+        { id: 9, name: "Basil", expirationDate: null, amount: "", unit: "g" },
+      ],
+      setFridgeItems: vi.fn(),
+      loading: false,
+      error: "",
+      addFridgeItem: vi.fn(),
+      addFridgeItemsBatch: vi.fn(),
+      removeFridgeItem: vi.fn(),
+      updateFridgeItem: vi.fn(),
+      refreshFridgeItems,
+      getFridgeItemNames: vi.fn(() => ["Tomatoes", "Basil"]),
+    });
+
+    renderRecipePage({
+      pathname: "/Recipe",
+      state: {
+        existingRecipe: {
+          name: "Tomato pasta",
+          title: "Tomato pasta",
+          ingredients: [
+            { name: "Tomato", amount: 200, unit: "g" },
+            { name: "Basil", amount: 12, unit: "g" },
+          ],
+          instructions: ["Cook"],
+          timeToPrepare: "20 min",
+        },
+      },
+    });
+
+    fireEvent.click(await screen.findByRole("button", { name: /Cooked/i }));
+
+    await waitFor(() =>
+      expect(applyFridgeOperation).toHaveBeenCalledWith({
+        operationId: "cook-operation",
+        source: "COOKED_RECIPE",
+        sourceReference: "recipe:Tomato pasta",
+        changes: [
+          expect.objectContaining({
+            type: "DECREMENT",
+            fridgeItemId: 8,
+            amount: 200,
+          }),
+          expect.objectContaining({
+            type: "FINISH",
+            fridgeItemId: 9,
+          }),
+        ],
+      }),
+    );
+    expect(refreshFridgeItems).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText("Fridge updated after cooking.")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    await waitFor(() =>
+      expect(undoFridgeOperation).toHaveBeenCalledWith(
+        "cook-operation",
+        "undo-operation",
+      ),
+    );
+    expect(refreshFridgeItems).toHaveBeenCalledTimes(2);
   });
 
   test("guest on a public recipe page sees a login CTA for shopping list generation", async () => {

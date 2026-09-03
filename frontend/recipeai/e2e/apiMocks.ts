@@ -420,6 +420,22 @@ export const mockRegisterApi = async (page: Page) => {
 
 export const mockAuthenticatedRecipesApi = async (page: Page) => {
   await markBrowserAsAuthenticated(page);
+  let recipeFridgeItems: FridgeItem[] = [
+    {
+      id: 21,
+      name: "Tomato",
+      expirationDate: null,
+      amount: 500,
+      unit: "g",
+    },
+    {
+      id: 22,
+      name: "Basil",
+      expirationDate: null,
+      amount: 20,
+      unit: "g",
+    },
+  ];
   let shoppingItems = [
     {
       id: "generated-1",
@@ -459,6 +475,37 @@ export const mockAuthenticatedRecipesApi = async (page: Page) => {
 
     if (method === "GET" && endpoint.startsWith("getRecipe/101")) {
       await fulfillJson(route, detailedRecipe);
+      return;
+    }
+
+    if (method === "GET" && endpoint === "getFridgeIngredients") {
+      await fulfillJson(route, recipeFridgeItems);
+      return;
+    }
+
+    if (method === "POST" && endpoint === "v2/fridge/operations") {
+      const payload = route.request().postDataJSON() as {
+        operationId?: string;
+        changes?: Array<{ fridgeItemId?: number; amount?: number }>;
+      };
+      for (const change of payload.changes ?? []) {
+        recipeFridgeItems = recipeFridgeItems.flatMap((item) => {
+          if (item.id !== change.fridgeItemId) return [item];
+          const remaining = Number(item.amount) - Number(change.amount ?? 0);
+          return remaining > 0 ? [{ ...item, amount: remaining }] : [];
+        });
+      }
+      await fulfillJson(route, {
+        operationId: payload.operationId,
+        status: "APPLIED",
+        appliedChanges: (payload.changes ?? []).map((change) => ({
+          type: "DECREMENT",
+          fridgeItemId: change.fridgeItemId,
+          status: "APPLIED",
+        })),
+        skippedChanges: [],
+        currentItems: recipeFridgeItems,
+      });
       return;
     }
 

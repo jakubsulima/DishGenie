@@ -291,12 +291,18 @@ public class FridgeInventoryOperationService {
         String name = requireName(change.getName());
         QuantityAccuracy accuracy = Optional.ofNullable(change.getQuantityAccuracy()).orElse(QuantityAccuracy.UNKNOWN);
         Double amount = accuracy == QuantityAccuracy.UNKNOWN ? null : requirePositive(change.getAmount());
+        Instant confirmedAt = Instant.now();
         FridgeIngredientDto dto = new FridgeIngredientDto(null, name, change.getExpirationDate(), amount, change.getUnit());
+        dto.setSource(source);
+        dto.setQuantityAccuracy(accuracy);
+        dto.setBarcode(trimToNull(change.getBarcode()));
+        dto.setStockState(FridgeStockState.IN_STOCK);
+        dto.setLastConfirmedAt(confirmedAt);
         FridgeIngredient result = fridgeService.addFridgeIngredientForUser(dto, user);
         result.setSource(source);
         result.setQuantityAccuracy(accuracy);
         result.setBarcode(trimToNull(change.getBarcode()));
-        result.setLastConfirmedAt(Instant.now());
+        result.setLastConfirmedAt(confirmedAt);
         if (result.getStockState() == null) {
             result.setStockState(FridgeStockState.IN_STOCK);
         }

@@ -16,6 +16,7 @@ import { applyFridgeOperation, createFridgeOperationId } from "../lib/fridgeOper
 import FridgeOperationSuccess from "../components/FridgeOperationSuccess";
 import { toShoppingToFridgeChange } from "../lib/shoppingToFridge";
 import { captureEvent } from "../lib/posthog";
+import { useFridge } from "../context/fridgeContext";
 
 const areItemsEqual = (a: ShoppingListItem[], b: ShoppingListItem[]) =>
   getShoppingListFingerprint(a) === getShoppingListFingerprint(b);
@@ -65,6 +66,7 @@ const TrashIcon = ({ className = "h-4 w-4" }: { className?: string }) => (
 
 const ShoppingList = () => {
   const { t } = useLanguage();
+  const { refreshFridgeItems } = useFridge();
   const [items, setItems] = useState<ShoppingListItem[]>(() =>
     readShoppingList(),
   );
@@ -357,6 +359,7 @@ const ShoppingList = () => {
       writeShoppingList(remainingItems);
       setReviewChanges(remainingItems.filter((item) => item.checked).map(toShoppingToFridgeChange));
       setImportSuccess(importedIds.size > 0);
+      await refreshFridgeItems().catch(() => undefined);
       if (remainingItems.length === 0 || remainingItems.every((item) => !item.checked)) {
         setIsReviewOpen(false);
       }
@@ -388,7 +391,7 @@ const ShoppingList = () => {
           {t("Shopping List")}
         </h1>
         <p className="mt-2 text-sm text-text/60 sm:text-base">
-          {t("Keep your next recipe run organized and check items as you shop.")}
+          {t("Check off products as you shop, then use Finish shopping to add them to your fridge.")}
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <span className="rounded-full bg-accent px-3 py-1.5 text-sm font-semibold text-text">
@@ -421,7 +424,7 @@ const ShoppingList = () => {
 
       {importSuccess && <FridgeOperationSuccess />}
 
-      {completedCount > 0 && (
+      {completedCount > 0 && !isReviewOpen && (
         <button
           type="button"
           onClick={openShoppingToFridgeReview}
@@ -433,11 +436,11 @@ const ShoppingList = () => {
       )}
 
       {isReviewOpen && (
-        <section className="mb-5 rounded-2xl border border-accent/30 bg-secondary p-4 sm:p-5" aria-label={t("What to add to the fridge?")}>
-          <div className="mb-4 flex items-start justify-between gap-3">
+        <section className="mb-5 rounded-2xl border border-accent/30 bg-secondary p-4" aria-label={t("What to add to the fridge?")}>
+          <div className="mb-3 flex items-start justify-between gap-3">
             <div>
               <h2 className="text-xl font-bold text-text">{t("What to add to the fridge?")}</h2>
-              <p className="mt-1 text-sm text-text/60">{t("Review the items before updating your fridge.")}</p>
+              <p className="mt-1 text-sm text-text/60">{t("Checked items are ready to add. Edit details only if needed.")}</p>
             </div>
             <button type="button" onClick={() => setIsReviewOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium text-text/70 hover:bg-background">
               {t("Cancel")}
@@ -447,7 +450,7 @@ const ShoppingList = () => {
           <button
             type="button"
             onClick={confirmShoppingToFridgeImport}
-            disabled={isImporting || reviewChanges.every((change) => !change.selected)}
+            disabled={isImporting || reviewChanges.length === 0}
             className="mt-4 w-full rounded-xl bg-primary px-4 py-3 font-semibold text-background disabled:cursor-not-allowed disabled:opacity-50"
           >
             {t(isImporting ? "Updating fridge..." : "Add selected to fridge")}

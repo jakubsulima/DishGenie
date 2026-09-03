@@ -26,4 +26,19 @@ public interface FridgeIngredientMapper {
     default String fromUnit(Unit unit) {
         return unit == null ? null : unit.getAbbreviation();
     }
+
+    default Unit toUnit(String unit) {
+        if (unit == null || unit.isBlank()) {
+            return null;
+        }
+
+        String normalized = unit.trim();
+        for (Unit candidate : Unit.values()) {
+            if (candidate.name().equalsIgnoreCase(normalized)
+                    || candidate.getAbbreviation().equalsIgnoreCase(normalized)) {
+                return candidate;
+            }
+        }
+        throw new IllegalArgumentException("Unknown fridge unit: " + unit);
+    }
 }

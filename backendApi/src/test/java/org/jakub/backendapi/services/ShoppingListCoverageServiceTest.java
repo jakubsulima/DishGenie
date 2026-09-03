@@ -54,6 +54,18 @@ class ShoppingListCoverageServiceTest {
         assertTrue(result.isEmpty());
     }
 
+    @Test
+    void findCoverage_shouldMatchAStoredBaseIngredientToQualifiedRecipeName() {
+        ShoppingListCoverageService.Coverage coverage = shoppingListCoverageService.findCoverage(
+                List.of(recipe("Olive oil", 30, "ml")),
+                List.of(fridge("olive", null, null))
+        );
+
+        assertEquals(List.of("Olive oil"), coverage.available());
+        assertTrue(coverage.missing().isEmpty());
+        assertTrue(coverage.unresolved().isEmpty());
+    }
+
     private RecipeIngredientDto recipe(String name, double amount, String unit) {
         return new RecipeIngredientDto(name, amount, unit);
     }

@@ -98,6 +98,26 @@ class FridgeInventoryOperationServiceTest {
     }
 
     @Test
+    void addPassesRequiredInventoryMetadataBeforeTheFirstPersistence() {
+        FridgeInventoryOperationRequestDto request = request("51822786-f628-4a39-9d5e-24865bf2ec62");
+        FridgeIngredient added = new FridgeIngredient();
+        added.setId(42L);
+        added.setName("Milk");
+
+        prepareNewOperation(request);
+        when(fridgeService.addFridgeIngredientForUser(any(), eq(owner))).thenReturn(added);
+
+        service.apply(request, owner.getEmail());
+
+        var dto = org.mockito.ArgumentCaptor.forClass(FridgeIngredientDto.class);
+        verify(fridgeService).addFridgeIngredientForUser(dto.capture(), eq(owner));
+        assertEquals(FridgeOperationSource.SHOPPING_LIST, dto.getValue().getSource());
+        assertEquals(QuantityAccuracy.UNKNOWN, dto.getValue().getQuantityAccuracy());
+        assertEquals(FridgeStockState.IN_STOCK, dto.getValue().getStockState());
+        org.junit.jupiter.api.Assertions.assertNotNull(dto.getValue().getLastConfirmedAt());
+    }
+
+    @Test
     void decrementRemovesAnItemWhenTheRemainingAmountReachesZero() {
         FridgeIngredient item = item(3L, "Milk", 1D, owner);
         FridgeInventoryOperationRequestDto request = request("b0d5c9b2-6040-44aa-8c10-5d46fb0f76f4");

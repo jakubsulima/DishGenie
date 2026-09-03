@@ -20,6 +20,13 @@ import { captureEvent } from "../lib/posthog";
 import { applySeo } from "../lib/seo";
 import { clearPendingRecipeSearch } from "../lib/pendingRecipeIntent";
 import { useLanguage } from "../context/languageContext";
+import {
+  applyFridgeOperation,
+  createFridgeOperationId,
+  undoFridgeOperation,
+} from "../lib/fridgeOperations";
+import { buildCookedRecipeFridgeChanges } from "../lib/cookedRecipe";
+import FridgeOperationSuccess from "../components/FridgeOperationSuccess";
 
 export interface RecipeIngredient {
   name: string;
@@ -417,6 +424,7 @@ const RecipePage = () => {
   const {
     fridgeItems,
     getFridgeItemNames,
+    refreshFridgeItems,
     loading: fridgeLoading,
   } = useFridge();
   const { user } = useUser();
@@ -441,6 +449,10 @@ const RecipePage = () => {
     "idle" | "saving" | "saved" | "error"
   >("idle");
   const [targetServings, setTargetServings] = useState<number | null>(null);
+  const [isUpdatingCookedFridge, setIsUpdatingCookedFridge] = useState(false);
+  const [isUndoingCookedFridge, setIsUndoingCookedFridge] = useState(false);
+  const [cookedOperationId, setCookedOperationId] = useState<string | null>(null);
+  const [cookedNotice, setCookedNotice] = useState("");
 
   const currentRecipeIdentifierRef = useRef<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -837,6 +849,69 @@ const RecipePage = () => {
       }))
     : [];
 
+  const handleCooked = async () => {
+    if (!user?.id || isUpdatingCookedFridge || cookedOperationId) {
+      return;
+    }
+
+    const changes = buildCookedRecipeFridgeChanges(
+      displayedIngredients,
+      fridgeItems,
+    );
+    if (changes.length === 0) {
+      setCookedNotice("No matching ingredients found in the fridge.");
+      return;
+    }
+
+    const operationId = createFridgeOperationId();
+    setIsUpdatingCookedFridge(true);
+    setCookedNotice("");
+    setError("");
+    try {
+      await applyFridgeOperation({
+        operationId,
+        source: "COOKED_RECIPE",
+        sourceReference: (recipeId ?? `recipe:${recipeData?.name ?? "generated"}`).slice(0, 100),
+        changes,
+      });
+      await refreshFridgeItems();
+      setCookedOperationId(operationId);
+    } catch (cookedError: unknown) {
+      setError(
+        getErrorMessage(
+          cookedError,
+          "Could not update the fridge after cooking.",
+        ),
+      );
+    } finally {
+      setIsUpdatingCookedFridge(false);
+    }
+  };
+
+  const undoCookedFridgeUpdate = async () => {
+    if (!cookedOperationId || isUndoingCookedFridge) {
+      return;
+    }
+
+    setIsUndoingCookedFridge(true);
+    setError("");
+    try {
+      await undoFridgeOperation(
+        cookedOperationId,
+        createFridgeOperationId(),
+      );
+      await refreshFridgeItems();
+      setCookedOperationId(null);
+      setCookedNotice("Fridge update undone.");
+    } catch (undoError: unknown) {
+      setError(
+        getErrorMessage(undoError, "Could not undo the fridge update."),
+      );
+    } finally {
+      setIsUndoingCookedFridge(false);
+    }
+  };
+
   const handleDelete = async () => {
     if (!recipeId) return;
 
@@ -1061,36 +1136,81 @@ const RecipePage = () => {
         </section>
 
         {recipeData.fridgeCoverage && (
-          <section className="mobile-card-enter mobile-card-delay-1 mt-6 rounded-2xl border border-primary/10 bg-secondary p-5">
-            <div className="grid gap-4 sm:grid-cols-2">
+          <section className="mobile-card-enter mobile-card-delay-1 mt-6 overflow-hidden rounded-3xl border border-primary/10 bg-gradient-to-br from-secondary via-secondary to-accent/10 shadow-sm">
+            <div className="flex items-start justify-between gap-4 border-b border-primary/10 px-5 py-4">
               <div>
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-text/60">
-                  {t("You have")}
-                </h2>
-                <p className="mt-2 text-sm text-text/85">
-                  {recipeData.fridgeCoverage.available?.length
-                    ? recipeData.fridgeCoverage.available.join(", ")
-                    : t("Nothing from your fridge is needed")}
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-text/50">
+                  {t("Fridge match")}
                 </p>
-              </div>
-              <div>
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-text/60">
-                  {t("Missing")}
+                <h2 className="mt-1 text-lg font-bold text-text">
+                  {t("Ready from your fridge: {count}", {
+                    count: recipeData.fridgeCoverage.available?.length ?? 0,
+                  })}
                 </h2>
-                <p className="mt-2 text-sm text-text/85">
-                  {recipeData.fridgeCoverage.missing?.length
-                    ? recipeData.fridgeCoverage.missing
-                        .map((ingredient) => `${ingredient.name} · ${ingredient.amount ?? "?"} ${ingredient.unit}`.trim())
-                        .join(", ")
-                    : t("Nothing — shopping is optional")}
-                  </p>
               </div>
+              {typeof recipeData.fridgeCoverage.coverageRatio === "number" && (
+                <span className="shrink-0 rounded-full border border-accent/30 bg-accent/15 px-3 py-1.5 text-xs font-bold text-text">
+                  {t("{percent}% covered", {
+                    percent: Math.round(recipeData.fridgeCoverage.coverageRatio * 100),
+                  })}
+                </span>
+              )}
+            </div>
+
+            <div className="grid gap-3 p-4 sm:grid-cols-2">
+              <div className="rounded-2xl border border-accent/25 bg-background/80 p-4">
+                <h3 className="text-xs font-bold uppercase tracking-wide text-text/55">
+                  {t("Already on hand")}
+                </h3>
+                {recipeData.fridgeCoverage.available?.length ? (
+                  <ul className="mt-3 flex flex-wrap gap-2">
+                    {recipeData.fridgeCoverage.available.map((ingredient) => (
+                      <li
+                        key={ingredient}
+                        className="rounded-full bg-accent/20 px-3 py-1.5 text-sm font-semibold text-text"
+                      >
+                        ✓ {ingredient}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-2 text-sm text-text/60">
+                    {t("No confident matches yet")}
+                  </p>
+                )}
+              </div>
+
+              <div className="rounded-2xl border border-primary/10 bg-background/65 p-4">
+                <h3 className="text-xs font-bold uppercase tracking-wide text-text/55">
+                  {t("Still needed")}
+                </h3>
+                {recipeData.fridgeCoverage.missing?.length ? (
+                  <ul className="mt-3 flex flex-wrap gap-2">
+                    {recipeData.fridgeCoverage.missing.map((ingredient) => (
+                      <li
+                        key={`${ingredient.name}-${ingredient.amount}-${ingredient.unit}`}
+                        className="rounded-full border border-primary/10 bg-secondary px-3 py-1.5 text-sm text-text/80"
+                      >
+                        {ingredient.name}
+                        {ingredient.amount != null
+                          ? ` · ${ingredient.amount}${ingredient.unit ? ` ${ingredient.unit}` : ""}`
+                          : ""}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-2 text-sm font-semibold text-text/70">
+                    {t("Nothing else needed")}
+                  </p>
+                )}
+              </div>
+
               {recipeData.fridgeCoverage.unresolved?.length ? (
-                <div className="sm:col-span-2">
-                  <h2 className="text-sm font-semibold uppercase tracking-wide text-text/60">
-                    {t("To check")}
-                  </h2>
-                  <p className="mt-2 text-sm text-text/85">
+                <div className="rounded-2xl border border-primary/10 bg-background/50 p-4 sm:col-span-2">
+                  <h3 className="text-xs font-bold uppercase tracking-wide text-text/55">
+                    {t("Amounts to check")}
+                  </h3>
+                  <p className="mt-2 text-sm text-text/70">
                     {recipeData.fridgeCoverage.unresolved
                       .map((ingredient) => ingredient.name)
                       .join(", ")}
@@ -1098,18 +1218,15 @@ const RecipePage = () => {
                 </div>
               ) : null}
             </div>
-            {typeof recipeData.fridgeCoverage.coverageRatio === "number" && (
-              <p className="mt-3 text-xs font-semibold text-text/60">
-                {t("Fridge coverage: {percent}%", {
-                  percent: Math.round(recipeData.fridgeCoverage.coverageRatio * 100),
-                })}
-              </p>
-            )}
+
             {recipeData.fridgeCoverage.explanation && (
-              <p className="mt-4 rounded-xl border border-accent/25 bg-accent/10 px-3 py-2 text-sm text-text/80">
-                <span className="font-semibold">{t("Why it fits")}:</span>{" "}
-                {recipeData.fridgeCoverage.explanation}
-              </p>
+              <div className="mx-4 mb-4 flex gap-3 rounded-2xl bg-text px-4 py-3 text-background">
+                <span aria-hidden="true" className="text-accent">✦</span>
+                <p className="text-sm leading-relaxed">
+                  <span className="font-bold">{t("Recipe note")}:</span>{" "}
+                  {recipeData.fridgeCoverage.explanation}
+                </p>
+              </div>
             )}
           </section>
         )}
@@ -1260,7 +1377,43 @@ const RecipePage = () => {
         </div>
 
         <div className="mobile-card-enter mobile-card-delay-2 mt-8 rounded-2xl border border-primary/10 bg-secondary p-4 sm:p-5">
+          {cookedOperationId && (
+            <div className="mb-3">
+              <FridgeOperationSuccess
+                message={isUndoingCookedFridge ? "Undoing fridge update..." : "Fridge updated after cooking."}
+                onUndo={isUndoingCookedFridge ? undefined : undoCookedFridgeUpdate}
+              />
+            </div>
+          )}
+          {cookedNotice && (
+            <p className="mb-3 rounded-xl border border-accent/30 bg-accent/10 px-4 py-3 text-sm text-text/75" role="status">
+              {t(cookedNotice)}
+            </p>
+          )}
           <div className="grid gap-3 sm:grid-cols-2">
+            {user && (
+              <button
+                type="button"
+                onClick={handleCooked}
+                disabled={fridgeLoading || isUpdatingCookedFridge || Boolean(cookedOperationId)}
+                className="mobile-soft-press inline-flex w-full flex-col items-center justify-center rounded-xl bg-green-700 px-4 py-3 font-semibold text-white transition-colors hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <span>
+                  {t(
+                    isUpdatingCookedFridge
+                      ? "Updating fridge..."
+                      : cookedOperationId
+                        ? "Cooked ✓"
+                        : "Cooked",
+                  )}
+                </span>
+                {!isUpdatingCookedFridge && !cookedOperationId && (
+                  <span className="mt-0.5 text-xs font-normal text-white/75">
+                    {t("Use matching ingredients from the fridge")}
+                  </span>
+                )}
+              </button>
+            )}
             <button
               className={shoppingListButtonClassName}
               onClick={handleGenerateShoppingList}

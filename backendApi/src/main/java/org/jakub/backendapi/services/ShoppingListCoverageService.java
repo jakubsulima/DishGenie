@@ -8,9 +8,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class ShoppingListCoverageService {
@@ -33,17 +31,12 @@ public class ShoppingListCoverageService {
         return findCoverage(recipeIngredients, fridgeItems).missing();
     }
 
+    public boolean ingredientNamesMatch(String recipeName, String fridgeName) {
+        return unitConversionService.ingredientNamesMatch(recipeName, fridgeName);
+    }
+
     public Coverage findCoverage(List<RecipeIngredientDto> recipeIngredients, List<FridgeIngredientDto> fridgeItems) {
-        Map<String, List<FridgeIngredientDto>> fridgeItemsByName = new HashMap<>();
-
-        for (FridgeIngredientDto fridgeItem : safeFridgeItems(fridgeItems)) {
-            String normalizedName = unitConversionService.normalizeIngredientName(fridgeItem.getName());
-            if (!StringUtils.hasText(normalizedName)) {
-                continue;
-            }
-
-            fridgeItemsByName.computeIfAbsent(normalizedName, ignored -> new ArrayList<>()).add(fridgeItem);
-        }
+        List<FridgeIngredientDto> safeFridgeItems = safeFridgeItems(fridgeItems);
 
         List<ShoppingListGenerationItemDto> missingIngredients = new ArrayList<>();
         List<ShoppingListGenerationItemDto> unresolvedIngredients = new ArrayList<>();
@@ -55,7 +48,9 @@ public class ShoppingListCoverageService {
                 continue;
             }
 
-            List<FridgeIngredientDto> matchingFridgeItems = fridgeItemsByName.getOrDefault(normalizedName, List.of());
+            List<FridgeIngredientDto> matchingFridgeItems = safeFridgeItems.stream()
+                    .filter(item -> unitConversionService.ingredientNamesMatch(ingredient.getName(), item.getName()))
+                    .toList();
             if (matchingFridgeItems.isEmpty()) {
                 missingIngredients.add(toShoppingListItem(ingredient.getName(), ingredient.getAmount(), ingredient.getUnit()));
                 continue;
