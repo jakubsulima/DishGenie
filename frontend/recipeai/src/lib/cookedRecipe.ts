@@ -1,7 +1,7 @@
 import type { FridgeIngredient } from "../context/fridgeContext";
 import type { RecipeIngredient } from "../pages/RecipePage";
 
-export interface CookedRecipeFridgeChange {
+interface CookedRecipeFridgeChange {
   type: "DECREMENT" | "FINISH";
   clientChangeId: string;
   fridgeItemId: number;
