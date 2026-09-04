@@ -15,7 +15,7 @@ java {
 }
 
 ext['spring-security.version'] = '6.5.9'
-ext['tomcat.version'] = '10.1.55'
+ext['tomcat.version'] = '10.1.59'
 
 repositories { mavenCentral() }
 
