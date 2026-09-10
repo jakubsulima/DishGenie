@@ -34,7 +34,7 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.56.2",
     "react-router-dom": "^7.17.0",
-    "vitest": "^4.1.8",
+    "vitest": "^4.1.11",
     "yup": "^1.6.1"
   },
   "devDependencies": {
