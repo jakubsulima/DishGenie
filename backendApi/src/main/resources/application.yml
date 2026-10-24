@@ -8,6 +8,8 @@ server:
     include-exception: false
 
 spring:
+  jackson:
+    use-jackson2-defaults: true
   mail:
     host: ${SMTP_HOST:localhost}
     port: ${SMTP_PORT:1025}

@@ -1,6 +1,6 @@
 package org.jakub.backendapi.dto;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import org.jakub.backendapi.entities.Enums.FridgePolicy;
 import org.jakub.backendapi.entities.Enums.ShoppingPolicy;
 import jakarta.validation.Validation;
@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RecipeGenerationRequestDtoTest {
 
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-    private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void acceptsStructuredGenerationContextAndUsesSafeDefaults() throws Exception {

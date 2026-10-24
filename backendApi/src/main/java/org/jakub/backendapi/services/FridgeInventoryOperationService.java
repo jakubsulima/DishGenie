@@ -1,7 +1,7 @@
 package org.jakub.backendapi.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.jakub.backendapi.dto.FridgeIngredientDto;
 import org.jakub.backendapi.dto.FridgeInventoryChangeRequestDto;
@@ -479,7 +479,7 @@ public class FridgeInventoryOperationService {
     private FridgeInventoryOperationResponseDto readStoredResult(FridgeInventoryOperation operation) {
         try {
             return objectMapper.readValue(operation.getResultJson(), FridgeInventoryOperationResponseDto.class);
-        } catch (JsonProcessingException exception) {
+        } catch (JacksonException exception) {
             throw new AppException("Stored fridge operation result is invalid", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -487,7 +487,7 @@ public class FridgeInventoryOperationService {
     private String writeResult(FridgeInventoryOperationResponseDto response) {
         try {
             return objectMapper.writeValueAsString(response);
-        } catch (JsonProcessingException exception) {
+        } catch (JacksonException exception) {
             throw new AppException("Could not store fridge operation result", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -1,7 +1,7 @@
 package org.jakub.backendapi.services;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import org.jakub.backendapi.dto.UserPreferencesDto;
 import org.jakub.backendapi.entities.Enums.ShoppingPolicy;
 import org.jakub.backendapi.exceptions.AppException;

@@ -165,6 +165,29 @@ describe("FridgeIngredientContainer", () => {
     expect(screen.getByLabelText("Expiration")).toBeInTheDocument();
   });
 
+  test("uses a mobile-safe font size for every edit control", () => {
+    render(
+      <FridgeIngredientContainer
+        id={7}
+        name="Milk"
+        expirationDate="20-05-2026"
+        amount={1}
+        unit="l"
+        remove={vi.fn()}
+        onUpdateItem={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /edit milk/i }));
+
+    [
+      screen.getByLabelText("Name"),
+      screen.getByLabelText("Amount"),
+      screen.getByRole("combobox", { name: "Unit l" }),
+      screen.getByLabelText("Expiration"),
+    ].forEach((control) => expect(control).toHaveClass("text-base"));
+  });
+
   test("shows separate edit action at the end of the card", () => {
     render(
       <FridgeIngredientContainer

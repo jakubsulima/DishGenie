@@ -44,7 +44,7 @@ A full-stack web application that helps users discover and manage recipes using 
 
 ### Backend
 
-- **Spring Boot 3.3.11** (Java 17)
+- **Spring Boot 4.1.2** (Java 17, Gradle 8.14.6)
 - **Spring Security** with JWT authentication
 - **Spring Data JPA** with Hibernate
 - **PostgreSQL** database

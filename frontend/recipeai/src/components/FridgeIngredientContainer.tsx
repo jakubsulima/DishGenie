@@ -143,7 +143,7 @@ const FridgeIngredientContainer = ({
   const shortExpirationDate = formatShortDate(expirationDate || null);
   const amountWillDelete = editAmount.trim() === "0";
   const inputClassName =
-    "w-full min-w-0 rounded-lg border bg-background px-2 py-2.5 text-sm text-text shadow-sm transition-shadow focus:outline-none focus:ring-2 focus:ring-accent";
+    "w-full min-w-0 rounded-lg border bg-background px-2 py-2.5 text-base text-text shadow-sm transition-shadow focus:outline-none focus:ring-2 focus:ring-accent";
   const invalidInputClassName = "border-error/70 ring-1 ring-error/25";
 
   return (
