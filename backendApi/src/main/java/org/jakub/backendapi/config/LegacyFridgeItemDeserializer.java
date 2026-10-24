@@ -1,12 +1,10 @@
 package org.jakub.backendapi.config;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JsonToken;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
 import org.jakub.backendapi.dto.FridgeIngredientDto;
-
-import java.io.IOException;
 
 public class LegacyFridgeItemDeserializer extends StdDeserializer<FridgeIngredientDto> {
 
@@ -15,7 +13,7 @@ public class LegacyFridgeItemDeserializer extends StdDeserializer<FridgeIngredie
     }
 
     @Override
-    public FridgeIngredientDto deserialize(JsonParser parser, DeserializationContext context) throws IOException {
+    public FridgeIngredientDto deserialize(JsonParser parser, DeserializationContext context) {
         if (parser.hasToken(JsonToken.VALUE_STRING)) {
             return new FridgeIngredientDto(null, parser.getValueAsString(), null, null, null);
         }

@@ -1,6 +1,6 @@
 package org.jakub.backendapi.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 import org.jakub.backendapi.config.CommaSeparatedStringToArrayDeserializer;
 
 import java.util.Arrays;

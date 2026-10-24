@@ -1,9 +1,10 @@
 package org.jakub.backendapi.services;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 import org.jakub.backendapi.dto.FridgeIngredientDto;
 import org.jakub.backendapi.dto.RecipeIngredientDto;
 import org.jakub.backendapi.dto.RecipeGenerationRequestDto;
@@ -219,7 +220,7 @@ public class GeminiService {
                     objectMapper.writeValueAsString(structuredContext),
                     objectMapper.writeValueAsString(serverConstraints)
             );
-        } catch (IOException exception) {
+        } catch (JacksonException exception) {
             throw new AppException("Could not prepare recipe generation context.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -442,7 +443,7 @@ public class GeminiService {
         try {
             candidateJson = objectMapper.writeValueAsString(candidateMissingIngredients);
             fridgeJson = objectMapper.writeValueAsString(fridgeItems == null ? List.of() : fridgeItems);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new AppException("Could not prepare shopping list review payload.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -519,7 +520,7 @@ public class GeminiService {
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
         String endpoint = UriComponentsBuilder
-                .fromHttpUrl("https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent")
+                .fromUriString("https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent")
                 .buildAndExpand(modelToUse)
                 .toUriString();
 
@@ -696,7 +697,7 @@ public class GeminiService {
         JsonNode root;
         try {
             root = objectMapper.readTree(cleanJsonPayload(payload));
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new AppException(INVALID_RECIPE_JSON_MESSAGE, HttpStatus.BAD_GATEWAY);
         }
 
@@ -721,7 +722,7 @@ public class GeminiService {
 
         try {
             return objectMapper.writeValueAsString(root);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new AppException(INVALID_RECIPE_JSON_MESSAGE, HttpStatus.BAD_GATEWAY);
         }
     }
@@ -950,7 +951,7 @@ public class GeminiService {
         JsonNode root;
         try {
             root = objectMapper.readTree(payload);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new AppException("Could not parse shopping list review response from Gemini.", HttpStatus.BAD_GATEWAY);
         }
 
@@ -984,7 +985,7 @@ public class GeminiService {
         JsonNode root;
         try {
             root = objectMapper.readTree(payload);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new AppException("Could not parse receipt scan response from Gemini.", HttpStatus.BAD_GATEWAY);
         }
 

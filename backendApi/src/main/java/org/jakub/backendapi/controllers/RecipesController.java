@@ -298,20 +298,20 @@ public class RecipesController {
         }
 
         try {
-            com.fasterxml.jackson.databind.JsonNode root = null;
+            tools.jackson.databind.JsonNode root = null;
             List<RecipeGenerationResponseDto.ConstraintCheckDto> checks = List.of();
             RuntimeException lastValidationError = null;
             for (int attempt = 0; attempt < 3; attempt++) {
                 String generated = geminiService.generateRecipes(recipeRequest, preferences);
                 try {
-                    root = new com.fasterxml.jackson.databind.ObjectMapper().readTree(generated);
+                    root = new tools.jackson.databind.ObjectMapper().readTree(generated);
                     checks = generatedRecipeValidator.validate(
                             root, count, preferences, requiredItems,
                             recipeRequest.preferences() == null ? null : recipeRequest.preferences().getMaxMinutes(),
                             recipeRequest.shoppingPolicy(), recipeRequest.servings(), recipeRequest.locale());
                     lastValidationError = null;
                     break;
-                } catch (java.io.IOException exception) {
+                } catch (tools.jackson.core.JacksonException exception) {
                     lastValidationError = new org.jakub.backendapi.exceptions.AppException(
                             "Generated recipe response is invalid.", org.springframework.http.HttpStatus.BAD_GATEWAY);
                 } catch (RuntimeException exception) {
@@ -323,13 +323,13 @@ public class RecipesController {
                         : new org.jakub.backendapi.exceptions.AppException(
                         "Generated recipe response is invalid.", org.springframework.http.HttpStatus.BAD_GATEWAY);
             }
-            List<com.fasterxml.jackson.databind.JsonNode> recipeNodes = new java.util.ArrayList<>();
+            List<tools.jackson.databind.JsonNode> recipeNodes = new java.util.ArrayList<>();
             if (count == 1) recipeNodes.add(root); else root.path("recipes").forEach(recipeNodes::add);
             List<RecipeGenerationResponseDto.GeneratedRecipeResultDto> results = new java.util.ArrayList<>();
             for (int index = 0; index < recipeNodes.size(); index++) {
-                com.fasterxml.jackson.databind.JsonNode recipe = recipeNodes.get(index);
+                tools.jackson.databind.JsonNode recipe = recipeNodes.get(index);
                 if (recipe.isObject()) {
-                    ((com.fasterxml.jackson.databind.node.ObjectNode) recipe).put(
+                    ((tools.jackson.databind.node.ObjectNode) recipe).put(
                             "locale", "pl".equalsIgnoreCase(recipeRequest.locale()) ? "pl" : "en");
                 }
                 results.add(new RecipeGenerationResponseDto.GeneratedRecipeResultDto(

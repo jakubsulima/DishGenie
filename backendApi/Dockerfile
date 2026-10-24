@@ -1,5 +1,5 @@
 # Stage 1: Build the application with Gradle
-FROM eclipse-temurin:17-jdk-jammy AS builder
+FROM eclipse-temurin:17-jdk-noble AS builder
 
 WORKDIR /app
 ENV GRADLE_USER_HOME=/home/gradle/.gradle
@@ -25,10 +25,12 @@ RUN --mount=type=cache,target=/home/gradle/.gradle \
     ./gradlew bootJar --no-daemon -x test -Dorg.gradle.vfs.watch=false --stacktrace --info
 
 # Stage 2: Create the final runtime image
-FROM eclipse-temurin:17-jre-jammy
+FROM eclipse-temurin:17-jre-noble
 WORKDIR /app
 
-RUN groupadd --system appgroup && useradd --system --gid appgroup --create-home appuser
+RUN apt-get update && apt-get upgrade -y && \
+    rm -rf /var/lib/apt/lists/* && \
+    groupadd --system appgroup && useradd --system --gid appgroup --create-home appuser
 
 # Copy the built JAR from the builder stage
 COPY --from=builder --chown=appuser:appgroup /app/build/libs/*.jar app.jar

@@ -1,7 +1,7 @@
 package org.jakub.backendapi.controllers;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jakub.backendapi.dto.FridgeIngredientDto;
 import org.jakub.backendapi.dto.RecipeDto;
@@ -19,7 +19,7 @@ import org.jakub.backendapi.services.UserPreferencesService;
 import org.jakub.backendapi.services.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

@@ -1,6 +1,6 @@
 package org.jakub.backendapi.services;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import org.jakub.backendapi.dto.FridgeIngredientDto;
 import org.jakub.backendapi.dto.RecipeGenerationResponseDto;
 import org.jakub.backendapi.dto.UserPreferencesDto;

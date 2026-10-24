@@ -1,6 +1,6 @@
 package org.jakub.backendapi.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import org.jakub.backendapi.dto.FridgeIngredientDto;
 import org.jakub.backendapi.dto.RecipeIngredientDto;
 import org.jakub.backendapi.dto.RecipeGenerationPreferencesDto;
