@@ -55,6 +55,7 @@ const Navbar = () => {
       return [
         ...baseItems,
         "Fridge",
+        "MealPlanner",
         "ShoppingList",
         "My Profile",
         isAdmin ? "Admin" : null,
@@ -91,7 +92,7 @@ const Navbar = () => {
           {/* --- Right Side: Controls (Desktop) / Burger (Mobile) --- */}
           <li className="flex items-center space-x-3">
             {/* Desktop Nav Links */}
-            <ul className="flex items-center space-x-3 max-sm:hidden">
+            <ul className="flex items-center space-x-3 max-xl:hidden">
               {loading ? (
                 // Skeleton pills during auth loading — prevents Login→items flash
                 <>
@@ -110,7 +111,7 @@ const Navbar = () => {
                         to={getItemHref(item)}
                         className="px-4 py-2 rounded-full text-background hover:text-accent inline-block border-none"
                       >
-                        {t(item)}
+                        {t(item === "MealPlanner" ? "Meal planner" : item)}
                       </Link>
                     </li>
                   ))}
@@ -146,7 +147,7 @@ const Navbar = () => {
             <button
               type="button"
               onClick={toggleLocale}
-              className="rounded-full border border-background/30 px-3 py-2 text-xs font-bold text-background sm:hidden"
+              className="rounded-full border border-background/30 px-3 py-2 text-xs font-bold text-background xl:hidden"
               aria-label={
                 locale === "en"
                   ? "Przełącz język na polski"
@@ -155,7 +156,7 @@ const Navbar = () => {
             >
               {locale === "en" ? "PL" : "EN"}
             </button>
-            <span className="flex items-center pr-1 sm:hidden">
+            <span className="flex items-center pr-1 xl:hidden">
               <DropDownButton
                 onClick={toggleOpen}
                 isOpen={isOpen}
@@ -167,7 +168,7 @@ const Navbar = () => {
         {isOpen && (
           <div
             id="mobile-navigation"
-            className="absolute left-0 top-full -mt-px flex w-full flex-col overflow-hidden bg-[#111111] shadow-2xl sm:hidden"
+            className="absolute left-0 top-full -mt-px flex w-full flex-col overflow-hidden bg-[#111111] shadow-2xl xl:hidden"
           >
             <DropDownMenu
               className="flex w-full flex-col pb-4"

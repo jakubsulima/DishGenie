@@ -52,7 +52,7 @@ const DropDownMenu = ({
                 className="block w-full px-6 py-4 text-center text-[1.1rem] font-medium text-[#fefefe] transition-all duration-200 hover:bg-white/5 hover:text-accent focus:bg-white/5 focus:outline-none active:scale-[0.98]"
                 onClick={onItemClick}
               >
-                {t(item)}
+                {t(item === "MealPlanner" ? "Meal planner" : item)}
               </DropDownItem>
             </li>
           );

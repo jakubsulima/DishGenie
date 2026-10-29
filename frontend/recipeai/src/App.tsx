@@ -29,6 +29,7 @@ const ResetPasswordPage = lazy(() =>
 const MePage = lazy(() => import("./pages/UserPreferencesPage.tsx"));
 const AdminPage = lazy(() => import("./pages/AdminPage"));
 const ShoppingList = lazy(() => import("./pages/ShoppingList"));
+const MealPlanner = lazy(() => import("./pages/MealPlanner"));
 const BlogIndexPage = lazy(() =>
   import("./pages/BlogPage").then((module) => ({
     default: module.BlogIndexPage,
@@ -126,6 +127,7 @@ function App() {
         />
         <Route path="/Recipe/:id" element={withSuspense(<RecipePage />)} />
         <Route path="/myRecipes" element={<Navigate to="/Recipes" replace />} />
+        <Route path="/MealPlanner" element={withSuspense(<ProtectedRoute><MealPlanner /></ProtectedRoute>)} />
         <Route path="/privacy" element={withSuspense(<PrivacyPolicyPage />)} />
         <Route path="/terms" element={withSuspense(<TermsOfServicePage />)} />
         <Route path="/blog" element={withSuspense(<BlogIndexPage />)} />

@@ -1,5 +1,7 @@
 # Plan rozwoju Dish Genie: tygodniowe planowanie posiłków
 
+Aktualizacja zakresu z 29 października 2026: [plan jadłospisu z budżetem i promocjami](PLAN_JADLOSPISU_BUDZETU_I_PROMOCJI.md) rozwija Etapy 4–5 i przesuwa budżet oraz integracje sklepowe z Etapów 8–9 do najbliższego zakresu. Zawiera aktualny punkt wyjścia z kodu i ma pierwszeństwo dla tych funkcji; poniższy audyt stanu pozostaje historyczny.
+
 ## 1. Cel produktu
 
 Głównym zadaniem Dish Genie ma być skrócenie drogi od pytania „co będziemy jeść w tym tygodniu?” do zaakceptowanego planu i gotowej listy zakupów. Produkt powinien wykorzystywać stan lodówki, ograniczenia dietetyczne i preferencje użytkownika, ale nie wymuszać gotowania wyłącznie z posiadanych produktów.
