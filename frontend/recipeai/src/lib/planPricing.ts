@@ -1,12 +1,12 @@
 import { apiClient } from "./hooks";
 import type { MealPlan, PlanStore } from "./mealPlans";
 
-export interface StoreOfferDetails {
+interface StoreOfferDetails {
   store: PlanStore; productName: string; packageAmount: number; unit: string; packagePrice: number;
   minimumPackages: number; packageMultiple: number; maximumPackages: number | null; loyaltyRequired: boolean;
   validFrom: string; validTo: string; sourceUrl: string; conditions: string; verifiedAt: string;
 }
-export interface PricedItem {
+interface PricedItem {
   key: string; name: string; offer: { id: string; version: number; details: StoreOfferDetails } | null;
   packages: number | null; purchasedAmount: number | null; leftoverAmount: number | null; cost: number | null;
   missingReason: "NO_ELIGIBLE_OFFER" | "CHECK_QUANTITY" | null;
