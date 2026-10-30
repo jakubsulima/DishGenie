@@ -11,6 +11,7 @@ A full-stack web application that helps users discover and manage recipes using 
 - **Smart Recipe Search**: Find recipes by name, ingredients, cuisine type, meal type, and preparation time
 - **Guest Recipe Preview**: Let non-logged-in visitors browse the 10 latest public recipes before signing up
 - **Dietary Preferences**: Set dietary restrictions (Vegan, Vegetarian, Gluten-Free, etc.) and ingredient dislikes
+- **Meal Planner**: Save 1–7 days of lunches and dinners, generate or swap individual meals, lock choices, adjust servings, and create a separate shopping checklist with fridge quantities deducted once. Compare whole-package basket estimates for Lidl, Biedronka or both, using administrator-verified offers and explicit missing-price coverage. Automatic promotion feeds and budget-driven meal selection are not connected yet. See [implementation scope](docs/PLAN_JADLOSPISU_BUDZETU_I_PROMOCJI.md).
 - **Recipe Management**: Create, view, edit, and delete your own recipes
 - **Admin Panel**: Administrative dashboard for user and recipe management
 - **Polish and English UI**: Language switcher with a persisted preference, localized generated recipes, help content, legal pages, and metadata
