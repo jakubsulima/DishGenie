@@ -60,6 +60,16 @@ class GeneratedRecipeValidatorTest {
                 recipe, 1, preferences, List.of(), null, ShoppingPolicy.ALLOWED, 2, "pl"));
     }
 
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = {"szczypta", "łyżeczka", "do smaku", "ząbki"})
+    void stillRejectsUnmeasurableUnitsObservedInPolishProviderResponses(String unit) {
+        JsonNode recipe = objectMapper.readTree("""
+                {"servings":2,"ingredients":[{"name":"przyprawa","amount":1,"unit":"%s"}]}
+                """.formatted(unit));
+        assertThrows(AppException.class, () -> validator.validate(
+                recipe, 1, null, List.of(), null, ShoppingPolicy.ALLOWED, 2, "pl"));
+    }
+
     private JsonNode recipeWithIngredient(String ingredientName) throws Exception {
         return objectMapper.readTree("""
                 {
