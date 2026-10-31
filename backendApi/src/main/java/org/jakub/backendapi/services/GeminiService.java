@@ -280,7 +280,9 @@ public class GeminiService {
                 - Write every user-facing string in %s.
                 - Treat dietary restrictions, allergies, and disliked ingredients as hard constraints.
                 - Each recipe must be realistic, fully cookable, and contain 8-14 ingredients with realistic amounts for %d servings.
-                - Use metric units (g, ml, kg) or whole counts.
+                - Ingredient unit must be exactly one of these codes: g, kg, ml, l, pcs. Do not translate unit codes, even when writing the recipe in Polish.
+                - Every ingredient needs a positive numeric amount. Express spices, salt and pepper in g or ml; never use pinches, teaspoons, tablespoons, szczypta, łyżeczka or do smaku as units.
+                - Use pcs for whole counts, including eggs, onions and garlic cloves. Put descriptive words such as garlic clove in the ingredient name, not in the unit.
                 - Include 6-9 clear instructions with sensory cues and time or temperature markers.
                 - Avoid vague steps such as "cook until done".
                 - Keep nutrition estimates internally consistent with the listed ingredients.
@@ -330,6 +332,9 @@ public class GeminiService {
         }
 
         Map<String, Object> payload = buildTextPromptPayload(recipePrompt);
+        payload.put("generationConfig", Map.of(
+                "responseMimeType", "application/json",
+                "responseSchema", RecipeGenerationSchema.forCount(expectedRecipeCount)));
         JsonNode responseBody = invokeGemini(payload, "Error creating recipe");
 
         String textResponse = extractTextFromGeminiResponse(responseBody);
