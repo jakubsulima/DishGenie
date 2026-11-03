@@ -105,7 +105,7 @@ export const cancelWeekGeneration = (id: string, jobId: string) => apiClient<Gen
 export const getShoppingPreferences = () => apiClient<PlanSettings | null>("v2/shopping-preferences");
 export interface RevisionPreview { id: string; planVersion: number; slotId: string; before: PlanRecipe; after: PlanRecipe; shoppingBefore: PlanShopping; shoppingAfter: PlanShopping; expiresAt: string; quoteBefore?: import("./planPricing").PlanQuote; quoteAfter?: import("./planPricing").PlanQuote }
 export type RevisionIntent = "MANUAL" | "SUBSTITUTE" | "DEAL" | "FASTER" | "SIMPLIFY";
-export interface RevisionInput { requestId: string; intent: RevisionIntent; recipe?: PlanRecipe; comment?: string; ingredient?: string; replacement?: string; offerId?: string; maxMinutes?: number }
+interface RevisionInput { requestId: string; intent: RevisionIntent; recipe?: PlanRecipe; comment?: string; ingredient?: string; replacement?: string; offerId?: string; maxMinutes?: number }
 export const previewRevision = async (plan: MealPlan, slotId: string, input: RevisionInput) => {
   await ensureCsrfToken();
   return (await axios.post<RevisionPreview>(`${API_URL}${base}/${plan.id}/slots/${slotId}/revision-previews`, { version: plan.version, ...input }, { timeout: 240_000 })).data;
