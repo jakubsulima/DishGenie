@@ -450,3 +450,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - All open-source contributors
 
 **Built with ❤️ using Spring Boot, React, and AI**
+
+
+### Tygodniowy planer z okazji
+
+Nowy klient korzysta z `/v3/meal-plans`: opcjonalny budżet, ustawienia konta, zadania tygodnia, poprawki przepisów, wycena robocza i zapis koszyka. [Stan implementacji i testów](docs/WDROZENIE_TYGODNIA_Z_OKAZJI.md) rozdziela działający przepływ od nieodebranego feedu promocji. Pobieranie próbki Lidla jest przeznaczone wyłącznie do weryfikacji; automatyczna publikacja cen nie jest uruchomiona.

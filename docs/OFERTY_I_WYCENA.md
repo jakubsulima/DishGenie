@@ -1,6 +1,8 @@
 # Oferty sklepowe i wycena planu — pilotaż
 
-Stan lokalnej implementacji: 29 października 2026. Planer oblicza zapotrzebowanie, a moduł wyceny porównuje koszt całych opakowań w Lidlu, Biedronce i obu sklepach. Katalog cen jest zasilany przez administratora po weryfikacji. Automatyczny feed, optymalizacja jadłospisu według cen i wdrożenie produkcyjne nie są częścią tego przyrostu.
+Aktualizacja 3 listopada 2026: rozszerzenia wyceny, import i ograniczone pobieranie do sprawdzenia opisuje [raport wdrożenia](WDROZENIE_TYGODNIA_Z_OKAZJI.md). Poniższy kontrakt opisuje pierwotny pilotaż stałych opakowań i endpoint v2; nie jest pełną specyfikacją nowego trybu.
+
+Stan pierwotnej implementacji: 29 października 2026. Planer oblicza zapotrzebowanie, a moduł wyceny porównuje koszt całych opakowań w Lidlu, Biedronce i obu sklepach. Katalog cen jest zasilany przez administratora po weryfikacji. Automatyczny feed, optymalizacja jadłospisu według cen i wdrożenie produkcyjne nie są częścią tego przyrostu.
 
 ## Dane dopuszczone do wyceny
 
@@ -41,7 +43,7 @@ Pola body publikacji:
 
 API waliduje format, zakres, źródłową domenę, mapowanie i zgodność limitów. Nie pobiera adresu URL ani nie potwierdza prawdziwości treści za administratora. Aktualizacja wymaga wersji; równoległa zmiana powoduje konflikt. Wycofanie usuwa ofertę z kolejnych wycen. Istniejące wyceny mają krótki termin ważności i wymagają ponownego sprawdzenia przed zakupami.
 
-Nie ma jeszcze formularza zarządzania ofertami w panelu administratora ani importu masowego. Powyższe API jest pierwszym interfejsem zasilania katalogu. Nie dodano przykładowych cen do migracji ani produkcyjnej bazy.
+W nowym przyroście dodano techniczny panel importu i weryfikacji JSON oraz partie importu. Pierwotny interfejs poniżej pozostaje wspierany. Powyższe API jest pierwszym interfejsem zasilania katalogu. Nie dodano przykładowych cen do migracji ani produkcyjnej bazy.
 
 ## Przygotowanie próbek Lidla
 

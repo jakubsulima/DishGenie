@@ -1,14 +1,16 @@
+import MealPlanRevision from "./MealPlanRevision";
 import { useLanguage } from "../context/languageContext";
-import { isSlotGenerating, type PlanSlot } from "../lib/mealPlans";
+import { isSlotGenerating, type MealPlan, type PlanSlot } from "../lib/mealPlans";
 
-export default function MealPlanSlotCard({ slot, busy, onGenerate, onChange }: {
+export default function MealPlanSlotCard({ slot, busy, onGenerate, onChange, plan, onApplied }: {
+  plan?: MealPlan; onApplied?: (plan: MealPlan) => void;
   slot: PlanSlot; busy: boolean; onGenerate: () => void;
   onChange: (action: "LOCK" | "UNLOCK" | "SKIP" | "RESTORE" | "SERVINGS", servings?: number) => void;
 }) {
   const { t } = useLanguage();
   const recipe = slot.recipe;
   const button = "rounded-full border border-primary/20 px-3 py-2 text-sm disabled:opacity-40 hover:bg-primary/5";
-  return <article className={`rounded-2xl border p-4 ${slot.skipped ? "border-primary/10 bg-primary/5" : "border-primary/15 bg-white"}`}>
+  return <article id={`meal-slot-${slot.id}`} className={`rounded-2xl border p-4 ${slot.skipped ? "border-primary/10 bg-primary/5" : "border-primary/15 bg-white"}`}>
     <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
       <h3 className="font-semibold">{t(slot.mealType === "LUNCH" ? "Lunch" : "Dinner")}</h3>
       <span className="text-sm text-primary/70">{t("{count} servings", { count: slot.servings })}</span>
@@ -35,5 +37,6 @@ export default function MealPlanSlotCard({ slot, busy, onGenerate, onChange }: {
         <button aria-label={t("Increase servings")} disabled={busy || slot.locked || slot.servings >= 100} onClick={() => onChange("SERVINGS", slot.servings + 1)} className={button}>+</button>
       </div>}
     </div>
+    {recipe && plan && onApplied && !slot.skipped && <MealPlanRevision plan={plan} slot={slot} disabled={busy} onApplied={onApplied} />}
   </article>;
 }

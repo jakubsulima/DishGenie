@@ -1,5 +1,7 @@
 # Plan jadłospisu z budżetem i promocjami sklepowymi
 
+Aktualizacja kierunku z 2 listopada 2026: [plan tygodnia z aktualnych okazji](PLAN_TYGODNIA_Z_AKTUALNYCH_OKAZJI.md) ma pierwszeństwo dla dalszego rozwoju. Promocje i szybkie poprawki przepisów są podstawą doboru jadłospisu; budżet ma być opcjonalną, elastyczną preferencją. Poniższy opis zachowuje wcześniejsze założenia i stan istniejącej implementacji.
+
 RecipeAI ma układać lunche i obiady na wybrane dni, wykorzystywać zapasy użytkownika oraz promocje w wybranych sklepach i tworzyć listę zakupów mieszczącą się w zadanym budżecie. Koszt powinien wynikać z ilości faktycznie kupowanych produktów i opakowań. AI proponuje dania; aplikacja oblicza zapotrzebowanie, ceny i zgodność z budżetem.
 
 Status: plan wdrożenia, 29 października 2026. Zakres pilotażu: Polska, PLN, Lidl i Biedronka jako sieci priorytetowe wskazane przez użytkownika, plan na 1–7 dni. Kolejność uruchomienia integracji zależy od dostępu do wiarygodnych danych; docelowy zakres obejmuje obie sieci.
@@ -205,3 +207,6 @@ Wdrażać migracje addytywnie, a nowe funkcje włączać flagami osobno dla plan
 Główny miernik pozostaje zgodny z kontraktem analityki: użytkownik akceptuje plan i tworzy listę dla tej samej wersji. Dodatkowo mierzyć kompletność wyceny, udział przekroczeń budżetu, częstotliwość nieaktualnych ofert, czas generowania oraz koszt AI na zaakceptowany plan. Nowe zdarzenia i dozwolone pola najpierw dopisać do `ANALITYKA_PLANERA.md`; nie przesyłać dokładnego budżetu, lokalizacji ani list produktów.
 
 Sieci priorytetowe są ustalone: Lidl i Biedronka. Przed integracją trzeba ustalić obszar pilotażu i zweryfikować źródła dla obu sieci. Przed publikacją doprecyzować maksymalny czas i koszt generowania oraz sposób naliczania limitów użytkownika. Pozostałe domyślne założenia do realizacji: PLN, budżet na wybrane posiłki i okres, jedna data zakupów, maksymalnie jeden odwiedzany sklep, opcjonalne rozszerzenie do dwóch.
+
+
+Aktualizacja implementacji z 3 listopada 2026: [stan, kontrakty, wykonane testy i zależności źródeł](WDROZENIE_TYGODNIA_Z_OKAZJI.md). Budżet jest opcjonalny; nowy klient używa kontraktu v3. Nie odebrano automatycznego feedu cen.

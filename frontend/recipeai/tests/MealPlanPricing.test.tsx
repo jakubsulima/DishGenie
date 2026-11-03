@@ -33,7 +33,7 @@ describe("Meal plan pricing", () => {
     vi.mocked(quoteMealPlan).mockResolvedValue(fixture()); show();
     fireEvent.click(screen.getByRole("button", { name: "Compare prices" }));
     await screen.findByText("No verified prices");
-    fireEvent.click(screen.getByLabelText("I can use Lidl Plus and activate the required coupon"));
+    fireEvent.click(screen.getByLabelText("I have Lidl Plus"));
     expect(screen.queryByText("No verified prices")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Compare prices" }));
     await waitFor(() => expect(quoteMealPlan).toHaveBeenLastCalledWith(plan, today, ["LIDL"]));
@@ -48,6 +48,7 @@ describe("Meal plan pricing", () => {
     vi.mocked(quoteMealPlan).mockResolvedValue(quote); show();
     fireEvent.click(screen.getByRole("button", { name: "Compare prices" }));
     expect(await screen.findByText("Estimated basket within budget")).toBeVisible();
+    fireEvent.click(screen.getByText("Shopping details and conditions"));
     expect(screen.getByText("Buy two with a coupon")).toBeVisible();
     expect(screen.getByText("Left after these meals: 200 g")).toBeVisible();
     expect(screen.getByRole("link", { name: "Offer source" })).toHaveAttribute("href", "https://www.lidl.pl/p/test-fixture");
