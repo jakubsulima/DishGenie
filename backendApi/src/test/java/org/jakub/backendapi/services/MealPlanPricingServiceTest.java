@@ -85,6 +85,64 @@ class MealPlanPricingServiceTest {
         assertThat(basket.items()).allMatch(item -> item.missingReason() == MissingReason.CHECK_QUANTITY);
     }
 
+    @Test void cardDoesNotConfirmAnUnknownCoupon() {
+        var old = new Offer(UUID.randomUUID(), 0, true, new Publish(0, Store.LIDL, 1L, "Rice", new BigDecimal("500"), "g", new BigDecimal("3"),
+                1, 1, null, true, day, day, "https://www.lidl.pl/p/test", "Requires coupon", now, true, true, true));
+        assertThat(quote(List.of(row("rice", 100d, false)), "20", List.of(old), Set.of(Store.LIDL)).baskets().get(0).missingItems()).isEqualTo(1);
+        Create settings = new Create(UUID.randomUUID(), day, 1, 2, Set.of(MealType.DINNER), Set.of(Store.LIDL), null, "en", 30,
+                PlanningMode.DEALS, BudgetMode.NONE, new ShoppingOptions(day, 1, Set.of(Store.LIDL), Set.of(old.id()), Set.of(), false));
+        View view = new View(settings.requestId(), 2, now, new Document(2, settings, Status.DRAFT, List.of(), new Shopping(now, List.of(row("rice", 100d, false)), Set.of())));
+        var basket = pricing.calculate(view, new QuoteRequest(2, day, Set.of(Store.LIDL), Set.of(old.id())), List.of(old), now).baskets().get(0);
+        assertThat(basket.knownTotal()).isEqualByComparingTo("3");
+        assertThat(basket.budgetStatus()).isEqualTo(BudgetStatus.NO_BUDGET);
+    }
+    @Test void bundlePriceNeverDividesAndRoundsAnIndividualPack() {
+        var deal = extended(false, "7.99", 2, null, null);
+        assertThat(quote(List.of(row("rice", 501d, false)), "20", List.of(deal), Set.of()).baskets().get(0).knownTotal()).isEqualByComparingTo("7.99");
+        assertThat(quote(List.of(row("rice", 1501d, false)), "20", List.of(deal), Set.of()).baskets().get(0).knownTotal()).isEqualByComparingTo("15.98");
+    }
+    @Test void weightedPriceUsesDeclaredBasisAndRoundingStep() {
+        var deal = extended(true, null, null, null, "10");
+        var basket = quote(List.of(row("rice", 351d, false)), "20", List.of(deal), Set.of()).baskets().get(0);
+        assertThat(basket.items().get(0).purchasedAmount()).isEqualByComparingTo("360");
+        assertThat(basket.knownTotal()).isEqualByComparingTo("3.60");
+        assertThat(basket.items().get(0).packages()).isNull();
+    }
+    @Test void weightedLimitUsesTheSamePriceBasisForTheRegularRemainder() {
+        var d = extended(true, null, null, "20", "10").details();
+        var offer = new Offer(UUID.randomUUID(), 0, true, new Publish(d.version(), d.store(), d.ingredientId(), d.productName(), d.packageAmount(), d.unit(), d.packagePrice(),
+                d.minimumPackages(), d.packageMultiple(), d.maximumPackages(), d.loyaltyRequired(), d.validFrom(), d.validTo(), d.sourceUrl(), d.conditions(), d.verifiedAt(), d.nationwide(), d.fixedPackage(), d.conditionsVerified(),
+                false, null, null, d.regularPrice(), d.category(), true, d.weightStep(), new BigDecimal("300")));
+        assertThat(quote(List.of(row("rice", 351d, false)), "20", List.of(offer), Set.of()).baskets().get(0).knownTotal()).isEqualByComparingTo("4.20");
+    }
+    @Test void regularPriceCanAvoidExcessiveMinimumAndPriceRemainder() {
+        var deal = extended(false, "7.99", 2, "5.00", null);
+        assertThat(quote(List.of(row("rice", 100d, false)), "20", List.of(deal), Set.of()).baskets().get(0).knownTotal()).isEqualByComparingTo("5.00");
+        assertThat(quote(List.of(row("rice", 2100d, false)), "30", List.of(deal), Set.of()).baskets().get(0).knownTotal()).isEqualByComparingTo("20.98");
+    }
+    @Test void threePacksCanCombineOneBundleAndOneRegularPackBelowTheLimit() {
+        var basket = quote(List.of(row("rice", 1500d, false)), "20", List.of(extended(false, "7.99", 2, "5.00", null)), Set.of()).baskets().get(0);
+        assertThat(basket.knownTotal()).isEqualByComparingTo("12.99");
+        assertThat(basket.items().get(0).packages()).isEqualByComparingTo("3");
+        assertThat(basket.items().get(0).leftoverAmount()).isZero();
+    }
+    @Test void unknownRegularPriceStillRequiresCompleteBundles() {
+        var basket = quote(List.of(row("rice", 1500d, false)), "20", List.of(extended(false, "7.99", 2, null, null)), Set.of()).baskets().get(0);
+        assertThat(basket.knownTotal()).isEqualByComparingTo("15.98");
+        assertThat(basket.items().get(0).packages()).isEqualByComparingTo("4");
+    }
+    @Test void overbuyingAnotherBundleCanBeCheaperThanTheRegularRemainder() {
+        var basket = quote(List.of(row("rice", 1500d, false)), "30", List.of(extended(false, "7.99", 2, "20.00", null)), Set.of()).baskets().get(0);
+        assertThat(basket.knownTotal()).isEqualByComparingTo("15.98");
+        assertThat(basket.items().get(0).packages()).isEqualByComparingTo("4");
+    }
+    private Offer extended(boolean weighted, String bundle, Integer bundleSize, String regular, String step) {
+        return new Offer(UUID.randomUUID(), 0, true, new Publish(0, Store.LIDL, 1L, "Rice", new BigDecimal(weighted ? "1000" : "500"), "g",
+                (bundle != null ? null : new BigDecimal(weighted ? "10" : "4")), weighted ? 1 : 2, weighted ? 1 : 2, weighted ? null : 4, false, day, day,
+                "https://www.lidl.pl/p/test", "Controlled test", now, true, !weighted, true, false,
+                bundle == null ? null : new BigDecimal(bundle), bundleSize, regular == null ? null : new BigDecimal(regular), "DRY", weighted, step == null ? null : new BigDecimal(step), null));
+    }
+
     private Quote quote(List<ShoppingItem> rows, String budget, List<Offer> offers, Set<Store> loyalty) {
         Create settings = new Create(UUID.randomUUID(), day, 1, 2, Set.of(MealType.DINNER), Set.of(Store.LIDL, Store.BIEDRONKA), new BigDecimal(budget), "en", 30);
         View view = new View(settings.requestId(), 2, now, new Document(1, settings, Status.ACCEPTED, List.of(), new Shopping(now, rows, Set.of())));
@@ -93,6 +151,6 @@ class MealPlanPricingServiceTest {
     private ShoppingItem row(String name, Double amount, boolean review) { return new ShoppingItem(name, name, amount, "g", 0, List.of(), review); }
     private Offer offer(Store store, String size, String price, int min, int multiple, Integer max, boolean loyalty, LocalDate from, LocalDate to, Instant verified) {
         return new Offer(UUID.randomUUID(), 0, true, new Publish(0, store, 1L, "Pack of rice", new BigDecimal(size), "g", new BigDecimal(price),
-                min, multiple, max, loyalty, from, to, "https://www.lidl.pl/test-fixture", "Test fixture only", verified, true, true, true));
+                min, multiple, max, loyalty, from, to, "https://www.lidl.pl/test-fixture", "Test fixture only", verified, true, true, true, false, null, null, null, null, false, null, null));
     }
 }

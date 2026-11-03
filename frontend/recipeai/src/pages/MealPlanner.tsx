@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useLanguage } from "../context/languageContext";
+import PlanShoppingGroups from "../components/PlanShoppingGroups";
 import MealPlanPricing from "../components/MealPlanPricing";
 import MealPlanForm from "../components/MealPlanForm";
 import MealPlanSlotCard from "../components/MealPlanSlotCard";
 import { acceptMealPlan, changePlanSlot, checkPlanShopping, createMealPlan, generatePlanSlot,
   getMealPlan, isSlotGenerating, listMealPlans, refreshPlanShopping,
+  updatePlanSettings, startWeekGeneration, getWeekGeneration, cancelWeekGeneration, type GenerationProgress,
   type MealPlan, type PlanSummary } from "../lib/mealPlans";
 import { captureEvent } from "../lib/posthog";
 
@@ -18,6 +20,9 @@ export default function MealPlanner() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState("");
+  const [editingSettings, setEditingSettings] = useState(false);
+  const [job, setJob] = useState<GenerationProgress | null>(null);
+  const jobRequest = useRef({ version: -1, id: "" });
   const [error, setError] = useState("");
   const working = useRef(false);
   const stop = useRef(false);
@@ -67,18 +72,30 @@ export default function MealPlanner() {
     }
   };
 
+  useEffect(() => {
+    if (!selectedId) { setJob(null); return; }
+    let ignore = false;
+    const poll = async () => {
+      try {
+        const current = await getWeekGeneration(selectedId);
+        if (ignore) return;
+        setJob(current);
+        if (current) {
+          const saved = await getMealPlan(selectedId);
+          if (!ignore && !working.current) setPlan(current => current?.id === saved.id && current.version >= saved.version ? current : saved);
+        }
+      } catch { /* Saved plan and manual refresh remain available during a temporary polling failure. */ }
+    };
+    void poll(); const timer = window.setInterval(() => void poll(), 2500);
+    return () => { ignore = true; window.clearInterval(timer); };
+  }, [selectedId]);
   const generateMissing = () => {
     if (!plan) return;
+    if (jobRequest.current.version !== plan.version) jobRequest.current = { version: plan.version, id: crypto.randomUUID() };
     void run(async () => {
-      let current = plan;
-      const pending = plan.plan.slots.filter(slot => !slot.recipe && !slot.skipped && !slot.locked);
-      for (const [index, slot] of pending.entries()) {
-        if (stop.current) break;
-        setProgress(t("Generating meal {current} of {total}", { current: index + 1, total: pending.length }));
-        current = await generatePlanSlot(current, slot.id, crypto.randomUUID());
-        if (mounted.current) setPlan(current);
-      }
-      return current;
+      const started = await startWeekGeneration(plan, jobRequest.current.id); setJob(started);
+      captureEvent("meal_plan_generation_requested", { planId: plan.id, generationId: started.id, dayCount: plan.plan.settings.dayCount, slotCount: started.total, servings: plan.plan.settings.servings });
+      return getMealPlan(plan.id);
     });
   };
   const toggleShopping = (key: string, checked: boolean) => {
@@ -91,7 +108,8 @@ export default function MealPlanner() {
       catch (failure) { if (mounted.current) setPlan(plan); throw failure; }
     });
   };
-  const remoteBusy = plan?.plan.slots.some(isSlotGenerating) ?? false;
+  const jobRunning = job?.status === "QUEUED" || job?.status === "RUNNING";
+  const remoteBusy = jobRunning || (plan?.plan.slots.some(isSlotGenerating) ?? false);
   const disabled = busy || remoteBusy;
   const planned = plan?.plan.slots.filter(slot => slot.recipe && !slot.skipped).length ?? 0;
   const remaining = plan?.plan.slots.filter(slot => !slot.recipe && !slot.skipped).length ?? 0;
@@ -119,29 +137,35 @@ export default function MealPlanner() {
         <div className="flex flex-wrap justify-between gap-4">
           <div><span className="rounded-full bg-primary/10 px-3 py-1 text-sm">{t(plan.plan.status === "ACCEPTED" ? "Accepted" : "Draft")}</span>
             <p className="mt-3 font-semibold">{t("{count} meals planned", { count: planned })}</p></div>
-          <div className="text-right"><p className="font-semibold">{t("Budget")}: {new Intl.NumberFormat(locale, { style: "currency", currency: "PLN" }).format(plan.plan.settings.budget)}</p>
+          <div className="text-right"><p className="font-semibold">{t("Budget")}: {plan.plan.settings.budget == null ? t("No budget preference") : new Intl.NumberFormat(locale, { style: "currency", currency: "PLN" }).format(plan.plan.settings.budget)}</p>
             <p className="text-sm text-primary/70">{plan.plan.settings.stores.map(store => store === "LIDL" ? "Lidl" : "Biedronka").join(" · ")}</p></div>
         </div>
-        <p className="my-4 text-sm text-amber-900">{t(plan.plan.status === "ACCEPTED" ? "Compare available prices below. Generating meals does not guarantee the budget." : "Accept your plan to compare available prices. Generating meals does not guarantee the budget.")}</p>
+        <p className="my-4 text-sm text-amber-900">{t("Known costs are available while editing. Your budget preference never blocks acceptance.")}</p>
         <div className="flex flex-wrap gap-3">
           <button className="rounded-full bg-primary px-5 py-3 font-semibold text-white disabled:opacity-40" disabled={disabled || remaining === 0} onClick={generateMissing}>{t("Generate missing meals")}</button>
           <button className={button} disabled={disabled || planned === 0 || plan.plan.status === "ACCEPTED"} onClick={() => void run(async () => {
-            const started = performance.now();
             const accepted = await acceptMealPlan(plan);
-            captureEvent("meal_plan_accepted", { planId: accepted.id, fullSlotCount: planned, emptySlotCount: remaining, durationMs: Math.round(performance.now() - started) });
+            captureEvent("meal_plan_accepted", { planId: accepted.id, fullSlotCount: planned, emptySlotCount: remaining, durationMs: Math.max(0, Date.now() - Date.parse(plan.createdAt)) });
             captureEvent("meal_plan_shopping_list_created", { planId: accepted.id, planVersion: accepted.version, itemCount: accepted.plan.shopping?.items.length ?? 0 });
             return accepted;
           })}>{t("Accept plan and create shopping list")}</button>
+          <button className={button} disabled={disabled} onClick={() => setEditingSettings(v => !v)}>{t("Planner settings")}</button>
           <button className={button} disabled={busy} onClick={() => void run(() => getMealPlan(plan.id))}>{t("Refresh")}</button>
-          {busy && progress && <button className={button} onClick={() => { stop.current = true; }}>{t("Stop after this meal")}</button>}
+          {jobRunning && job && <button className={button} onClick={() => void cancelWeekGeneration(plan.id, job.id).then(setJob)}>{t("Stop after this meal")}</button>}
         </div>
-        <p className="mt-3 text-sm text-primary/60">{t("Each generated meal uses one recipe request. Earlier meals are saved if you stop or leave this page.")}</p>
+        <p className="mt-3 text-sm text-primary/60">{t("We use saved recipes first. AI fills gaps using your recipe allowance. Planning continues after you leave this page.")}</p>
         {remaining > 0 && <p className="mt-2 text-sm text-primary/60">{t("You can accept a partial plan. Empty and skipped meals are excluded from shopping.")}</p>}
+        {job && <p role="status" className="mt-3">{t("Week progress")}: {job.completed}/{job.total} · {t({ QUEUED: "Queued", RUNNING: "Planning", COMPLETED: "Ready", FAILED: "Stopped after an error", CANCELLED: "Stopped" }[job.status])}</p>}
+        {job?.status === "FAILED" && <p role="alert" className="mt-2 text-amber-900">{t("Planning stopped. Saved meals are safe. Refresh and retry missing meals.")}</p>}
         {(progress || remoteBusy) && <p role="status" className="mt-3 font-semibold">{progress || t("Generating this meal. Refresh to check progress.")}</p>}
       </section>
-      <div className="space-y-5">{dates.map(date => <section key={date} aria-label={dateLabel(date)}>
+      {editingSettings && <MealPlanForm initialSettings={plan.plan.settings} busy={disabled} onCreate={settings => void run(async () => {
+        const updated = await updatePlanSettings(plan, settings); setEditingSettings(false); return updated;
+      })} />}
+      {planned > 0 && <MealPlanPricing key={`${plan.id}:${plan.version}`} plan={plan} disabled={disabled} auto onSelected={setPlan} />}
+      <div className="mt-6 space-y-5">{dates.map(date => <section key={date} aria-label={dateLabel(date)}>
         <h2 className="mb-3 text-lg font-semibold capitalize">{dateLabel(date)}</h2>
-        <div className="grid gap-4 md:grid-cols-2">{plan.plan.slots.filter(slot => slot.date === date).map(slot => <MealPlanSlotCard key={slot.id} slot={slot} busy={disabled}
+        <div className="grid gap-4 md:grid-cols-2">{plan.plan.slots.filter(slot => slot.date === date).map(slot => <MealPlanSlotCard key={slot.id} slot={slot} busy={disabled} plan={plan} onApplied={setPlan}
           onGenerate={() => void run(() => generatePlanSlot(plan, slot.id, crypto.randomUUID()))}
           onChange={(action, servings) => void run(() => changePlanSlot(plan, slot.id, action, servings))} />)}</div>
       </section>)}</div>
@@ -150,17 +174,8 @@ export default function MealPlanner() {
           <button disabled={disabled} className={button} onClick={() => void run(() => refreshPlanShopping(plan))}>{t("Recalculate from fridge")}</button></div>
         <p className="mt-2 text-sm text-primary/70">{t("This checklist belongs to this plan. Your manual shopping list is unchanged.")}</p>
         <p className="mt-2 text-sm text-primary/60">{t("Calculated")}: {new Date(plan.plan.shopping.calculatedAt).toLocaleString(locale)}</p>
-        <ul className="mt-5 divide-y divide-primary/10">{plan.plan.shopping.items.map(item => <li key={item.key} className="flex items-start gap-3 py-3">
-          {item.amount !== 0 && <input className="mt-1 h-5 w-5" type="checkbox" aria-label={item.name} checked={plan.plan.shopping!.checkedKeys.includes(item.key)} disabled={disabled}
-            onChange={e => toggleShopping(item.key, e.target.checked)} />}
-          <div><span className="font-semibold">{item.name}</span> · {item.amount === null ? t("Check quantity") : item.amount === 0 ? t("Available in fridge") : `${item.amount} ${item.unit}`}
-            {item.usedFromFridge > 0 && <p className="text-sm text-primary/60">{t("From fridge")}: {item.usedFromFridge} {item.unit}</p>}
-            {item.needsReview && <p className="text-sm text-amber-900">{t("Check the amount and unit at home before shopping.")}</p>}
-            <p className="text-sm text-primary/60">{item.slotIds.map(id => { const slot = plan.plan.slots.find(s => s.id === id); return slot ? `${dateLabel(slot.date)} · ${t(slot.mealType === "LUNCH" ? "Lunch" : "Dinner")}` : ""; }).join(", ")}</p>
-          </div>
-        </li>)}</ul>
+        <PlanShoppingGroups plan={plan} disabled={disabled} onCheck={toggleShopping} />
       </section>}
-      {plan.plan.shopping && <MealPlanPricing key={`${plan.id}:${plan.plan.shopping.calculatedAt}`} plan={plan} disabled={disabled} />}
     </> : null}
   </div>;
 }

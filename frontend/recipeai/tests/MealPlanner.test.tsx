@@ -12,7 +12,10 @@ vi.mock("../src/lib/mealPlans", async importOriginal => ({
   listMealPlans: vi.fn(), getMealPlan: vi.fn(), createMealPlan: vi.fn(),
   generatePlanSlot: vi.fn(), changePlanSlot: vi.fn(), acceptMealPlan: vi.fn(),
   checkPlanShopping: vi.fn(), refreshPlanShopping: vi.fn(),
+  getShoppingPreferences: vi.fn(), startWeekGeneration: vi.fn(), getWeekGeneration: vi.fn(), cancelWeekGeneration: vi.fn(),
+  latestPlanRevision: vi.fn().mockResolvedValue({}), previewRevision: vi.fn(), applyRevision: vi.fn(), undoRevision: vi.fn(),
 }));
+vi.mock("../src/lib/planPricing", () => ({ getOffers: vi.fn().mockResolvedValue({ offers: [], sourceStatus: "MANUAL_REVIEW_ONLY" }), quoteMealPlan: vi.fn().mockResolvedValue({ planId: "plan-1", planVersion: 0, budget: null, shoppingDate: "2026-10-29", calculatedAt: new Date().toISOString(), expiresAt: new Date(Date.now() + 900000).toISOString(), baskets: [] }) }));
 vi.mock("../src/lib/posthog", () => ({ captureEvent: vi.fn() }));
 
 const recipe: PlanRecipe = { name: "Rice bowl", description: "Simple", timeToPrepare: "20 min", servings: 2,
@@ -27,48 +30,54 @@ const renderPlanner = () => render(<LanguageProvider initialLocale="en"><MemoryR
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.mocked(api.getShoppingPreferences).mockResolvedValue(null);
+  vi.mocked(api.getWeekGeneration).mockResolvedValue(null);
   vi.mocked(api.listMealPlans).mockResolvedValue([]);
   vi.mocked(api.getMealPlan).mockResolvedValue(fixture());
 });
 
 describe("Meal planner", () => {
-  test("saves Lidl, Biedronka, explicit budget and selected meals from the Polish form", () => {
+  test("creates a Polish week without a budget and defaults to one store", async () => {
     const onCreate = vi.fn();
     render(<LanguageProvider initialLocale="pl"><MealPlanForm busy={false} onCreate={onCreate} /></LanguageProvider>);
-    fireEvent.change(screen.getByLabelText("Budżet na ten plan (PLN)"), { target: { value: "250.50" } });
+    await waitFor(() => expect(screen.getByRole("button", { name: "Utwórz jadłospis" })).toBeEnabled());
     fireEvent.click(screen.getByRole("button", { name: "Utwórz jadłospis" }));
-    expect(onCreate).toHaveBeenCalledWith(expect.objectContaining({ budget: 250.5, stores: ["LIDL", "BIEDRONKA"],
-      mealTypes: ["LUNCH", "DINNER"], locale: "pl", dayCount: 7 }));
-    expect(screen.getByText(/Generowanie posiłków nie optymalizuje jeszcze budżetu/)).toBeVisible();
+    expect(onCreate).toHaveBeenCalledWith(expect.objectContaining({ budget: null, budgetMode: "NONE", stores: ["LIDL"],
+      shopping: expect.objectContaining({ maxStores: 1, confirmedCouponOffers: [] }), locale: "pl", dayCount: 7 }));
   });
-
-  test("generates sequentially using each returned version", async () => {
-    vi.mocked(api.generatePlanSlot).mockImplementation(async (plan, slotId) => {
-      const next = structuredClone(plan); next.version += 2;
-      next.plan.slots.find(slot => slot.id === slotId)!.recipe = recipe;
-      return next;
-    });
+  test("saves an optional amount and explicit permission to split shopping", async () => {
+    const onCreate = vi.fn();
+    render(<LanguageProvider initialLocale="pl"><MealPlanForm busy={false} onCreate={onCreate} /></LanguageProvider>);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Utwórz jadłospis" })).toBeEnabled());
+    fireEvent.change(screen.getByLabelText("Orientacyjna kwota (PLN, opcjonalnie)"), { target: { value: "250.50" } });
+    fireEvent.click(screen.getByLabelText("Biedronka"));
+    fireEvent.click(screen.getByLabelText("Zgadzam się na zakupy w dwóch sklepach"));
+    fireEvent.click(screen.getByRole("button", { name: "Utwórz jadłospis" }));
+    expect(onCreate).toHaveBeenCalledWith(expect.objectContaining({ budget: 250.5, budgetMode: "SOFT", stores: ["LIDL", "BIEDRONKA"], shopping: expect.objectContaining({ maxStores: 2 }) }));
+  });
+  test("starts a durable week job with an idempotent request instead of scheduling browser AI calls", async () => {
+    vi.mocked(api.startWeekGeneration).mockResolvedValue({ id: "job", planId: "plan-1", status: "QUEUED", completed: 0, total: 2, error: null });
+    renderPlanner(); fireEvent.click(await screen.findByRole("button", { name: "Generate missing meals" }));
+    await waitFor(() => expect(api.startWeekGeneration).toHaveBeenCalledOnce());
+    expect(api.generatePlanSlot).not.toHaveBeenCalled();
+    expect(await screen.findByText("Week progress: 0/2 · Queued")).toBeVisible();
+    expect(screen.getByRole("button", { name: "Generate missing meals" })).toBeDisabled();
+  });
+  test("returning to a running week restores progress and prevents concurrent edits", async () => {
+    vi.mocked(api.getWeekGeneration).mockResolvedValue({ id: "job", planId: "plan-1", status: "RUNNING", completed: 1, total: 2, error: null });
     renderPlanner();
-    fireEvent.click(await screen.findByRole("button", { name: "Generate missing meals" }));
-    await waitFor(() => expect(screen.getAllByText("Rice bowl")).toHaveLength(2));
-    expect(vi.mocked(api.generatePlanSlot).mock.calls.map(([plan]) => plan.version)).toEqual([0, 2]);
-    expect(screen.getByText(/Generating meals does not guarantee the budget/)).toBeVisible();
+    expect(await screen.findByText("Week progress: 1/2 · Planning")).toBeVisible();
+    expect(screen.getByRole("button", { name: "Generate missing meals" })).toBeDisabled();
+    expect(screen.getAllByRole("button", { name: "Skip meal" })[0]).toBeDisabled();
   });
-
-  test("keeps saved meals after a partial failure and retries only missing slots", async () => {
+  test("a failed week keeps saved dishes and allows retry of missing meals", async () => {
     const partial = fixture(); partial.version = 3; partial.plan.slots[0].recipe = recipe;
-    vi.mocked(api.generatePlanSlot).mockResolvedValueOnce(partial).mockRejectedValueOnce(new Error("offline"));
-    vi.mocked(api.getMealPlan).mockResolvedValueOnce(fixture()).mockResolvedValue(partial);
+    vi.mocked(api.getMealPlan).mockResolvedValue(partial);
+    vi.mocked(api.getWeekGeneration).mockResolvedValue({ id: "job", planId: "plan-1", status: "FAILED", completed: 1, total: 2, error: "GENERATION_STOPPED" });
     renderPlanner();
-    fireEvent.click(await screen.findByRole("button", { name: "Generate missing meals" }));
-    expect(await screen.findByRole("alert")).toHaveTextContent("Your saved meals are safe");
-    expect(screen.getByText("Rice bowl")).toBeVisible();
-    const completed = structuredClone(partial); completed.version = 5; completed.plan.slots[1].recipe = recipe;
-    vi.mocked(api.generatePlanSlot).mockResolvedValue(completed);
-    await waitFor(() => expect(screen.getByRole("button", { name: "Generate missing meals" })).toBeEnabled());
-    fireEvent.click(screen.getByRole("button", { name: "Generate missing meals" }));
-    await waitFor(() => expect(vi.mocked(api.generatePlanSlot).mock.calls).toHaveLength(3));
-    expect(vi.mocked(api.generatePlanSlot).mock.calls[2][1]).toBe("slot-1");
+    expect(await screen.findByText("Rice bowl")).toBeVisible();
+    expect(await screen.findByRole("alert")).toHaveTextContent("Saved meals are safe");
+    expect(screen.getByRole("button", { name: "Generate missing meals" })).toBeEnabled();
   });
 
   test("locked meals cannot be swapped or have their portions changed", async () => {

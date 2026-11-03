@@ -11,7 +11,11 @@ export interface PlanSettings {
   servings: number;
   mealTypes: MealType[];
   stores: PlanStore[];
-  budget: number;
+  budget: number | null;
+  planningMode?: "DEALS";
+  budgetMode?: "NONE" | "SOFT";
+  shopping?: { shoppingDate: string | null; maxStores: number; loyaltyStores: PlanStore[];
+    confirmedCouponOffers: string[]; selectedOffers: string[]; allowRepeats: boolean };
   locale: "pl" | "en";
   maxMinutes: number;
 }
@@ -36,6 +40,7 @@ export interface PlanSlot {
   generationStartedAt: string | null;
 }
 export interface PlanShopping {
+  basketOption?: string | null; quote?: import("./planPricing").PlanQuote | null;
   calculatedAt: string;
   checkedKeys: string[];
   items: { key: string; name: string; amount: number | null; unit: string;
@@ -57,7 +62,7 @@ export interface PlanSummary {
   plannedSlots: number;
   totalSlots: number;
 }
-const base = "v2/meal-plans";
+const base = "v3/meal-plans";
 export const listMealPlans = () => apiClient<PlanSummary[]>(base);
 export const getMealPlan = (id: string) => apiClient<MealPlan>(`${base}/${id}`);
 export const createMealPlan = (settings: PlanSettings) => apiClient<MealPlan>(base, true, settings);
@@ -80,7 +85,7 @@ export const generatePlanSlot = async (plan: MealPlan, slotId: string, requestId
 export const acceptMealPlan = (plan: MealPlan) =>
   apiClient<MealPlan>(`${base}/${plan.id}/accept`, true, { version: plan.version });
 export const refreshPlanShopping = (plan: MealPlan) =>
-  apiClient<MealPlan>(`${base}/${plan.id}/shopping-list/refresh`, true, { version: plan.version });
+  apiClient<MealPlan>(`${base}/${plan.id}/shopping-list/sync`, true, { version: plan.version, requestId: crypto.randomUUID() });
 export const checkPlanShopping = (plan: MealPlan, key: string, checked: boolean) =>
   apiClient<MealPlan>(`${base}/${plan.id}/shopping-list/check`, true, { version: plan.version, key, checked });
 
@@ -91,3 +96,33 @@ export const localDateInput = () => {
   const now = new Date();
   return new Date(now.getTime() - now.getTimezoneOffset() * 60_000).toISOString().slice(0, 10);
 };
+
+export interface GenerationProgress { id: string; planId: string; status: "QUEUED" | "RUNNING" | "COMPLETED" | "FAILED" | "CANCELLED"; completed: number; total: number; error: string | null }
+export const startWeekGeneration = (plan: MealPlan, requestId: string) =>
+  apiClient<GenerationProgress>(`${base}/${plan.id}/generations`, true, { version: plan.version, requestId });
+export const getWeekGeneration = (id: string) => apiClient<GenerationProgress | null>(`${base}/${id}/generations/latest`);
+export const cancelWeekGeneration = (id: string, jobId: string) => apiClient<GenerationProgress>(`${base}/${id}/generations/${jobId}/cancel`, true, {});
+export const getShoppingPreferences = () => apiClient<PlanSettings | null>("v2/shopping-preferences");
+export interface RevisionPreview { id: string; planVersion: number; slotId: string; before: PlanRecipe; after: PlanRecipe; shoppingBefore: PlanShopping; shoppingAfter: PlanShopping; expiresAt: string; quoteBefore?: import("./planPricing").PlanQuote; quoteAfter?: import("./planPricing").PlanQuote }
+export type RevisionIntent = "MANUAL" | "SUBSTITUTE" | "DEAL" | "FASTER" | "SIMPLIFY";
+export interface RevisionInput { requestId: string; intent: RevisionIntent; recipe?: PlanRecipe; comment?: string; ingredient?: string; replacement?: string; offerId?: string; maxMinutes?: number }
+export const previewRevision = async (plan: MealPlan, slotId: string, input: RevisionInput) => {
+  await ensureCsrfToken();
+  return (await axios.post<RevisionPreview>(`${API_URL}${base}/${plan.id}/slots/${slotId}/revision-previews`, { version: plan.version, ...input }, { timeout: 240_000 })).data;
+};
+export const applyRevision = (plan: MealPlan, slotId: string, previewId: string) => apiClient<MealPlan>(`${base}/${plan.id}/slots/${slotId}/apply-revision`, true, { version: plan.version, previewId });
+export const undoRevision = (plan: MealPlan, slotId: string, previewId: string) => apiClient<RevisionPreview>(`${base}/${plan.id}/slots/${slotId}/undo-revision`, true, { version: plan.version, previewId });
+
+export const selectPlanBasket = (plan: MealPlan, option: string, shoppingDate: string, loyaltyStores: PlanStore[]) =>
+  apiClient<MealPlan>(`${base}/${plan.id}/shopping-list/select`, true, { version: plan.version, option,
+    quote: { version: plan.version, shoppingDate, loyaltyStores, confirmedCouponOffers: plan.plan.settings.shopping?.confirmedCouponOffers ?? [] } });
+
+export const updatePlanSettings = async (plan: MealPlan, settings: PlanSettings) => {
+  await ensureCsrfToken();
+  return (await axios.patch<MealPlan>(`${API_URL}${base}/${plan.id}/settings`, { version: plan.version, settings })).data;
+};
+
+export const latestPlanRevision = (planId: string, slotId: string) => apiClient<{ id?: string }>(`${base}/${planId}/slots/${slotId}/revisions/latest`);
+
+export const reportPlanShoppingIssue = (plan: MealPlan, key: string, reason: "MISSING_PRODUCT" | "PRICE_DIFFERENT", requestId: string) =>
+  apiClient<{ id: string }>(`${base}/${plan.id}/shopping-list/issues`, true, { version: plan.version, key, reason, requestId });

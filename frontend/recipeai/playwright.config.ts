@@ -2,7 +2,8 @@ import { defineConfig, devices } from "@playwright/test";
 import process from "node:process";
 
 const externalBaseURL = process.env.PLAYWRIGHT_BASE_URL;
-const baseURL = externalBaseURL || "http://127.0.0.1:5173";
+const localPort = process.env.PLAYWRIGHT_PORT || "5173";
+const baseURL = externalBaseURL || `http://127.0.0.1:${localPort}`;
 
 export default defineConfig({
   testDir: "./e2e",
@@ -20,7 +21,7 @@ export default defineConfig({
   webServer: externalBaseURL
     ? undefined
     : {
-        command: "npm run dev -- --host 127.0.0.1",
+        command: `npm run dev -- --host 127.0.0.1 --port ${localPort}`,
         url: baseURL,
         reuseExistingServer: true,
         timeout: 120_000,

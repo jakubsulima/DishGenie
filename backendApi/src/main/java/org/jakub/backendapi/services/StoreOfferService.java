@@ -25,14 +25,23 @@ public class StoreOfferService {
     @Transactional
     public Offer publish(UUID id, Publish input) {
         Instant now = Instant.now();
+        if (input.packagePrice() == null && input.bundlePrice() == null) bad("A package/basis price or an exact bundle price is required.");
+        if (input.weighted() && input.packagePrice() == null) bad("A weighted offer needs a price for its declared weight basis.");
+        if (!input.weighted() && input.maximumAmount() != null) bad("Weight limits require weighted sale mode.");
         if (input.validTo().isBefore(input.validFrom()) || input.verifiedAt().isAfter(now)
                 || input.verifiedAt().isBefore(now.minus(MAX_AGE))) bad("Invalid offer dates or stale verification.");
-        if (!input.nationwide() || !input.fixedPackage() || !input.conditionsVerified()) bad("Only verified nationwide packaged offers are supported.");
+        if (!input.nationwide() || (!input.fixedPackage() && !input.weighted()) || !input.conditionsVerified()) bad("Only verified nationwide packaged offers are supported.");
         if (!ingredients.existsById(input.ingredientId())) bad("Unknown ingredient mapping.");
         if (input.maximumPackages() != null && (input.maximumPackages() < input.minimumPackages()
                 || input.minimumPackages() + (input.packageMultiple() - input.minimumPackages() % input.packageMultiple()) % input.packageMultiple() > input.maximumPackages()))
             bad("Package limits cannot satisfy this offer.");
         if (input.unit().equals("pcs") && input.packageAmount().stripTrailingZeros().scale() > 0) bad("Package piece count must be whole.");
+        if (input.weighted() && (!input.unit().equals("g") || input.fixedPackage() || input.weightStep() == null
+                || input.minimumPackages() != 1 || input.packageMultiple() != 1 || input.maximumPackages() != null
+                || input.bundlePrice() != null)) bad("Unsupported weighted conditions.");
+        if ((input.bundlePrice() == null) != (input.bundleSize() == null)) bad("Bundle price and size must be provided together.");
+        if (input.bundleSize() != null && (input.weighted() || input.minimumPackages() % input.bundleSize() != 0
+                || input.packageMultiple() % input.bundleSize() != 0)) bad("Only complete bundles are supported.");
         validateSource(input);
         StoreOffer entity = offers.findById(id).orElse(null);
         if (entity == null) {

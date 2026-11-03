@@ -1,3 +1,4 @@
+import OfferImportAdmin from "../components/OfferImportAdmin";
 import React, {
   useCallback,
   useContext,
@@ -217,6 +218,7 @@ const AdminPage: React.FC = () => {
           onAutoHide={() => setError(null)}
         />
 
+        <OfferImportAdmin />
         <section className="mb-8 grid gap-3 md:grid-cols-4">
           <SummaryStat label={t("Total users")} value={totalUsers} />
           <SummaryStat label={t("Visible admins")} value={visibleStats.admins} />

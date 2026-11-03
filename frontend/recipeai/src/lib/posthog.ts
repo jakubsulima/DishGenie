@@ -39,7 +39,9 @@ type AnalyticsEventName =
   | "meal_plan_accepted"
   | "meal_plan_shopping_list_created"
   | "meal_plan_slot_cooked"
-  | "meal_plan_slot_skipped";
+  | "meal_plan_slot_skipped"
+  | "meal_plan_revision_applied"
+  | "meal_plan_quote_created";
 
 type AnalyticsProperties = Record<string, unknown>;
 

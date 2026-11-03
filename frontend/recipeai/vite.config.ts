@@ -37,6 +37,7 @@ export default defineConfig({
     },
   },
   server: {
+    proxy: process.env.RECIPEAI_DEV_API_PROXY ? { "/api": { target: process.env.RECIPEAI_DEV_API_PROXY, changeOrigin: true } } : undefined,
     host: "0.0.0.0",
     port: 5173,
     strictPort: true,

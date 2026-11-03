@@ -43,3 +43,12 @@ _Avoid_: Using this as user-facing product language
 ## Flagged ambiguities
 
 - "product" was used to mean **Fridge Item**; resolved: use **Fridge Item** for the broader user-facing concept.
+
+## Weekly meal planning
+
+- A Meal Plan belongs to one user and contains versioned meal snapshots. Editing a snapshot never changes the library recipe.
+- Budget is an optional soft preference, separate from known shopping cost. Unknown prices are not zero.
+- Shopping uses one store by default. Selecting two chains compares single-store alternatives; splitting requires an explicit choice.
+- A loyalty card and confirmation of a specific coupon are separate permissions.
+- The plan checklist is separate from the manual shopping list. Revisions preserve checks for unchanged requirements; changed quantities need checking again.
+- Store promotion validity is not a food expiration date. Current automatic source acceptance and API details are recorded in docs/WDROZENIE_TYGODNIA_Z_OKAZJI.md.

@@ -16,6 +16,10 @@ import java.util.Optional;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
+    @Query("SELECT r.id FROM Recipe r WHERE r.locale = :locale AND (r.visibility = :visibility OR r.user.email = :email) ORDER BY r.updatedAt DESC, r.id DESC")
+    List<Long> findPlanningCandidates(@Param("email") String email, @Param("locale") ContentLocale locale,
+                                      @Param("visibility") RecipeVisibility visibility, Pageable page);
+
     Optional<Recipe> findByName(String name);
 
     @Query("""
