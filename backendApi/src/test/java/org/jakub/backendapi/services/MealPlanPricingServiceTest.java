@@ -136,6 +136,28 @@ class MealPlanPricingServiceTest {
         assertThat(basket.knownTotal()).isEqualByComparingTo("15.98");
         assertThat(basket.items().get(0).packages()).isEqualByComparingTo("4");
     }
+    @Test void anOngoingPlanCanBeQuotedTodayWithoutExcludingSavedPastMeals() {
+        LocalDate today = LocalDate.now(ZoneId.of("Europe/Warsaw"));
+        var plans = mock(MealPlanService.class); var offers = mock(StoreOfferService.class);
+        var service = new MealPlanPricingService(plans, offers, names);
+        var settings = new Create(UUID.randomUUID(), today.minusDays(1), 7, 2, Set.of(MealType.DINNER), Set.of(Store.LIDL), null, "en", 30,
+                PlanningMode.DEALS, BudgetMode.NONE, new ShoppingOptions(today.minusDays(1), 1, Set.of(), Set.of(), Set.of(), false));
+        var recipe = new org.jakub.backendapi.dto.RecipeDto(null, "Rice", List.of(), List.of("Cook."), "", "20 min", 2);
+        var past = new Slot(UUID.randomUUID(), today.minusDays(1), MealType.DINNER, 2, false, false, recipe, null, null, null);
+        var upcoming = new Slot(UUID.randomUUID(), today.plusDays(1), MealType.DINNER, 2, false, false, recipe, null, null, null);
+        var shopping = new Shopping(Instant.now(), List.of(row("rice", 200d, false)), Set.of());
+        var plan = new View(settings.requestId(), 2, Instant.now(), new Document(2, settings, Status.DRAFT, List.of(past, upcoming), shopping));
+        when(plans.get("user", plan.id())).thenReturn(plan);
+        when(plans.previewShopping("user", plan.id(), plan.plan().slots())).thenReturn(shopping);
+        when(offers.eligible(org.mockito.ArgumentMatchers.eq(Set.of(Store.LIDL)), org.mockito.ArgumentMatchers.eq(today), org.mockito.ArgumentMatchers.any())).thenReturn(List.of());
+        var quote = service.preview("user", plan.id(), new QuoteRequest(2, today, Set.of()));
+        assertThat(quote.shoppingDate()).isEqualTo(today);
+        assertThat(quote.baskets().get(0).items()).singleElement().satisfies(item -> assertThat(item.requiredAmount()).isEqualTo(200d));
+        assertThat(plan.plan().settings().shopping().shoppingDate()).isEqualTo(today.minusDays(1));
+        assertThatThrownBy(() -> service.preview("user", plan.id(), new QuoteRequest(2, today.plusDays(2), Set.of())))
+                .isInstanceOf(org.jakub.backendapi.exceptions.AppException.class);
+    }
+
     private Offer extended(boolean weighted, String bundle, Integer bundleSize, String regular, String step) {
         return new Offer(UUID.randomUUID(), 0, true, new Publish(0, Store.LIDL, 1L, "Rice", new BigDecimal(weighted ? "1000" : "500"), "g",
                 (bundle != null ? null : new BigDecimal(weighted ? "10" : "4")), weighted ? 1 : 2, weighted ? 1 : 2, weighted ? null : 4, false, day, day,

@@ -19,7 +19,7 @@ import org.jakub.backendapi.services.MealPlanPricingService;
 import java.util.*;
 
 @RestController
-@RequestMapping({"/v2/meal-plans", "/v3/meal-plans"})
+@RequestMapping({"/v2/meal-plans", "/v3/meal-plans", "/v4/meal-plans"})
 public class MealPlanController {
     private final MealPlanShoppingIssueService issues;
     private final MealPlanJobService jobs;
@@ -28,8 +28,20 @@ public class MealPlanController {
     private final MealPlanService plans;
     private final MealPlanGenerationService generation;
     private final MealPlanPricingService pricing;
-    public MealPlanController(MealPlanService plans, MealPlanGenerationService generation, MealPlanPricingService pricing, MealPlanJobService jobs, MealPlanRevisionService revisions, MealPlanRevisionStore revisionStore, MealPlanShoppingIssueService issues) {
+    private final org.jakub.backendapi.services.MealPlanItemPriceService itemPrices;
+    private final org.jakub.backendapi.services.MealPlanCandidateService candidates;
+    public MealPlanController(MealPlanService plans, MealPlanGenerationService generation, MealPlanPricingService pricing, MealPlanJobService jobs, MealPlanRevisionService revisions, MealPlanRevisionStore revisionStore, MealPlanShoppingIssueService issues, org.jakub.backendapi.services.MealPlanItemPriceService itemPrices, org.jakub.backendapi.services.MealPlanCandidateService candidates) {
+        this.candidates = candidates;
+        this.itemPrices = itemPrices;
         this.issues = issues; this.revisions = revisions; this.revisionStore = revisionStore; this.jobs = jobs; this.plans = plans; this.generation = generation; this.pricing = pricing;
+    }
+    @PostMapping("/{id}/prices")
+    public View savePrice(Authentication user, @PathVariable UUID id, @Valid @RequestBody StoreOfferDto.PriceInput input) {
+        return itemPrices.save(email(user), id, input);
+    }
+    @PostMapping("/{id}/prices/{priceId}/remove")
+    public View removePrice(Authentication user, @PathVariable UUID id, @PathVariable UUID priceId, @Valid @RequestBody Version input) {
+        return itemPrices.remove(email(user), id, priceId, input.version());
     }
     private String email(Authentication user) {
         return user.getPrincipal() instanceof UserDto dto ? dto.getEmail() : user.getName();
@@ -37,6 +49,12 @@ public class MealPlanController {
     /** A v2 client cannot safely represent a missing budget: fail before performing a mutation. */
     @ModelAttribute
     public void legacyCompatibility(Authentication user, HttpServletRequest request) {
+        if (!request.getMethod().equals("GET") && request.getRequestURI().matches(".*/v[23]/meal-plans/.*")) {
+            String part = request.getRequestURI().split("/meal-plans/", 2)[1].split("/", 2)[0];
+            try { if (plans.get(email(user), UUID.fromString(part)).plan().schemaVersion() >= 4)
+                throw new AppException("This week requires the v4 planner.", HttpStatus.CONFLICT);
+            } catch (IllegalArgumentException ignored) { /* Route binding reports malformed IDs. */ }
+        }
         if (!request.getRequestURI().contains("/v2/meal-plans/")) return;
         String suffix = request.getRequestURI().split("/v2/meal-plans/", 2)[1];
         try {
@@ -55,8 +73,19 @@ public class MealPlanController {
     }
     @PostMapping("/{id}/generations")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public MealPlanJobService.Progress start(Authentication user, @PathVariable UUID id, @Valid @RequestBody Generate input) {
-        return jobs.start(email(user), id, input);
+    public MealPlanJobService.Progress start(Authentication user, @PathVariable UUID id, @Valid @RequestBody Generate input, HttpServletRequest request) {
+        return request.getRequestURI().contains("/v3/") ? jobs.startFromOffers(email(user), id, input) : jobs.start(email(user), id, input);
+    }
+    @PostMapping("/{id}/replan-from-offers")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public MealPlanJobService.Progress replan(Authentication user, @PathVariable UUID id, @Valid @RequestBody Generate input) {
+        return jobs.replanFromOffers(email(user), id, input);
+    }
+    public record PlanningOffers(long version, List<StoreOfferDto.Offer> offers) {}
+    @GetMapping("/{id}/planning-offers")
+    public PlanningOffers planningOffers(Authentication user, @PathVariable UUID id) {
+        var plan = plans.get(email(user), id);
+        return new PlanningOffers(plan.version(), candidates.deals(email(user), plan.plan().settings()));
     }
     @GetMapping("/{id}/generations/latest")
     public MealPlanJobService.Progress progress(Authentication user, @PathVariable UUID id) { return jobs.latest(email(user), id); }
@@ -82,12 +111,15 @@ public class MealPlanController {
     @GetMapping("/{id}/shopping-list/issues")
     public List<MealPlanShoppingIssueService.Issue> issues(Authentication user, @PathVariable UUID id) { return issues.list(email(user), id); }
     @GetMapping
-    public List<Summary> list(Authentication user) { return plans.list(email(user)); }
+    public List<Summary> list(Authentication user, @RequestParam(defaultValue = "0") int page) { return plans.list(email(user), page); }
     @PostMapping
     public View create(Authentication user, @Valid @RequestBody Create input, HttpServletRequest request) {
         if (request.getRequestURI().endsWith("/v2/meal-plans") && input.budget() == null)
             throw new AppException("Use the v3 planner to omit the budget.", HttpStatus.BAD_REQUEST);
-        return plans.create(email(user), input);
+        Create settings = request.getRequestURI().endsWith("/v3/meal-plans")
+                ? new Create(input.requestId(), input.startDate(), input.dayCount(), input.servings(), input.mealTypes(), input.stores(),
+                    input.budget(), "pl", input.maxMinutes(), PlanningMode.PROMOTIONS_FIRST, input.budgetMode(), input.shopping()) : input;
+        return plans.create(email(user), settings);
     }
     @GetMapping("/{id}")
     public View get(Authentication user, @PathVariable UUID id) { return plans.get(email(user), id); }
@@ -96,8 +128,8 @@ public class MealPlanController {
         return plans.change(email(user), id, slotId, input);
     }
     @PostMapping("/{id}/slots/{slotId}/generate")
-    public View generate(Authentication user, @PathVariable UUID id, @PathVariable UUID slotId, @Valid @RequestBody Generate input) {
-        return generation.generate(email(user), id, slotId, input);
+    public View generate(Authentication user, @PathVariable UUID id, @PathVariable UUID slotId, @Valid @RequestBody Generate input, HttpServletRequest request) {
+        return request.getRequestURI().contains("/v3/") ? generation.generateFromOffers(email(user), id, slotId, input) : generation.generate(email(user), id, slotId, input);
     }
     @PostMapping("/{id}/accept")
     public View accept(Authentication user, @PathVariable UUID id, @Valid @RequestBody Version input) { return plans.accept(email(user), id, input); }

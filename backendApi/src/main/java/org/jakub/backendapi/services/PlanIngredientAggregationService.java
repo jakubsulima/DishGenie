@@ -22,18 +22,39 @@ public class PlanIngredientAggregationService {
         this.scaling = scaling;
     }
 
+    /** Explicit batches replace their allocations; cooked ingredients are already consumed. */
+    public Shopping aggregate(Document document, List<FridgeIngredient> fridge, String locale) {
+        if (document.cycle() == null || document.cycle().batches().isEmpty()) return aggregate(document.slots(), fridge, locale);
+        List<Slot> demands = new ArrayList<>(); Set<UUID> allocated = new HashSet<>();
+        for (var batch : document.cycle().batches()) {
+            batch.allocations().stream().filter(a -> !a.status().equals("SKIPPED")).forEach(a -> allocated.add(a.slotId()));
+            if (!"PLANNED".equals(batch.status())) continue;
+            demands.add(new Slot(batch.id(), batch.cookingDate(), MealType.LUNCH, batch.portions(), false, false,
+                    batch.recipe(), null, null, null));
+        }
+        document.slots().stream().filter(s -> !allocated.contains(s.id())).forEach(demands::add);
+        Shopping calculated = aggregate(demands, fridge, locale);
+        return new Shopping(calculated.calculatedAt(), calculated.items().stream().map(i -> new ShoppingItem(i.key(), i.name(),
+                i.amount(), i.unit(), i.usedFromFridge(), i.slotIds().stream().flatMap(id -> document.cycle().batches().stream()
+                    .filter(b -> b.id().equals(id)).findFirst().map(b -> b.allocations().stream().filter(a -> !"SKIPPED".equals(a.status()))
+                        .map(a -> a.slotId())).orElseGet(() -> java.util.stream.Stream.of(id))).distinct().toList(), i.needsReview())).toList(), Set.of());
+    }
+
     public Shopping aggregate(List<Slot> slots, List<FridgeIngredient> fridge, String locale) {
+        return allocate(slots, fridge, locale, new IdentityHashMap<>());
+    }
+    private Shopping allocate(List<Slot> slots, List<FridgeIngredient> fridge, String locale, Map<FridgeIngredient, Double> stock) {
         Map<String, IngredientNormalizationService.Resolution> resolutions = new HashMap<>();
-        Map<FridgeIngredient, Double> stock = new IdentityHashMap<>();
         List<FridgeIngredient> ordered = fridge.stream().sorted(Comparator.comparing(
                 FridgeIngredient::getExpirationDate, Comparator.nullsLast(Comparator.naturalOrder()))).toList();
         Map<String, Row> rows = new LinkedHashMap<>();
         for (Slot slot : slots.stream().sorted(Comparator.comparing(Slot::date)).toList()) {
             if (slot.skipped() || slot.recipe() == null) continue;
+            String recipeLocale = slot.recipe().getLocale() == null ? locale : slot.recipe().getLocale().name();
             int ingredientIndex = 0;
             for (var ingredient : scaling.scale(slot.recipe().getIngredients(), slot.recipe().getServings(), slot.servings())) {
-                String identity = identity(ingredient.getName(), locale, resolutions);
-                boolean ambiguous = resolutions.get(ingredient.getName()).status() == IngredientNormalizationService.Status.AMBIGUOUS;
+                String identity = identity(ingredient.getName(), recipeLocale, resolutions);
+                boolean ambiguous = resolution(ingredient.getName(), recipeLocale, resolutions).status() == IngredientNormalizationService.Status.AMBIGUOUS;
                 var unit = units.normalize(ingredient.getUnit()).orElse(null);
                 double amount = ingredient.getAmount();
                 boolean measured = unit != null && Double.isFinite(amount) && amount > 0;
@@ -48,7 +69,7 @@ public class PlanIngredientAggregationService {
                 if (ambiguous) { row.review = true; row.missing += remaining; continue; }
                 for (FridgeIngredient item : ordered) {
                     if (item.getExpirationDate() != null && item.getExpirationDate().isBefore(slot.date())) continue;
-                    if (!identity.equals(identity(item.getName(), locale, resolutions))) continue;
+                    if (!identity.equals(identity(item.getName(), recipeLocale, resolutions))) continue;
                     var stockUnit = units.normalize(item.getUnit() == null ? null : item.getUnit().name()).orElse(null);
                     if (item.getQuantityAccuracy() == QuantityAccuracy.UNKNOWN || stockUnit == null || item.getAmount() == null || !Double.isFinite(item.getAmount())) {
                         row.review = true;
@@ -78,11 +99,32 @@ public class PlanIngredientAggregationService {
         return new Shopping(Instant.now(), items, Set.of());
     }
 
+    /** Generation context uses only stock left after all other planned cookings. */
+    public List<FridgeIngredient> remainingStock(Document document, UUID excludedSlot, List<FridgeIngredient> fridge, String locale) {
+        Set<UUID> explicit = new HashSet<>(); List<Slot> demands = new ArrayList<>();
+        if (document.cycle() != null) for (var b : document.cycle().batches()) {
+            b.allocations().stream().filter(a -> !a.status().equals("SKIPPED")).forEach(a -> explicit.add(a.slotId()));
+            if (b.status().equals("PLANNED") && b.allocations().stream().noneMatch(a -> a.slotId().equals(excludedSlot)))
+                demands.add(new Slot(b.id(), b.cookingDate(), MealType.LUNCH, b.portions(), false, false, b.recipe(), null, null, null));
+        }
+        document.slots().stream().filter(slot -> !slot.id().equals(excludedSlot) && !explicit.contains(slot.id())).forEach(demands::add);
+        Map<FridgeIngredient, Double> remaining = new IdentityHashMap<>(); allocate(demands, fridge, locale, remaining);
+        return fridge.stream().map(item -> {
+            var copy = new FridgeIngredient(item.getId(), item.getName(), item.getExpirationDate(), item.getAmount(), item.getUnit(), item.getUser());
+            var unit = units.normalize(item.getUnit() == null ? null : item.getUnit().name()).orElse(null);
+            if (unit != null && remaining.containsKey(item)) copy.setAmount(units.fromBaseAmount(remaining.get(item), unit));
+            copy.setQuantityAccuracy(item.getQuantityAccuracy()); copy.setStockState(item.getStockState()); return copy;
+        }).filter(item -> item.getAmount() == null || item.getAmount() > 0).toList();
+    }
+
     private String identity(String name, String locale, Map<String, IngredientNormalizationService.Resolution> cache) {
-        var resolution = cache.computeIfAbsent(name, value -> names.resolve(value, locale));
+        var resolution = resolution(name, locale, cache);
         if (resolution.isResolved()) return "id:" + resolution.ingredient().getId();
         // Exact names only for unresolved ingredients; no fuzzy raw/cooked substitution.
         return "name:" + names.canonicalName(name);
+    }
+    private IngredientNormalizationService.Resolution resolution(String name, String locale, Map<String, IngredientNormalizationService.Resolution> cache) {
+        return cache.computeIfAbsent(locale + "|" + name, ignored -> names.resolve(name, locale));
     }
     private String baseUnit(UnitConversionService.Dimension dimension) {
         return switch (dimension) { case MASS -> "g"; case VOLUME -> "ml"; case COUNT -> "pcs"; };

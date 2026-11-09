@@ -1,3 +1,4 @@
+import ShoppingVisitDock from "../components/ShoppingVisitDock";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   createShoppingListItemId,
@@ -64,7 +65,7 @@ const TrashIcon = ({ className = "h-4 w-4" }: { className?: string }) => (
   </svg>
 );
 
-const ShoppingList = () => {
+const ManualShoppingList = () => {
   const { t } = useLanguage();
   const { refreshFridgeItems } = useFridge();
   const [items, setItems] = useState<ShoppingListItem[]>(() =>
@@ -560,4 +561,4 @@ const ShoppingList = () => {
   );
 };
 
-export default ShoppingList;
+export default function ShoppingList() { return <div className="mx-auto max-w-5xl p-4"><ShoppingVisitDock manual={<ManualShoppingList />}/></div>; }

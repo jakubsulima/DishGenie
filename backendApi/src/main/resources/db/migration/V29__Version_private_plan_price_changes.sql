@@ -1,0 +1,1 @@
+ALTER TABLE meal_plan ADD COLUMN price_revision BIGINT NOT NULL DEFAULT 0;

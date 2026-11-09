@@ -29,6 +29,7 @@ public class UserPreferencesService {
         this.userPreferencesMapper = userPreferencesMapper;
     }
 
+    @Transactional(readOnly = true)
     public UserPreferencesDto getPreferences(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException("User not found", HttpStatus.NOT_FOUND));
         return userPreferencesMapper.toUserPreferencesDto(user.getUserPreferences());

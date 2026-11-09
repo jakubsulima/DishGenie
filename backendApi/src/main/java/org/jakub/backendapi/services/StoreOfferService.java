@@ -63,10 +63,13 @@ public class StoreOfferService {
     @Transactional(readOnly = true)
     public List<Offer> eligible(Set<Store> stores, LocalDate day, Instant now) {
         return offers.findByActiveTrueAndStoreInAndValidFromLessThanEqualAndValidToGreaterThanEqualAndVerifiedAtGreaterThanEqual(
-                stores, day, day, now.minus(MAX_AGE)).stream().map(this::view).toList();
+                stores, day, day, now.minus(MAX_AGE)).stream()
+                // Apply the current collection policy to cached imports as well, even if refreshing fails.
+                .filter(o -> !LidlCatalogStore.SOURCE_TYPE.equals(o.getSourceType()) || PriceIngredientKeys.isMealIngredient(o.getIngredientKey()))
+                .map(this::view).toList();
     }
     private Offer view(StoreOffer entity) {
-        return new Offer(entity.getId(), entity.getVersion(), entity.isActive(), json.readValue(entity.getDocument(), Publish.class));
+        return new Offer(entity.getId(), entity.getVersion(), entity.isActive(), json.readValue(entity.getDocument(), Publish.class), entity.getSourceType(), entity.getIngredientKey());
     }
     private void validateSource(Publish input) {
         try {

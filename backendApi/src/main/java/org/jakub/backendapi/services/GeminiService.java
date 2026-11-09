@@ -177,7 +177,8 @@ public class GeminiService {
                 fridgeItemNames,
                 request.locale(),
                 recipeCount,
-                request.servings()
+                request.servings(),
+                !request.getPlanningIngredients().isEmpty()
         );
 
         Map<String, Object> structuredContext = new LinkedHashMap<>();
@@ -193,6 +194,8 @@ public class GeminiService {
 
         Map<String, Object> serverConstraints = new LinkedHashMap<>();
         serverConstraints.put("diets", hardConstraints == null ? List.of() : safeValues(hardConstraints.getDiets(), hardConstraints.getDiet()));
+        serverConstraints.put("pricedIngredients", request.getPlanningIngredients());
+        serverConstraints.put("requiredPricedIngredients", request.getRequiredPlanningIngredients());
         serverConstraints.put("dislikedIngredients", hardConstraints == null
                 ? List.of()
                 : safeValues(hardConstraints.getDislikedIngredients(), null));
@@ -211,6 +214,8 @@ public class GeminiService {
                     </server-provided hard constraints>
 
                     Structured selection rules:
+                    - When server-provided pricedIngredients is nonempty, this is promotion-first planning: build a simple, coherent meal around these ingredients BEFORE choosing fridge items. At least HALF of the shopping ingredients must come from this catalog. Use the catalog's ingredient names and unit codes EXACTLY. Weighted fruit must use g, not pcs. Do not pad the recipe with unnecessary unpriced garnishes, spices or specialty ingredients. The canonical name/unit association is authoritative; never convert an unrelated food into a priced one.
+                    - Include EVERY requiredPricedIngredients item as a separate ingredient row, using its exact name and unit. With two required priced ingredients, choose a simple four-ingredient dish, or use more catalog ingredients before adding extras. Do not add more unpriced ingredient rows than priced rows. Salt, oil, spices, sweeteners, dressing and garnish each count as an extra ingredient row; omit optional extras. Cooking steps must still be complete and use the listed ingredients.
                     - fridgeItemNames are ordered by expiration priority: earlier names expire sooner; items without dates are last.
                     - PRIORITIZE means prefer naturally fitting fridge items with higher expiration priority, without breaking dietary or culinary coherence.
                     - Every item in mustUseFridgeItemNames must be used when that list is not empty.
@@ -254,6 +259,9 @@ public class GeminiService {
             int recipeCount,
             int servings
     ) {
+        return buildRecipeGenerationPrompt(userRequest, fridgeItems, requestedLocale, recipeCount, servings, false);
+    }
+    private String buildRecipeGenerationPrompt(String userRequest, List<String> fridgeItems, String requestedLocale, int recipeCount, int servings, boolean promotionPlanning) {
         String responseLanguage = "pl".equalsIgnoreCase(requestedLocale) ? "Polish" : "English";
         List<String> safeFridgeItems = fridgeItems == null
                 ? List.of()
@@ -279,7 +287,7 @@ public class GeminiService {
                 - Return exactly %d recipe%s.
                 - Write every user-facing string in %s.
                 - Treat dietary restrictions, allergies, and disliked ingredients as hard constraints.
-                - Each recipe must be realistic, fully cookable, and contain 8-14 ingredients with realistic amounts for %d servings.
+                - Each recipe must be realistic, fully cookable, and contain %s ingredients with realistic amounts for %d servings.
                 - Ingredient unit must be exactly one of these codes: g, kg, ml, l, pcs. Do not translate unit codes, even when writing the recipe in Polish.
                 - Every ingredient needs a positive numeric amount. Express spices, salt and pepper in g or ml; never use pinches, teaspoons, tablespoons, szczypta, łyżeczka or do smaku as units.
                 - Use pcs for whole counts, including eggs, onions and garlic cloves. Put descriptive words such as garlic clove in the ingredient name, not in the unit.
@@ -309,6 +317,7 @@ public class GeminiService {
                 recipeCount,
                 recipeCount == 1 ? "" : "s",
                 responseLanguage,
+                promotionPlanning ? "4-8" : "8-14",
                 servings,
                 recipeCount > 1
                         ? "- Make recipes meaningfully different in strategy while preserving the same user intent; do not change the requested dish, cuisine, main ingredient, or base merely to create variety."

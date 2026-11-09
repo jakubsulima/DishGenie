@@ -10,4 +10,5 @@ public interface StoreOfferRepository extends JpaRepository<StoreOffer, UUID> {
     List<StoreOffer> findByActiveTrueAndStoreInAndValidFromLessThanEqualAndValidToGreaterThanEqualAndVerifiedAtGreaterThanEqual(
             Set<Store> stores, LocalDate from, LocalDate to, Instant verifiedAfter);
     List<StoreOffer> findTop100ByOrderByVerifiedAtDesc();
+    List<StoreOffer> findBySourceType(String sourceType);
 }

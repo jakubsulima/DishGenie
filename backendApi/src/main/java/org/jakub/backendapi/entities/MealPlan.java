@@ -17,6 +17,11 @@ public class MealPlan {
     @Version
     private long version;
     @Column(nullable = false)
+    private long priceRevision;
+    @Column(nullable = false) private long cycleRevision;
+    public void markCycleChanged() { cycleRevision++; }
+    public void markPricesChanged() { priceRevision++; }
+    @Column(nullable = false)
     private Instant createdAt;
     @Column(nullable = false, columnDefinition = "TEXT")
     private String document;

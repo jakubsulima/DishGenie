@@ -1,4 +1,8 @@
 spring:
+  task:
+    scheduling:
+      pool:
+        size: 3
   jpa:
     hibernate:
       ddl-auto: validate
@@ -9,7 +13,18 @@ spring:
     baseline-version: 22
     validate-on-migrate: true
 
+app:
+  offers:
+    lidl-price-import-enabled: ${LIDL_PRICE_IMPORT_ENABLED:true}
+
 gemini:
   api:
     model: ${GEMINI_API_MODEL:gemini-3.5-flash-lite}
     fallback-model: ${GEMINI_API_FALLBACK_MODEL:}
+
+# The development stack does not start an SMTP service. Its absence must not
+# make the API/container unhealthy; production keeps the normal mail indicator.
+management:
+  health:
+    mail:
+      enabled: false

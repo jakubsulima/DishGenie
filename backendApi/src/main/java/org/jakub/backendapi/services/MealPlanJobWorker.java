@@ -47,7 +47,14 @@ public class MealPlanJobWorker {
             var result = generation.generate(work.email(), work.planId(), slotId, new Generate(plan.version(), request), operationId(work.id(), slotId));
             jobs.finish(work, result.version(), null);
         } catch (RuntimeException failure) {
-            jobs.finish(work, null, "GENERATION_STOPPED");
+            org.slf4j.LoggerFactory.getLogger(MealPlanJobWorker.class).warn("Planner job stopped: {}: {}", failure.getClass().getSimpleName(), failure.getMessage());
+            String reason="GENERATION_STOPPED";
+            if(failure instanceof org.jakub.backendapi.exceptions.AppException app) {
+                if(app.getCode()==org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY) reason="PRICE_COVERAGE_UNAVAILABLE";
+                else if(app.getCode()==org.springframework.http.HttpStatus.TOO_MANY_REQUESTS) reason="AI_LIMIT_REACHED";
+                else if(app.getCode()==org.springframework.http.HttpStatus.CONFLICT) reason="PLAN_CHANGED";
+            }
+            jobs.finish(work,null,reason);
         }
     }
 }

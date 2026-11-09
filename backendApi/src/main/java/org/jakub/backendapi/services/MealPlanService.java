@@ -41,7 +41,7 @@ public class MealPlanService {
         if (input.startDate().isBefore(today.minusDays(7)) || input.startDate().isAfter(today.plusYears(1)))
             throw error("Choose a start date within the next year.", HttpStatus.BAD_REQUEST);
         if (input.shopping().shoppingDate() != null && (input.shopping().shoppingDate().isBefore(today)
-                || input.shopping().shoppingDate().isAfter(today.plusDays(7)) || input.shopping().shoppingDate().isAfter(input.startDate())))
+                || input.planningMode() != PlanningMode.PRACTICAL && input.shopping().shoppingDate().isAfter(today.plusDays(7)) || input.shopping().shoppingDate().isAfter(input.startDate())))
             throw error("Shopping must be within seven days and no later than the first meal.", HttpStatus.BAD_REQUEST);
         List<Slot> slots = new ArrayList<>();
         for (int day = 0; day < input.dayCount(); day++) {
@@ -57,8 +57,13 @@ public class MealPlanService {
     }
 
     @Transactional(readOnly = true)
-    public List<Summary> list(String email) {
-        return plans.findTop20ByUserEmailOrderByCreatedAtDesc(email).stream().map(plan -> {
+    public List<Summary> list(String email) { return list(email, 0); }
+
+    @Transactional(readOnly = true)
+    public List<Summary> list(String email, int page) {
+        if (page < 0) throw error("Page cannot be negative.", HttpStatus.BAD_REQUEST);
+        return plans.findByUserEmailOrderByCreatedAtDescIdDesc(email,
+                org.springframework.data.domain.PageRequest.of(page, 20)).stream().map(plan -> {
             Document d = read(plan);
             return new Summary(plan.getId(), plan.getVersion(), d.settings().startDate(), d.settings().dayCount(),
                     d.status(), (int) d.slots().stream().filter(s -> s.recipe() != null && !s.skipped()).count(), d.slots().size());
@@ -78,12 +83,14 @@ public class MealPlanService {
                 || !old.mealTypes().equals(next.mealTypes()) || !old.locale().equals(next.locale()))
             throw error("Change dates, meal types and people by creating a new plan; individual portions can be edited separately.", HttpStatus.BAD_REQUEST);
         LocalDate day = next.shopping().shoppingDate(); LocalDate today = LocalDate.now(ZoneId.of("Europe/Warsaw"));
-        if (day != null && (day.isBefore(today) || day.isAfter(today.plusDays(7)) || day.isAfter(next.startDate())))
+        // A saved shopping date can pass while the rest of the week's settings remain editable.
+        if (day != null && !Objects.equals(day, old.shopping().shoppingDate())
+                && (day.isBefore(today) || next.planningMode() != PlanningMode.PRACTICAL && day.isAfter(today.plusDays(7)) || day.isAfter(next.startDate())))
             throw error("Choose a shopping date in the next seven days, no later than the first meal.", HttpStatus.BAD_REQUEST);
         Create settings = new Create(old.requestId(), old.startDate(), old.dayCount(), old.servings(), old.mealTypes(), next.stores(),
                 next.budget(), old.locale(), next.maxMinutes(), next.planningMode(), next.budgetMode(), next.shopping());
         preferences.save(email, settings);
-        return save(plan, new Document(2, settings, Status.DRAFT, d.slots(), synchronizedShopping(plan, d, d.slots())));
+        return save(plan, new Document(d.schemaVersion(), settings, Status.DRAFT, d.slots(), synchronizedShopping(plan, d, d.slots()), d.cycle()));
     }
 
     @Transactional
@@ -93,6 +100,8 @@ public class MealPlanService {
         Document d = read(plan);
         assertIdle(d);
         Slot target = slot(d, slotId);
+        if (input.action() != Action.LOCK && input.action() != Action.UNLOCK && d.cycle() != null && d.cycle().batches().stream().anyMatch(b -> b.allocations().stream().anyMatch(a -> a.slotId().equals(slotId) && !a.status().equals("SKIPPED"))))
+            throw conflict("Use the cooking batch preview to change this meal.");
         if (target.locked() && input.action() != Action.UNLOCK) throw conflict("Unlock this meal before changing it.");
         if (input.action() == Action.LOCK && (target.recipe() == null || target.skipped()))
             throw conflict("Only a planned meal can be locked.");
@@ -104,8 +113,8 @@ public class MealPlanService {
                 input.action() == Action.SKIP || (input.action() != Action.RESTORE && target.skipped()),
                 target.recipe(), target.generationId(), target.generationStatus(), target.generationStartedAt());
         boolean contentChanged = input.action() != Action.LOCK && input.action() != Action.UNLOCK;
-        return save(plan, new Document(2, d.settings(), contentChanged ? Status.DRAFT : d.status(),
-                replace(d.slots(), updated), contentChanged ? synchronizedShopping(plan, d, replace(d.slots(), updated)) : d.shopping()));
+        return save(plan, new Document(d.schemaVersion(), d.settings(), contentChanged ? Status.DRAFT : d.status(),
+                replace(d.slots(), updated), contentChanged ? synchronizedShopping(plan, d, replace(d.slots(), updated)) : d.shopping(), d.cycle()));
     }
 
     @Transactional
@@ -113,6 +122,8 @@ public class MealPlanService {
         MealPlan plan = owned(email, id);
         Document d = read(plan);
         Slot target = slot(d, slotId);
+        if (d.cycle() != null && d.cycle().batches().stream().anyMatch(b -> b.allocations().stream().anyMatch(a -> a.slotId().equals(slotId) && !a.status().equals("SKIPPED"))))
+            throw conflict("Use the cooking batch preview to change this meal.");
         if (input.requestId().equals(target.generationId())) {
             if (target.generationStatus() == GenerationStatus.COMPLETED)
                 return new GenerationWork(view(plan), target, false);
@@ -125,7 +136,7 @@ public class MealPlanService {
         if (target.locked() || target.skipped()) throw conflict("Unlock or restore this meal before generating it.");
         Slot running = new Slot(target.id(), target.date(), target.mealType(), target.servings(), false, false,
                 target.recipe(), input.requestId(), GenerationStatus.RUNNING, Instant.now());
-        View result = save(plan, new Document(2, d.settings(), d.status(), replace(d.slots(), running), d.shopping()));
+        View result = save(plan, new Document(d.schemaVersion(), d.settings(), d.status(), replace(d.slots(), running), d.shopping(), d.cycle()));
         return new GenerationWork(result, running, true);
     }
 
@@ -135,11 +146,27 @@ public class MealPlanService {
         checkVersion(plan, version);
         Document d = read(plan);
         Slot target = slot(d, slotId);
+        if (d.cycle() != null && d.cycle().batches().stream().anyMatch(b -> b.allocations().stream().anyMatch(a -> a.slotId().equals(slotId) && !a.status().equals("SKIPPED"))))
+            throw conflict("Use the cooking batch preview to change this meal.");
         if (!requestId.equals(target.generationId()) || target.generationStatus() != GenerationStatus.RUNNING)
             throw conflict("This generation has been replaced. Refresh the plan.");
         Slot done = new Slot(target.id(), target.date(), target.mealType(), target.servings(), false, false,
                 recipe, requestId, GenerationStatus.COMPLETED, target.generationStartedAt());
-        return save(plan, new Document(2, d.settings(), Status.DRAFT, replace(d.slots(), done), synchronizedShopping(plan, d, replace(d.slots(), done))));
+        var completedSlots = replace(d.slots(), done);
+        var cycle = d.cycle();
+        if (cycle != null && cycle.exceptions().stream().anyMatch(e -> e.date().equals(target.date()) && e.mealType() == target.mealType() && e.cookForNext() && !e.skipped())) {
+            var next = d.slots().stream().filter(s -> s.mealType() == target.mealType() && s.date().isAfter(target.date()) && !s.skipped())
+                .min(Comparator.comparing(Slot::date)).orElseThrow(() -> conflict("No later meal is available for these portions."));
+            if (next.recipe() != null || next.locked()) throw conflict("The meal for tomorrow is occupied.");
+            var batches = new ArrayList<>(cycle.batches());
+            batches.add(new org.jakub.backendapi.dto.WeekCycleDto.Batch(target.id(), target.date(), recipe, target.servings() + next.servings(), "PLANNED",
+                List.of(new org.jakub.backendapi.dto.WeekCycleDto.Allocation(target.id(), target.servings(), "PLANNED"),
+                    new org.jakub.backendapi.dto.WeekCycleDto.Allocation(next.id(), next.servings(), "PLANNED")), null, false, null));
+            cycle = new org.jakub.backendapi.dto.WeekCycleDto.Cycle(cycle.exceptions(), cycle.priorityFridgeIds(), batches, cycle.inventoryReview());
+            completedSlots = replace(completedSlots, new Slot(next.id(), next.date(), next.mealType(), next.servings(), false, false, recipe, null, null, null));
+        }
+        var nextDocument = new Document(d.schemaVersion(), d.settings(), Status.DRAFT, completedSlots, null, cycle);
+        return save(plan, new Document(d.schemaVersion(), d.settings(), Status.DRAFT, completedSlots, synchronizedShopping(plan, nextDocument, completedSlots), cycle));
     }
 
     @Transactional
@@ -147,10 +174,12 @@ public class MealPlanService {
         MealPlan plan = owned(email, id);
         Document d = read(plan);
         Slot target = slot(d, slotId);
+        if (d.cycle() != null && d.cycle().batches().stream().anyMatch(b -> b.allocations().stream().anyMatch(a -> a.slotId().equals(slotId) && !a.status().equals("SKIPPED"))))
+            throw conflict("Use the cooking batch preview to change this meal.");
         if (!requestId.equals(target.generationId()) || target.generationStatus() != GenerationStatus.RUNNING) return;
         Slot failed = new Slot(target.id(), target.date(), target.mealType(), target.servings(), target.locked(), target.skipped(),
                 target.recipe(), requestId, GenerationStatus.FAILED, target.generationStartedAt());
-        save(plan, new Document(2, d.settings(), d.status(), replace(d.slots(), failed), d.shopping()));
+        save(plan, new Document(d.schemaVersion(), d.settings(), d.status(), replace(d.slots(), failed), d.shopping(), d.cycle()));
     }
 
     @Transactional
@@ -164,7 +193,7 @@ public class MealPlanService {
             throw conflict("Plan at least one meal before accepting.");
         Shopping shopping = synchronizedShopping(plan, d, d.slots());
         if (shopping == null) shopping = aggregate(plan, d, d.slots());
-        return save(plan, new Document(2, d.settings(), Status.ACCEPTED, d.slots(), shopping));
+        return save(plan, new Document(d.schemaVersion(), d.settings(), Status.ACCEPTED, d.slots(), shopping, d.cycle()));
     }
 
     @Transactional
@@ -174,7 +203,7 @@ public class MealPlanService {
         Document d = read(plan);
         assertIdle(d);
         if (d.shopping() == null) throw conflict("Create this plan’s shopping list first.");
-        return save(plan, new Document(2, d.settings(), d.status(), d.slots(), synchronizedShopping(plan, d, d.slots())));
+        return save(plan, new Document(d.schemaVersion(), d.settings(), d.status(), d.slots(), synchronizedShopping(plan, d, d.slots()), d.cycle()));
     }
 
     /** Pure preview: reads current inventory once without changing the plan. */
@@ -190,11 +219,19 @@ public class MealPlanService {
         checkVersion(plan, version);
         Document d = read(plan); assertIdle(d);
         Slot target = slot(d, slotId);
+        if (d.cycle() != null && d.cycle().batches().stream().anyMatch(b -> b.allocations().stream().anyMatch(a -> a.slotId().equals(slotId) && !a.status().equals("SKIPPED"))))
+            throw conflict("Use the cooking batch preview to change this meal.");
         if (target.locked() || target.skipped() || target.recipe() == null) throw conflict("Unlock or restore the meal before editing.");
         Slot revised = new Slot(target.id(), target.date(), target.mealType(), target.servings(), false, false,
                 recipe, null, null, null);
         var slots = replace(d.slots(), revised);
-        return save(plan, new Document(2, d.settings(), Status.DRAFT, slots, synchronizedShopping(plan, d, slots)));
+        // Once a historical plan is translated, future generated meals use Polish too.
+        if (recipe.getLocale() == org.jakub.backendapi.entities.Enums.ContentLocale.pl && !"pl".equals(d.settings().locale())) {
+            var s = d.settings();
+            d = new Document(d.schemaVersion(), new Create(s.requestId(), s.startDate(), s.dayCount(), s.servings(), s.mealTypes(), s.stores(),
+                    s.budget(), "pl", s.maxMinutes(), s.planningMode(), s.budgetMode(), s.shopping()), d.status(), d.slots(), d.shopping(), d.cycle());
+        }
+        return save(plan, new Document(d.schemaVersion(), d.settings(), Status.DRAFT, slots, synchronizedShopping(plan, d, slots), d.cycle()));
     }
 
     @Transactional
@@ -203,12 +240,12 @@ public class MealPlanService {
         if (quote.planVersion() != version || quote.baskets().stream().noneMatch(b -> b.option().equals(option))) throw conflict("Basket changed. Refresh prices.");
         Shopping shopping = synchronizedShopping(plan, d, d.slots());
         if (shopping == null) shopping = aggregate(plan, d, d.slots());
-        return save(plan, new Document(2, d.settings(), d.status(), d.slots(),
-                new Shopping(shopping.calculatedAt(), shopping.items(), shopping.checkedKeys(), option, quote)));
+        return save(plan, new Document(d.schemaVersion(), d.settings(), d.status(), d.slots(),
+                new Shopping(shopping.calculatedAt(), shopping.items(), shopping.checkedKeys(), option, quote), d.cycle()));
     }
 
     private Shopping aggregate(MealPlan plan, Document d, List<Slot> slots) {
-        return aggregation.aggregate(slots, fridge.findByUser_Id(plan.getUser().getId()), d.settings().locale());
+        return aggregation.aggregate(d.withSlots(slots, d.status(), null), d.cycle() != null && d.cycle().inventoryReview() ? List.of() : fridge.findByUser_Id(plan.getUser().getId()), d.settings().locale());
     }
     private Shopping synchronizedShopping(MealPlan plan, Document d, List<Slot> slots) {
         if (d.shopping() == null) return null;
@@ -225,8 +262,8 @@ public class MealPlanService {
         checkVersion(plan, input.version()); assertIdle(d);
         if (d.shopping() == null) throw conflict("Create this plan’s shopping list first.");
         Shopping calculated = synchronizedShopping(plan, d, d.slots());
-        return save(plan, new Document(2, d.settings(), d.status(), d.slots(), new Shopping(calculated.calculatedAt(),
-                calculated.items(), calculated.checkedKeys(), calculated.basketOption(), null, input.requestId())));
+        return save(plan, new Document(d.schemaVersion(), d.settings(), d.status(), d.slots(), new Shopping(calculated.calculatedAt(),
+                calculated.items(), calculated.checkedKeys(), calculated.basketOption(), null, input.requestId()), d.cycle()));
     }
 
     @Transactional
@@ -239,14 +276,24 @@ public class MealPlanService {
         if (shopping == null || shopping.items().stream().noneMatch(i -> i.key().equals(input.key()))) throw notFound();
         Set<String> checked = new HashSet<>(shopping.checkedKeys());
         if (input.checked()) checked.add(input.key()); else checked.remove(input.key());
-        return save(plan, new Document(2, d.settings(), d.status(), d.slots(),
-                new Shopping(shopping.calculatedAt(), shopping.items(), checked, shopping.basketOption(), shopping.quote(), shopping.syncRequestId())));
+        return save(plan, new Document(d.schemaVersion(), d.settings(), d.status(), d.slots(),
+                new Shopping(shopping.calculatedAt(), shopping.items(), checked, shopping.basketOption(), shopping.quote(), shopping.syncRequestId()), d.cycle()));
+    }
+    @Transactional
+    public View priceChanged(String email, UUID id, long version) {
+        MealPlan plan = owned(email, id); checkVersion(plan, version); Document d = read(plan); assertIdle(d);
+        plan.markPricesChanged();
+        Shopping old = d.shopping();
+        Shopping shopping = old == null ? null : new Shopping(old.calculatedAt(), old.items(), old.checkedKeys(), old.basketOption(), null, old.syncRequestId());
+        return save(plan, new Document(d.schemaVersion(), d.settings(), d.status(), d.slots(), shopping, d.cycle()));
     }
 
     private MealPlan owned(String email, UUID id) { return plans.findOwnedForUpdate(id, email).orElseThrow(this::notFound); }
     private Document read(MealPlan plan) { return json.readValue(plan.getDocument(), Document.class); }
     private View view(MealPlan plan) { return new View(plan.getId(), plan.getVersion(), plan.getCreatedAt(), read(plan)); }
     private View save(MealPlan plan, Document document) {
+        if (plan.getDocument() != null && read(plan).schemaVersion() > document.schemaVersion())
+            throw conflict("Update the planner before changing this document.");
         plan.setDocument(json.writeValueAsString(document));
         return view(plans.saveAndFlush(plan));
     }

@@ -406,7 +406,9 @@ export const apiClient = async function <T = unknown>(
   url: string,
   uploadData: boolean = false,
   body: unknown = null,
+  options: { timeoutMs?: number } = {},
 ): Promise<T> {
+  const requestTimeoutMs = options.timeoutMs ?? REQUEST_TIMEOUT_MS;
   const normalizedUrl = String(url ?? "");
   const authNoiseEndpoints = [
     "csrf",
@@ -433,15 +435,15 @@ export const apiClient = async function <T = unknown>(
             : { "Content-Type": "application/json" },
         })
       : axios.get(API_URL + url, {
-          timeout: REQUEST_TIMEOUT_MS,
+          timeout: requestTimeoutMs,
         });
 
     const res = (await Promise.race([
       fetchOperation,
       new Promise<never>((_, reject) =>
         setTimeout(
-          () => reject(new Error(`Request timed out after ${TIMEOUT} seconds`)),
-          REQUEST_TIMEOUT_MS,
+          () => reject(new Error(`Request timed out after ${requestTimeoutMs / 1000} seconds`)),
+          requestTimeoutMs,
         ),
       ),
     ])) as AxiosResponse<unknown>;

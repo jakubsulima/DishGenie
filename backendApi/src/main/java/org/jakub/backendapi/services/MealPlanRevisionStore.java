@@ -15,14 +15,16 @@ public class MealPlanRevisionStore {
     public record Data(UUID slotId, RevisionRequest request, RevisionPreview preview, Long appliedVersion) {}
     public record Reservation(Data data, boolean execute) {}
     private final StoreOfferService offers;
+    private final WeekCycleService cycle;
+    private final WeekCycleSupport cycleSupport;
     private final MealPlanRevisionRepository revisions;
     private final MealPlanRepository repository;
     private final MealPlanService plans;
     private final PlanRecipeValidationService validation;
     private final ObjectMapper json;
     public MealPlanRevisionStore(MealPlanRevisionRepository revisions, MealPlanRepository repository, MealPlanService plans,
-            PlanRecipeValidationService validation, ObjectMapper json, StoreOfferService offers) {
-        this.offers = offers; this.revisions = revisions; this.repository = repository; this.plans = plans; this.validation = validation; this.json = json;
+            PlanRecipeValidationService validation, ObjectMapper json, StoreOfferService offers,WeekCycleService cycle,WeekCycleSupport cycleSupport) {
+        this.cycle=cycle;this.cycleSupport=cycleSupport;this.offers = offers; this.revisions = revisions; this.repository = repository; this.plans = plans; this.validation = validation; this.json = json;
     }
     @Transactional
     public Reservation reserve(String email, UUID planId, UUID slotId, RevisionRequest input) {
@@ -37,6 +39,8 @@ public class MealPlanRevisionStore {
         }
         if (plan.getVersion() != input.version()) throw error(HttpStatus.CONFLICT);
         var slot = plans.get(email, planId).plan().slots().stream().filter(s -> s.id().equals(slotId)).findFirst().orElseThrow(() -> error(HttpStatus.NOT_FOUND));
+        var doc=plans.get(email,planId).plan();
+        if(doc.schemaVersion()>=4 && !cycleSupport.forSlot(doc,slotId).status().equals("PLANNED")) throw error(HttpStatus.CONFLICT);
         if (slot.recipe() == null || slot.locked() || slot.skipped()) throw error(HttpStatus.CONFLICT);
         var entity = new MealPlanRevision(); entity.setId(input.requestId()); entity.setPlan(plan); entity.setCreatedAt(Instant.now()); entity.setStatus("PREPARING");
         Data data = new Data(slotId, input, null, null); entity.setDocument(json.writeValueAsString(data)); revisions.saveAndFlush(entity);
@@ -63,8 +67,10 @@ public class MealPlanRevisionStore {
             var used = preview.quoteAfter().baskets().stream().flatMap(b -> b.items().stream()).map(i -> i.offer()).filter(Objects::nonNull).toList();
             if (used.stream().anyMatch(old -> available.stream().noneMatch(current -> current.id().equals(old.id()) && current.version() == old.version()))) throw error(HttpStatus.CONFLICT);
         }
-        validation.validate(email, preview.after(), plan.plan().settings().maxMinutes(), plan.plan().settings().locale());
-        var result = plans.revise(email, planId, slotId, input.version(), preview.after());
+        validation.validate(email, preview.after(), plan.plan().settings().maxMinutes(), preview.after().getLocale().name());
+        var result = plan.plan().schemaVersion()>=4
+            ? cycle.apply(email,planId,new WeekCycleService.Apply(input.version(),RecipeGenerationQuotaService.key("v4-revision:"+planId+":"+input.previewId()),input.previewId()))
+            : plans.revise(email, planId, slotId, input.version(), preview.after());
         entity.setDocument(json.writeValueAsString(new Data(d.slotId(), d.request(), preview, result.version()))); entity.setStatus("APPLIED");
         return result;
     }

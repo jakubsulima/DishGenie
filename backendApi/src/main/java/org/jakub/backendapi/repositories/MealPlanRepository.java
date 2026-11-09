@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.*;
 
 public interface MealPlanRepository extends JpaRepository<MealPlan, UUID> {
-    List<MealPlan> findTop20ByUserEmailOrderByCreatedAtDesc(String email);
+    List<MealPlan> findByUserEmailOrderByCreatedAtDescIdDesc(String email, org.springframework.data.domain.Pageable page);
     Optional<MealPlan> findByIdAndUserEmail(UUID id, String email);
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from MealPlan p where p.id = :id and p.user.email = :email")

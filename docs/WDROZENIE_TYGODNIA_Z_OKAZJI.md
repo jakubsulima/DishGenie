@@ -1,6 +1,73 @@
 # Tydzień z okazji — stan implementacji
 
-Stan lokalny: 3 listopada 2026. Dokument uzupełnia nadrzędny [plan](PLAN_TYGODNIA_Z_AKTUALNYCH_OKAZJI.md). Nie oznacza wdrożenia produkcyjnego ani odbioru automatycznego katalogu cen.
+Stan lokalny: 8 listopada 2026. Dokument uzupełnia nadrzędny [plan](PLAN_TYGODNIA_Z_AKTUALNYCH_OKAZJI.md). Nie oznacza wdrożenia produkcyjnego ani kompletności katalogu cen.
+
+## Składniki do posiłków — 8 listopada
+
+Automatyczne zbieranie ofert służy przygotowywaniu posiłków. Zakres obejmuje rozpoznane składniki: warzywa, owoce, nabiał, produkty białkowe, podstawowe produkty suche oraz tłuszcze i dodatki do gotowania. Gotowe słodkie wypieki, słodycze i przekąski nie są podstawą automatycznych propozycji. Nie oznacza to pełnego pokrycia cen tych grup.
+
+- Wycofano mapowanie rogala świętomarcińskiego i pobieranie strony piekarni. Pozostało pięć oficjalnych źródeł: żywność, owoce/warzywa, nabiał/jaja, oleje/sosy/przyprawy i mięso/drób. Ogólna strona żywności nadal przechodzi tę samą jawną listę rozpoznanych składników.
+- Filtr `StoreOfferService.eligible` odrzuca również wcześniej pobrane automatyczne oferty spoza aktualnego zakresu składników, nawet przy awarii źródła. Wersja importu 3 wymusza odświeżenie starszej pamięci katalogu; pełny udany import dezaktywuje jego wycofane wiersze. Nie usuwa zapisanych dań ani prywatnych cen użytkownika.
+- Opis źródeł PL/EN informuje o nowym zakresie. Fixture z rogalem pozostaje negatywnym przypadkiem testowym. Testy obejmują odrzucenie wypieków i przekąsek oraz zachowanie składników do dań.
+
+Poniższe wyniki importu i liczby źródeł opisują historyczny stan z 7 listopada, przed wycofaniem piekarni.
+
+## Rozpoczęte plany i zakres cen — 7 listopada
+
+- Usunięto niemożliwy zakres dat wyceny: plan z pierwszym daniem wczoraj nie ogranicza już daty zakupów do wczoraj przy wymaganiu daty od dziś. Wspólna reguła `PlanPricingDates` dla wyceny i cen własnych dopuszcza dziś–dziś+7, najpóźniej dzień najbliższego nieprzeszłego, gotowego i niepominiętego posiłku. Gdy takich dań nie ma, przyszły początek planu nadal ogranicza zakres; historyczny początek go nie blokuje.
+- Nieaktualna zapisana data domyślnie daje dzisiejszą datę tylko w formularzu wyceny. Nie zmienia ustawień, przepisów, statusu ani checklisty. Wycena nadal obejmuje wszystkie zapisane dania, także z przeszłych dni. Pusta lub niedopuszczona data blokuje wycenę przed żądaniem API i daje „Ustaw dzisiaj”.
+- Do czterech dotychczasowych stron dołączono oficjalne [mięso i drób](https://www.lidl.pl/h/mieso-i-drob/h10095752) oraz [piekarnię](https://www.lidl.pl/h/piekarnia/h10096086). Rozpoznawane są dodatkowo schab wędzony wiśnią 400 g, krakowska z szynki 550 g, śląska 800 g i rogal świętomarciński 200 g. Tożsamości wędlin są oddzielone od surowego mięsa. Nieznana masa całego opakowania nadal wyklucza automatyczną wycenę.
+- Parser obsługuje zweryfikowany zapis wielokrotności sztuk. Jawna cena poza promocją jest odczytywana również przy promocji bez aplikacji; nieobsługiwane „1+1 gratis” pozostaje wykluczone, ale jawna cena regularna jest dostępna. Wersja źródła unieważnia pamięć starszego zakresu katalogu bez czekania sześciu godzin.
+- „Skąd pochodzą ceny?” pokazuje sześć rzeczywistych adresów, częściowy zakres katalogu i brak automatycznego źródła Biedronki. Nie dodano nowego dostawcy ani integracji.
+- Odtworzono błędy przed poprawką w testach komponentu i serwisu. Testy katalogu używają dodatkowego publicznego fixture’u z 7 listopada. Test integracyjny sprawdza dzisiejszą cenę własną dla historycznego planu bez akceptacji i zmiany dat. Rzeczywisty import w odrębnej bazie H2 zapisał 25 wariantów cen (nie 25 różnych produktów) i wycenił kontrolowany przepis bez Gemini. W działającym lokalnym planie podgląd na dziś pokazuje 1,82 zł za dwie pozycje oraz dwa braki (bulgur i orzechy); nie jest to cena całych zakupów.
+
+Weryfikacja tej poprawki: 217 testów backendu zakończonych powodzeniem, 4 opcjonalne pominięte; osobno 1 test rzeczywistego importu bez Gemini. Frontend: 132 testy jednostkowe i 5 scenariuszy Chromium (360/390/1440 px), typecheck, lint i build bez błędów. Ręcznie sprawdzono również lokalny podgląd wyceny i linki źródeł na telefonie. Nie uruchamiano płatnego generowania ani nie akceptowano planu użytkownika.
+
+## Aktualizacja wyceny — 6 listopada
+
+### Najpierw ceny, potem dania
+
+Nowe plany v3 używają `PROMOTIONS_FIRST`. Również rozpoczęcie generowania lub wymiana pojedynczego dania w starszym planie przez v3 włącza ten tryb. Historyczny tryb `DEALS` pozostaje czytelny dla starszych klientów.
+
+- `GET /v3/meal-plans/{id}/planning-offers` pobiera świeże oferty dla zapisanych sklepów i daty zakupów, odrzuca niedopuszczone kupony oraz produkty sprzeczne z dietą. Zwraca oferty w kolejności: wskazania użytkownika, deklarowana obniżka sklepu, cena jednostkowa. Cena odniesienia służy tylko do rankingu, nigdy do wyceny jako cena aktualna. Zachowywane są także warianty regularne potrzebne po przekroczeniu limitu kuponu.
+- Generowanie otrzymuje nazwy kanoniczne, jednostki, opakowania i warunki ofert. Dostępne oferty stają się wymaganiem, także gdy użytkownik nie zaznaczył ręcznie konkretnego produktu. Biblioteka i AI muszą przejść tę samą kontrolę wyceny: co najmniej połowa wierszy zakupów związanych z nowym daniem musi mieć obliczalną cenę w jednym dozwolonym koszyku. Wiersze w całości pokryte przez lodówkę nie wymagają zakupu. Ceny prywatne są uwzględniane, gdy nadal dotyczą tego samego zapotrzebowania.
+- Katalog kanonicznych nazw i jednostek jest osobnym, wewnętrznym polem żądania AI, pomijanym przy odczycie JSON od klienta. W trybie promocyjnym AI układa prostsze przepisy z 4–8 składników i nie dostaje wcześniejszej listy lodówki jako konkurencyjnego priorytetu. Zapasy są nadal odliczane przez serwer przy kontroli wyceny i tworzeniu zakupów; ich ilości nie są zmieniane.
+- Serwer wybiera do dwóch różnych produktów z dopuszczonego katalogu jako obowiązkową podstawę posiłku. Wskazania użytkownika mają pierwszeństwo, potem produkty dotąd niewykorzystane i ranking okazji. AI musi uwzględnić oba produkty, zamiast wybierać dowolny pojedynczy element z długiej listy. Biblioteka przechodzi tę samą kontrolę.
+- Przy braku dopuszczonych produktów generowanie zatrzymuje się przed wywołaniem AI. Trzy nieudane odpowiedzi AI nie zastępują wcześniejszego dania i nie publikują fikcyjnej kwoty. Nowy komunikat wyjaśnia brak wystarczającego pokrycia cenami.
+- `POST /v3/meal-plans/{id}/replan-from-offers` przyjmuje `version` i `requestId`. Trwała kolejka obejmuje niezablokowane i niepominięte miejsca, również już wypełnione. Poprzednie danie jest zastępowane dopiero po poprawnym wyniku. Żądanie jest idempotentne; anulowanie i odzyskiwanie korzystają z dotychczasowej kolejki.
+- Planer pokazuje przefiltrowane produkty i ceny przed układaniem posiłków oraz przycisk „Ułóż plan z tych okazji”. Brak ofert blokuje ten przycisk. Katalog nadal jest częściowy; ta zmiana nie oznacza automatycznych cen wszystkich produktów ani podłączenia Biedronki.
+
+Testy `PromotionFirstPlannerIntegrationTest` obejmują odrzucenie całkowicie niewycenionego dania z biblioteki i AI, ponowienie aż do wycenialnego przepisu, ochronę przed pojedynczym symbolicznym składnikiem z ceną, brak wywołania AI przy pustym katalogu, ranking i kupony oraz przeplanowanie z zachowaniem blokad. Test przeglądarkowy sprawdza ceny przed generowaniem oraz ponowne układanie z zachowaniem zablokowanego posiłku.
+
+Weryfikacja lokalnego planu z rzeczywistym Gemini i danymi sklepu: powstała „Sałatka obiadowa z pieczonym jabłkiem i śliwką”. Cena 250 g jabłek wyniosła 0,62 zł, a 200 g śliwek 1,20 zł; suma znanych pozycji 1,82 zł. Bulgur i orzechy włoskie pozostały jawnie niewycenione. To potwierdzenie przepływu, nie pełnej ceny dania ani kompletności źródła. W trakcie prób dostawca AI zwrócił także błąd tymczasowej niedostępności; wcześniej zapisane danie zostało wtedy zachowane.
+
+Planer ma teraz ograniczony automatyczny katalog Lidla oraz prywatne ceny użytkownika. Dawny importer próbki do weryfikacji pozostaje osobnym mechanizmem; jego niekompletne partie nadal nie mogą publikować cen przyciskiem administratora.
+
+- `LidlPriceCatalogService` pobiera pięć stałych oficjalnych stron: żywność, owoce i warzywa, nabiał, oleje/sosy/przyprawy oraz mięso/drób (stan po korekcie 8 listopada). Nie korzysta z logowania, paginacji ani nieznanych adresów. Jest to częściowe pokrycie, wyraźnie oznaczone `LIVE_PARTIAL`.
+- Parser dopuszcza wyłącznie rozpoznane tożsamości produktów i jednostki, zgodne daty ceny i sprzedaży oraz jednakowy wariant ceny w całym rozpoznanym zestawie regionów. Nieznana tożsamość, inny zakres regionów, sprzeczne ceny między stronami i nieobsługiwane warunki pozostają bez automatycznej ceny. Nowe produkty wymagają rozszerzenia sprawdzonego mapowania.
+- Cenę poza promocją pobieramy tylko z jawnego tekstu sklepu. Cena przekreślona lub odniesienie z 30 dni nie zastępują ceny regularnej. Karta i potwierdzenie konkretnego kuponu pozostają oddzielne. Rabaty za kilka opakowań, wielokrotności i limity przechodzą do istniejącego kalkulatora. Nieobsługiwany mechanizm „gratis” nie staje się zgadywaną ceną promocyjną.
+- Luźne owoce są wyceniane orientacyjnie według planowanej wagi z dokładnością obliczeń do grama. Nie jest to potwierdzenie kroku ważenia ani dostępności konkretnej sztuki. Mięso z nieznaną wagą całego opakowania/tuszki nie trafia automatycznie do wyceny.
+- Import działa co sześć godzin i przy pierwszym odczycie nieaktualnego katalogu, również po zmianie dnia. Wymuszone odświeżanie ma globalne minimum jednej minuty; nieudane pobranie ma pięć minut przerwy. Awaria zachowuje uprzednio ważne ceny i jest widoczna w statusie źródła. Oferta nadal musi przejść datę ważności i limit świeżości 48 godzin.
+- Tylko wiersze oznaczone `LIDL_PUBLIC` są zarządzane przez ten import. Dane administratora pozostają odrębne. Zmiana ceny lub warunków zmienia identyfikator oferty, więc stary identyfikator potwierdzonego kuponu nie dopuszcza zmienionych warunków.
+- `LIDL_PRICE_IMPORT_ENABLED` włącza automat. Profil Docker i pliki Compose domyślnie go włączają; bazowy profil/testy pozostają offline. `LIDL_REVIEW_CAPTURE_ENABLED` nadal oznacza wyłącznie stary harmonogram próbki do weryfikacji.
+- Biedronka nadal nie ma źródła automatycznego. Interfejs pokazuje ten stan i pozwala wpisać własną cenę; nie podstawia zera ani ceny z AI.
+- Własna cena dotyczy dokładnego wiersza zapotrzebowania, planu, sklepu i daty zakupów. Użytkownik podaje ilość w opakowaniu oraz cenę za opakowanie; koszt liczy całe opakowania. Cena jest prywatna i nie publikuje oferty globalnej. Zmiana wymaganej ilości zmienia klucz wiersza i wymaga ponownego sprawdzenia ceny.
+- Zapis/usunięcie własnej ceny zwiększa wersję planu i unieważnia przypiętą wycenę, zachowując odhaczenia zakupów. Podglądy poprawek uwzględniają prywatne ceny dla niezmienionych wymagań. Nowy klient rozróżnia cenę sklepową i własną, pokazuje braki oraz daje przycisk odświeżenia źródła.
+- Nowe jadłospisy v3 zapisują `locale=pl`, niezależnie od języka interfejsu. Dobór biblioteki i generowanie korzystają z tego języka; kuchnia pozostaje dowolna. Historyczne dania można przetłumaczyć przez „Popraw przepis” → „Przetłumacz na polski”, z podglądem i możliwością cofnięcia. Tłumaczenie korzysta z limitu AI, zachowuje porcje, kolejność składników, ilości, jednostki, czas, liczbę kroków i wartości odżywcze; zmienione liczby są odrzucane. Po zastosowaniu kolejne dania planu powstają po polsku. Lista zakupów i sprawdzanie składników uwzględniają język każdej migawki, także podczas częściowego tłumaczenia planu.
+
+Nowe API (wymaga zalogowania, a mutacje również CSRF):
+
+| Operacja | Endpoint |
+|---|---|
+| Odświeżenie oficjalnego katalogu | `POST /v2/offers/reload-prices` |
+| Zapis prywatnej ceny | `POST /v3/meal-plans/{id}/prices`: `version`, `key`, `store`, `shoppingDate`, `packageAmount`, `packagePrice` |
+| Usunięcie prywatnej ceny | `POST /v3/meal-plans/{id}/prices/{priceId}/remove`: `version` |
+
+Wycena zwraca dodatkowo `sources`, a wiersze `requiredAmount`, `unit` i opcjonalne `manualPrice`. Oferty zwracają `sourceType` i `ingredientKey`. Migracje V27–V29 dodają pochodzenie oferty, prywatne ceny i licznik zmian cen planu; nie przepisują historycznych przepisów.
+
+Test rzeczywistego źródła i wyceny (bez Gemini): `RUN_LIVE_PRICE_SMOKE=1 ./gradlew test --tests '*LivePriceCatalogSmokeIT'`. Offline: `PriceCatalogIntegrationTest` odtwarza zapisane publiczne formaty cen, zakres dat dostosowując do dnia testu. Testy obejmują kupony, cenę poza promocją, nieobsługiwane warunki, awarię źródła, prywatność i wersjonowanie własnych cen oraz zapis/odczyt/usunięcie w Chromium PL mobile i EN desktop.
+
+Poniższy opis źródeł i poprzedniego pilotażu dokumentuje stan z 3 listopada; stan automatycznej wyceny określa powyższa aktualizacja.
 
 ## Wynik
 

@@ -33,7 +33,7 @@ public class GeneratedRecipeValidator {
     private static final DietLexicon POLISH = new DietLexicon(
             Set.of("mięs", "kurcz", "wołow", "wieprz", "szynk", "indyk", "boczk", "kiełbas", "jagnięc", "cielęc", "kaczk", "prosciutto", "żelatyn"),
             Set.of("ryb", "łoso", "tuńczy", "krewet", "anchois", "sardyn", "dorsz"),
-            Set.of("mlek", "ser", "jogurt", "masł", "śmietan", "mozzarell", "parmezan", "twar"),
+            Set.of("mlek", "ser", "jogurt", "masł", "śmietan", "mozzarell", "parmezan", "twaróg", "twarog"),
             Set.of("jaj"),
             Set.of("pszen", "mąk", "chleb", "makaron", "kuskus", "jęcz", "żyt", "orkisz", "buł"),
             Set.of("kokos", "ows", "soj", "migdał", "ryżow", "roślinn", "wegań")

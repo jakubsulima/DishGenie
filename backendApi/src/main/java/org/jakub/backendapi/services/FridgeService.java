@@ -46,7 +46,7 @@ public class FridgeService {
 
     @Transactional
     public FridgeIngredient addFridgeIngredient(FridgeIngredientDto fridgeIngredientDto, String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException("User not found", HttpStatus.NOT_FOUND));
+        User user = userRepository.findByEmailForUpdate(email).orElseThrow(() -> new AppException("User not found", HttpStatus.NOT_FOUND));
         return addFridgeIngredientForUser(fridgeIngredientDto, user);
     }
 
@@ -57,7 +57,7 @@ public class FridgeService {
 
         Unit unit = parseUnit(fridgeIngredientDto.getUnit());
 
-        if (fridgeIngredientDto.getAmount() != null && fridgeIngredientDto.getAmount() <= 0) {
+        if (fridgeIngredientDto.getAmount() != null && (!Double.isFinite(fridgeIngredientDto.getAmount()) || fridgeIngredientDto.getAmount() <= 0)) {
             throw new AppException("Amount must be positive", HttpStatus.BAD_REQUEST);
         }
         List<FridgeIngredient> mergeCandidates = fridgeIngredientRepository.findMergeCandidates(
@@ -78,7 +78,9 @@ public class FridgeService {
         return fridgeIngredientRepository.save(fridgeIngredient);
     }
 
+    @Transactional
     public void deleteFridgeIngredient(Long id, String email) {
+        userRepository.findByEmailForUpdate(email).orElseThrow(() -> new AppException("User not found", HttpStatus.NOT_FOUND));
         UserDto userDto = userService.findByEmail(email);
         FridgeIngredient fridgeIngredient = fridgeIngredientRepository.findById(id).orElseThrow(() -> new AppException("Fridge ingredient not found", HttpStatus.NOT_FOUND));
 
@@ -90,10 +92,12 @@ public class FridgeService {
         fridgeIngredientMapper.toFridgeIngredientDto(fridgeIngredient);
     }
 
+    @Transactional
     public void changeFridgeIngredientAmount(Long id, double amount, String email) {
-        if (amount < 0) {
+        if (!Double.isFinite(amount) || amount < 0) {
             throw new AppException("Amount must be positive", HttpStatus.BAD_REQUEST);
         }
+        userRepository.findByEmailForUpdate(email).orElseThrow(() -> new AppException("User not found", HttpStatus.NOT_FOUND));
         UserDto userDto = userService.findByEmail(email);
         FridgeIngredient fridgeIngredient = fridgeIngredientRepository.findById(id).orElseThrow(() -> new AppException("Fridge ingredient not found", HttpStatus.NOT_FOUND));
 
@@ -118,10 +122,11 @@ public class FridgeService {
         Unit unit = parseUnit(fridgeIngredientDto.getUnit());
 
         Double amount = fridgeIngredientDto.getAmount();
-        if (amount != null && amount < 0) {
+        if (amount != null && (!Double.isFinite(amount) || amount < 0)) {
             throw new AppException("Amount must be positive", HttpStatus.BAD_REQUEST);
         }
 
+        userRepository.findByEmailForUpdate(email).orElseThrow(() -> new AppException("User not found", HttpStatus.NOT_FOUND));
         UserDto userDto = userService.findByEmail(email);
         FridgeIngredient fridgeIngredient = fridgeIngredientRepository.findById(id).orElseThrow(() -> new AppException("Fridge ingredient not found", HttpStatus.NOT_FOUND));
 
@@ -156,6 +161,8 @@ public class FridgeService {
         fridgeIngredient.setName(ingredientName);
         fridgeIngredient.setExpirationDate(fridgeIngredientDto.getExpirationDate());
         fridgeIngredient.setAmount(amount);
+        fridgeIngredient.setQuantityAccuracy(amount == null ? org.jakub.backendapi.entities.Enums.QuantityAccuracy.UNKNOWN : org.jakub.backendapi.entities.Enums.QuantityAccuracy.EXACT);
+        fridgeIngredient.setLastConfirmedAt(java.time.Instant.now());
         fridgeIngredient.setUnit(unit);
         attachCanonicalIngredient(fridgeIngredient, ingredientName);
 

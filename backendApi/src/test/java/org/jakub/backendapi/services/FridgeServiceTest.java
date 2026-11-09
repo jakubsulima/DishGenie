@@ -43,6 +43,9 @@ class FridgeServiceTest {
 
     @BeforeEach
     void setUp() {
+        org.mockito.Mockito.lenient().when(userRepository.findByEmailForUpdate(org.mockito.ArgumentMatchers.anyString())).thenAnswer(call -> {
+            var user = new User(); user.setId(currentUser == null ? 1L : currentUser.getId()); user.setEmail(call.getArgument(0)); return Optional.of(user);
+        });
         UserService userService = new UserService(null, null, null, null) {
             @Override
             public UserDto findByEmail(String email) {
@@ -133,7 +136,7 @@ class FridgeServiceTest {
         existingIngredient.setUnit(Unit.GRAMS);
         existingIngredient.setUser(user);
 
-        when(userRepository.findByEmail("owner@example.com")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailForUpdate("owner@example.com")).thenReturn(Optional.of(user));
         when(fridgeIngredientRepository.findMergeCandidates(1L, "Tomatoes", expirationDate, Unit.GRAMS))
                 .thenReturn(List.of(existingIngredient));
         when(fridgeIngredientRepository.save(existingIngredient)).thenReturn(existingIngredient);
@@ -157,7 +160,7 @@ class FridgeServiceTest {
         mappedIngredient.setName("Milk");
         mappedIngredient.setUser(user);
 
-        when(userRepository.findByEmail("owner@example.com")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailForUpdate("owner@example.com")).thenReturn(Optional.of(user));
         when(fridgeIngredientRepository.findMergeCandidates(1L, "Milk", null, null)).thenReturn(List.of());
         when(fridgeIngredientMapper.toFridgeIngredientWithUser(dto, user)).thenReturn(mappedIngredient);
         when(fridgeIngredientRepository.save(mappedIngredient)).thenReturn(mappedIngredient);

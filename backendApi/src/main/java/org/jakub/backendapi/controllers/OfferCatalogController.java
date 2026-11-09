@@ -2,6 +2,8 @@ package org.jakub.backendapi.controllers;
 import org.jakub.backendapi.dto.*;
 import org.jakub.backendapi.dto.MealPlanDto.Store;
 import org.jakub.backendapi.services.StoreOfferService;
+import org.jakub.backendapi.services.LidlPriceCatalogService;
+import org.jakub.backendapi.services.RateLimitService;
 import org.jakub.backendapi.exceptions.AppException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -11,14 +13,25 @@ import java.util.*;
 @RequestMapping("/v2")
 public class OfferCatalogController {
     private final StoreOfferService offers;
-    public OfferCatalogController(StoreOfferService offers) { this.offers = offers; }
+    private final LidlPriceCatalogService catalog;
+    private final RateLimitService limits;
+    public OfferCatalogController(StoreOfferService offers, LidlPriceCatalogService catalog, RateLimitService limits) { this.offers = offers; this.catalog = catalog; this.limits = limits; }
     @GetMapping("/stores") public List<Map<String, String>> stores() {
-        return Arrays.stream(Store.values()).map(s -> Map.of("store", s.name(), "sourceStatus", "MANUAL_REVIEW_ONLY")).toList();
+        return catalog.status(Set.of(Store.values()), LocalDate.now(ZoneId.of("Europe/Warsaw"))).stream()
+                .map(s -> Map.of("store", s.store().name(), "sourceStatus", s.status())).toList();
+    }
+    @PostMapping("/offers/reload-prices") public List<StoreOfferDto.SourceStatus> refresh(org.springframework.security.core.Authentication user) {
+        limits.assertAllowed("price-refresh:" + user.getName(), 2, 60_000, "Please wait before refreshing store prices again.");
+        catalog.refresh(true);
+        return catalog.status(Set.of(Store.values()), LocalDate.now(ZoneId.of("Europe/Warsaw")));
     }
     @GetMapping("/offers") public StoreOfferDto.Catalog catalog(@RequestParam Set<Store> stores, @RequestParam LocalDate shoppingDate) {
         LocalDate today = LocalDate.now(ZoneId.of("Europe/Warsaw"));
         if (stores.isEmpty() || shoppingDate.isBefore(today) || shoppingDate.isAfter(today.plusDays(7)))
             throw new AppException("Choose stores and a shopping date within seven days.", HttpStatus.BAD_REQUEST);
-        return new StoreOfferDto.Catalog(shoppingDate, offers.eligible(stores, shoppingDate, Instant.now()), "MANUAL_REVIEW_ONLY");
+        catalog.ensureFresh(stores);
+        String status = catalog.status(stores, shoppingDate).stream().filter(s -> s.store() == Store.LIDL && catalog.enabled())
+                .map(StoreOfferDto.SourceStatus::status).findFirst().orElse("MANUAL_REVIEW_ONLY");
+        return new StoreOfferDto.Catalog(shoppingDate, offers.eligible(stores, shoppingDate, Instant.now()), status);
     }
 }
