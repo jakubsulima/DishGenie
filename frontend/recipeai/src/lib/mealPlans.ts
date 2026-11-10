@@ -1,4 +1,4 @@
-import { durableIntent, clearIntent, cycleMutation } from "./weekCycle";
+import { durableIntent, clearIntent, cycleMutation, type Cycle } from "./weekCycle";
 import axios from "axios";
 import { apiClient, ensureCsrfToken } from "./hooks";
 import { API_URL } from "./constants";
@@ -56,7 +56,7 @@ export interface MealPlan {
   version: number;
   createdAt: string;
   plan: { schemaVersion: number; settings: PlanSettings; status: "DRAFT" | "ACCEPTED";
-    cycle?: import("./weekCycle").Cycle | null; slots: PlanSlot[]; shopping: PlanShopping | null };
+    cycle?: Cycle | null; slots: PlanSlot[]; shopping: PlanShopping | null };
 }
 export interface PlanSummary {
   id: string;
@@ -81,7 +81,6 @@ export const listMealPlans = async (): Promise<PlanSummary[]> => {
   }
 };
 export const getMealPlan = (id: string) => apiClient<MealPlan>(`${base}/${id}`);
-export const createMealPlan = (settings: PlanSettings) => apiClient<MealPlan>(base, true, settings);
 export const changePlanSlot = (plan: MealPlan, slotId: string,
   action: "LOCK" | "UNLOCK" | "SKIP" | "RESTORE" | "SERVINGS", servings?: number) =>
   apiClient<MealPlan>(`${planBase(plan)}/${plan.id}/slots/${slotId}`, true, { version: plan.version, action, servings });

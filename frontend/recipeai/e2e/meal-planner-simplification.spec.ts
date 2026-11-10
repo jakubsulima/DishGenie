@@ -41,6 +41,9 @@ for (const width of [360, 390, 1440]) {
     await expect(first.getByRole("button", { name, exact: true })).toBeVisible();
     expect((await first.boundingBox())!.y).toBeLessThan(500);
     expect((await page.getByRole("heading", { level: 1 }).boundingBox())!.height).toBeLessThan(44);
+    // Wider system fonts (as on Linux CI) must not squeeze the title onto two lines.
+    await page.addStyleTag({ content: ".planner > header { font-family: monospace; }" });
+    expect((await page.getByRole("heading", { level: 1 }).boundingBox())!.height).toBeLessThan(44);
     expect(await first.locator("button:visible").allTextContents()).toEqual([name, "Swap", "⋯"]);
     expect(await page.locator('article[id^="meal-slot-"]').nth(1).locator("button:visible").allTextContents()).toEqual(["+ Add meal", "⋯"]);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

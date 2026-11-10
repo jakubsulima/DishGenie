@@ -122,7 +122,12 @@ class WeekCycleIntegrationTest {
     @Test void sameIntentConcurrentCreationAndJobRetryAreIdempotent() throws Exception {
         var in=new Start(settings(2),List.of(),Set.of());var pool=Executors.newFixedThreadPool(2);
         try {var a=pool.submit(()->cycle.create(email,in));var b=pool.submit(()->cycle.create(email,in));var one=a.get(20,TimeUnit.SECONDS);assertThat(b.get(20,TimeUnit.SECONDS)).isEqualTo(one);
-            var command=new Generate(one.view().version(),one.generationId());var j=jobs.start(email,one.view().id(),command);assertThat(jobs.start(email,one.view().id(),command)).isEqualTo(j);
+            var command=new Generate(one.view().version(),one.generationId());
+            var preciseTime=Instant.now().truncatedTo(java.time.temporal.ChronoUnit.SECONDS).plusNanos(123456789);
+            try(var clock=mockStatic(Instant.class,CALLS_REAL_METHODS)) {
+                clock.when(Instant::now).thenReturn(preciseTime);
+                var j=jobs.start(email,one.view().id(),command);assertThat(jobs.start(email,one.view().id(),command)).isEqualTo(j);
+            }
         }finally{pool.shutdownNow();}
     }
     @Test void occupiedMoveAndCookedHistoryAreProtected() {
@@ -194,7 +199,12 @@ class WeekCycleIntegrationTest {
     }
 
     @Test void startingV4CannotOverwriteAnExistingLegacyPlanWithAReusedId() {
-        var input=settings(1);var legacy=plans.create(email,input);
+        var input=settings(1);View legacy;
+        var preciseTime=Instant.now().truncatedTo(java.time.temporal.ChronoUnit.SECONDS).plusNanos(123456789);
+        try(var clock=mockStatic(Instant.class,CALLS_REAL_METHODS)) {
+            clock.when(Instant::now).thenReturn(preciseTime);
+            legacy=plans.create(email,input);
+        }
         assertThatThrownBy(()->cycle.create(email,new Start(input,List.of(),Set.of()))).hasMessageContaining("already belongs");
         assertThat(plans.get(email,legacy.id())).isEqualTo(legacy);
     }

@@ -2,7 +2,7 @@ import { apiClient } from './hooks';
 import type { MealPlan, PlanRecipe, PlanSettings, PlanShopping, PlanSlot, MealType } from './mealPlans';
 export interface WeekException { date: string; mealType: MealType; skipped: boolean; maxMinutes: number | null; cookForNext?: boolean }
 export interface Allocation { slotId: string; portions: number; status: 'PLANNED' | 'EATEN' | 'SKIPPED'; eatenPortions?: number }
-export interface CookingBatch { id: string; cookingDate: string; recipe: PlanRecipe; portions: number; status: 'PLANNED'|'COOKED'|'CANCELLED'; allocations: Allocation[]; inventoryOperationId: string|null; inventoryReview: boolean; storage: string|null }
+interface CookingBatch { id: string; cookingDate: string; recipe: PlanRecipe; portions: number; status: 'PLANNED'|'COOKED'|'CANCELLED'; allocations: Allocation[]; inventoryOperationId: string|null; inventoryReview: boolean; storage: string|null }
 export interface Cycle { exceptions: WeekException[]; priorityFridgeIds: number[]; batches: CookingBatch[]; inventoryReview: boolean }
 export interface TripLine { id: string; source: string; manualItemId: number|null; requirementKey: string|null; name: string; needed: number|null; fromHome: number; toBuy: number|null; unit: string|null; needsReview: boolean; slotIds: string[]; state: 'NEEDED'|'IN_BASKET'|'UNAVAILABLE'; purchasedAmount: number|null; purchasedUnit: string|null; importToFridge: boolean; importStatus: string|null; actualPrice: number|null; suggestedAmount: number|null; department: string;store:string|null;packages:number|null }
 export interface ShoppingTrip { id: string; planId: string|null; version: number; status: string; createdAt: string; trip: {lines: TripLine[]; inventoryOperationId: string|null; completedAt: string|null} }
@@ -45,7 +45,7 @@ export const pendingManual = () => apiClient<{id: number; name: string; amount: 
 export const prepareTrip = (plan: MealPlan|null, manualItemIds: number[]) => cycleMutation<ShoppingTrip>(`prepare:${plan?.id ?? 'manual'}`, plan ? `v4/meal-plans/${plan.id}/trips` : 'v4/shopping-trips', { version: plan?.version ?? 0, manualItemIds });
 export const changeTripLine = (trip: ShoppingTrip, line: TripLine, state: TripLine['state']) => cycleMutation<ShoppingTrip>(`line:${trip.id}:${line.id}`,`v4/shopping-trips/${trip.id}/lines/${line.id}`,{version:trip.version,state});
 export const addTripLine = (trip: ShoppingTrip,name: string,amount: number|null,unit: string|null) => cycleMutation<ShoppingTrip>(`add:${trip.id}`,`v4/shopping-trips/${trip.id}/lines`,{version:trip.version,name,amount,unit});
-export interface Purchase {lineId: string; amount: number|null; unit: string|null; importToFridge: boolean; actualPrice: number|null}
+interface Purchase {lineId: string; amount: number|null; unit: string|null; importToFridge: boolean; actualPrice: number|null}
 export const confirmTrip = (trip: ShoppingTrip,purchases: Purchase[]) => cycleMutation<ShoppingTrip>(`confirm:${trip.id}`,`v4/shopping-trips/${trip.id}/confirm`,{version:trip.version,purchases});
 export const retryTripImport = (trip: ShoppingTrip,purchases: Purchase[]) => cycleMutation<ShoppingTrip>(`retry-import:${trip.id}`,`v4/shopping-trips/${trip.id}/retry-import`,{version:trip.version,purchases});
 export const undoTripImport = (trip: ShoppingTrip) => cycleMutation<ShoppingTrip>(`undo-import:${trip.id}`,`v4/shopping-trips/${trip.id}/undo-import`,{version:trip.version});
@@ -56,7 +56,6 @@ export const cookingPreview = (plan: MealPlan,batchId: string,portions?: number)
 export const cookBatch = (plan: MealPlan,preview: CookPreview,updateInventory: boolean) => cycleMutation<MealPlan>(`cook:${plan.id}:${preview.batchId}`,`v4/meal-plans/${plan.id}/batches/${preview.batchId}/cook`,{version:preview.version,portions:preview.portions,inventoryFingerprint:preview.inventoryFingerprint,updateInventory});
 export const eatPortions = (plan: MealPlan,slot: PlanSlot) => cycleMutation<MealPlan>(`eat:${plan.id}:${slot.id}`,`v4/meal-plans/${plan.id}/allocations/${slot.id}/eat`,{version:plan.version,portions:slot.servings-(planBatches(plan).flatMap(b=>b.allocations).find(a=>a.slotId===slot.id)?.eatenPortions??0)});
 export const undoCooking = (plan: MealPlan,batchId: string) => cycleMutation<MealPlan>(`undo-cook:${plan.id}:${batchId}`,`v4/meal-plans/${plan.id}/batches/${batchId}/undo`,{version:plan.version});
-export const getToday = (planId: string,date: string) => apiClient<{date: string; slots: PlanSlot[]; batches: CookingBatch[]; inventoryReview: boolean}>(`v4/meal-plans/${planId}/today?date=${date}`);
 export function planBatches(plan: MealPlan): CookingBatch[] {
   const batches = [...(plan.plan.cycle?.batches ?? [])];
   for (const s of plan.plan.slots) if(s.recipe && !s.skipped && !batches.some(b=>b.allocations.some(a=>a.slotId===s.id&&a.status!=="SKIPPED"))) batches.push({id:batches.some(b=>b.id===s.id)&&s.generationId?s.generationId:s.id,cookingDate:s.date,recipe:s.recipe,portions:s.servings,status:'PLANNED',allocations:[{slotId:s.id,portions:s.servings,status:'PLANNED'}],inventoryOperationId:null,inventoryReview:false,storage:null});

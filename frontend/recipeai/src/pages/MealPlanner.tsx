@@ -238,8 +238,8 @@ export default function MealPlanner() {
 
   return <div className="planner mx-auto max-w-4xl px-4 pb-10 pt-5 text-primary sm:pt-8">
     <header className="mb-4">
-      <div className="flex items-center justify-between gap-2">
-        <h1 className="text-xl font-bold sm:text-2xl">{t("Meal planner")}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="shrink-0 text-xl font-bold sm:text-2xl">{t("Meal planner")}</h1>
         <div className="flex items-center gap-2">
           {(plan || summaries.length > 0) && <button type="button" disabled={busy || revisionBusy.size > 0} onClick={() => setHistoryOpen(true)} className="min-h-11 whitespace-nowrap rounded-lg px-2 text-sm font-semibold">{range} ▾</button>}
           <PlannerMenu label={t("Plan options")} disabled={busy || revisionBusy.size > 0}>

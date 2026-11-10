@@ -245,7 +245,7 @@ class WeeklyPlannerIntegrationTest {
         var stock = new FridgeIngredient(null, "ryż", null, 100d, Unit.GRAMS, owner);
         stock.setQuantityAccuracy(QuantityAccuracy.EXACT); stock = fridge.saveAndFlush(stock);
         var manual = manualShopping.replaceShoppingList(email, List.of(new ShoppingListItemDto(
-                "manual", "Kawa", 2d, "pcs", true, Instant.now().toString())));
+                "manual", "Kawa", 2d, "pcs", true, "2026-11-10T12:00:00.123456789Z")));
         var plan = generated(1);
         assertThat(plan.plan().slots().get(0).recipe().getName()).isEqualTo(source.getName());
         verifyNoInteractions(gemini);

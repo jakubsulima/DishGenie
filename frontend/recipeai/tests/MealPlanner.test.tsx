@@ -11,7 +11,7 @@ vi.mock("../src/context/fridgeContext", async original => ({...await original<ty
 vi.mock("../src/lib/weekCycle", async original => ({...await original<typeof import("../src/lib/weekCycle")>(), readyPortions: vi.fn().mockResolvedValue([])}));
 vi.mock("../src/lib/mealPlans", async importOriginal => ({
   ...await importOriginal<typeof api>(),
-  listMealPlans: vi.fn(), getMealPlan: vi.fn(), createMealPlan: vi.fn(),
+  listMealPlans: vi.fn(), getMealPlan: vi.fn(),
   generatePlanSlot: vi.fn(), changePlanSlot: vi.fn(), acceptMealPlan: vi.fn(),
   checkPlanShopping: vi.fn(), refreshPlanShopping: vi.fn(), updatePlanSettings: vi.fn(),
   getShoppingPreferences: vi.fn(), startWeekGeneration: vi.fn(), getWeekGeneration: vi.fn(), cancelWeekGeneration: vi.fn(),
