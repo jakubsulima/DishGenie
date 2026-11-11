@@ -20,15 +20,18 @@ public class MealPlanService {
     private final PlanIngredientAggregationService aggregation;
     private final ObjectMapper json;
     private final ShoppingPreferencesService preferences;
+    private final OfferFeatureService offerFeature;
 
     public MealPlanService(MealPlanRepository plans, UserRepository users, FridgeIngredientRepository fridge,
-                           PlanIngredientAggregationService aggregation, ObjectMapper json, ShoppingPreferencesService preferences) {
+                           PlanIngredientAggregationService aggregation, ObjectMapper json, ShoppingPreferencesService preferences, OfferFeatureService offerFeature) {
         this.plans = plans; this.users = users; this.fridge = fridge;
         this.preferences = preferences; this.aggregation = aggregation; this.json = json;
+        this.offerFeature = offerFeature;
     }
 
     @Transactional
     public View create(String email, Create input) {
+        if (input.planningMode() != PlanningMode.PRACTICAL) offerFeature.requireAvailable(email);
         var owner = users.findByEmailForUpdate(email).orElseThrow(() -> error("Unauthorized", HttpStatus.UNAUTHORIZED));
         var existing = plans.findById(input.requestId());
         if (existing.isPresent()) {
@@ -77,6 +80,7 @@ public class MealPlanService {
 
     @Transactional
     public View settings(String email, UUID id, SettingsChange input) {
+        if (input.settings().planningMode() != PlanningMode.PRACTICAL) offerFeature.requireAvailable(email);
         MealPlan plan = owned(email, id); checkVersion(plan, input.version()); Document d = read(plan); assertIdle(d);
         Create old = d.settings(); Create next = input.settings();
         if (!old.startDate().equals(next.startDate()) || old.dayCount() != next.dayCount() || old.servings() != next.servings()

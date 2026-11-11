@@ -1,0 +1,4884 @@
+{
+  "version": 1,
+  "pdfSha256": "7d3f8c3749d977c09111462714f45cdf9989786d87f36405721c66fa8bd7442b",
+  "pages": 97,
+  "sourceId": "01a1c5e7-cac0-7917-96c7-5b9362c8c4ec",
+  "method": "All 313 candidates triaged against source content. Publication fields transcribed from rendered source pages; unspecified dates and package masses remain unsupported. Not a recall claim for image-only or percentage-only promotions.",
+  "reviewedAt": "2026-11-11",
+  "records": [
+    {
+      "page": 1,
+      "priceBbox": [
+        10.63,
+        323.78,
+        60.83,
+        363.78
+      ],
+      "sourcePrice": "2.49",
+      "decision": "IGNORE",
+      "reason": "REPEATED_PRODUCT_OR_SECOND_PRICE_LABEL"
+    },
+    {
+      "page": 1,
+      "priceBbox": [
+        164.43,
+        347.43,
+        216.35,
+        387.43
+      ],
+      "sourcePrice": "2.99",
+      "decision": "IGNORE",
+      "reason": "REPEATED_PRODUCT_OR_SECOND_PRICE_LABEL"
+    },
+    {
+      "page": 1,
+      "priceBbox": [
+        325.21,
+        347.43,
+        375.69,
+        387.43
+      ],
+      "sourcePrice": "5.99",
+      "decision": "IGNORE",
+      "reason": "REPEATED_PRODUCT_OR_SECOND_PRICE_LABEL"
+    },
+    {
+      "page": 1,
+      "priceBbox": [
+        10.63,
+        505.56,
+        77.07,
+        545.56
+      ],
+      "sourcePrice": "14.99",
+      "decision": "IGNORE",
+      "reason": "REPEATED_PRODUCT_OR_SECOND_PRICE_LABEL"
+    },
+    {
+      "page": 1,
+      "priceBbox": [
+        162.99,
+        543.94,
+        215.27,
+        583.94
+      ],
+      "sourcePrice": "9.99",
+      "decision": "IGNORE",
+      "reason": "REPEATED_PRODUCT_OR_SECOND_PRICE_LABEL"
+    },
+    {
+      "page": 1,
+      "priceBbox": [
+        325.13,
+        543.94,
+        391.57,
+        583.94
+      ],
+      "sourcePrice": "14.99",
+      "decision": "IGNORE",
+      "reason": "REPEATED_PRODUCT_OR_SECOND_PRICE_LABEL"
+    },
+    {
+      "page": 2,
+      "priceBbox": [
+        14.17,
+        312.58,
+        127.29,
+        392.58
+      ],
+      "sourcePrice": "2.49",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "PILOS Masło 82% Mleczna Krowa",
+        "ingredientKey": "butter",
+        "ingredientName": "masło",
+        "category": "DAIRY",
+        "weighted": false,
+        "amount": "200",
+        "unit": "g",
+        "price": "2.49",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 3,
+        "multiple": 1,
+        "maximum": 3,
+        "maximumAmount": null,
+        "loyalty": true,
+        "coupon": true,
+        "validFrom": "2026-11-13",
+        "validTo": "2026-11-14",
+        "regularPrice": "4.99",
+        "conditions": "Gazetka Lidla 12.11, str. 2. Cena za opakowanie przy zakupie co najmniej 3 opak. Limit: 3 opak. na kupon. Wymagana aplikacja Lidl Plus. Wymagana osobna aktywacja kuponu. Cena poza promocją podana przez sklep: 4.99 zł."
+      }
+    },
+    {
+      "page": 2,
+      "priceBbox": [
+        14.41,
+        633.42,
+        147.29,
+        713.42
+      ],
+      "sourcePrice": "14.99",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 3,
+      "priceBbox": [
+        13.89,
+        309.91,
+        118.45,
+        389.91
+      ],
+      "sourcePrice": "9.99",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 3,
+      "priceBbox": [
+        14.17,
+        658.93,
+        119.61,
+        738.93
+      ],
+      "sourcePrice": "4.99",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 6,
+      "priceBbox": [
+        14.17,
+        311.24,
+        118.01,
+        391.24
+      ],
+      "sourcePrice": "2.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Banany, luzem",
+        "ingredientKey": "banana",
+        "ingredientName": "banan",
+        "category": "FRUIT",
+        "weighted": true,
+        "amount": "1000",
+        "unit": "g",
+        "price": "2.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": "2000",
+        "loyalty": true,
+        "coupon": true,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": "6.99",
+        "conditions": "Gazetka Lidla 12.11, str. 6. Cena za wskazane opakowanie lub wagę. Limit: 2000 g na kupon. Wymagana aplikacja Lidl Plus. Wymagana osobna aktywacja kuponu. Cena poza promocją podana przez sklep: 6.99 zł."
+      }
+    },
+    {
+      "page": 6,
+      "priceBbox": [
+        14.17,
+        656.12,
+        115.13,
+        736.12
+      ],
+      "sourcePrice": "5.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Mandarynki, luzem",
+        "ingredientKey": "mandarin",
+        "ingredientName": "mandarynka",
+        "category": "FRUIT",
+        "weighted": true,
+        "amount": "1000",
+        "unit": "g",
+        "price": "5.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": "3000",
+        "loyalty": true,
+        "coupon": true,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": "9.99",
+        "conditions": "Gazetka Lidla 12.11, str. 6. Cena za wskazane opakowanie lub wagę. Limit: 3000 g na kupon. Wymagana aplikacja Lidl Plus. Wymagana osobna aktywacja kuponu. Cena poza promocją podana przez sklep: 9.99 zł."
+      }
+    },
+    {
+      "page": 7,
+      "priceBbox": [
+        14.17,
+        201.31,
+        119.61,
+        281.31
+      ],
+      "sourcePrice": "4.99",
+      "decision": "IGNORE",
+      "reason": "REPEATED_PRODUCT_OR_SECOND_PRICE_LABEL"
+    },
+    {
+      "page": 7,
+      "priceBbox": [
+        192.07,
+        203.83,
+        288.45,
+        280.63
+      ],
+      "sourcePrice": "2.49",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Kaki",
+        "ingredientKey": "kaki",
+        "ingredientName": "kaki",
+        "category": "FRUIT",
+        "weighted": false,
+        "amount": "1",
+        "unit": "pcs",
+        "price": null,
+        "bundlePrice": "4.99",
+        "bundleSize": 2,
+        "minimum": 2,
+        "multiple": 2,
+        "maximum": 6,
+        "maximumAmount": null,
+        "loyalty": true,
+        "coupon": true,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": "4.99",
+        "conditions": "Gazetka Lidla 12.11, str. 7. 1+1 gratis: dokładna cena zestawu 2 szt. = 4.99 zł. Limit: 3 szt. gratis na kupon (6 szt. łącznie). Wymagana aplikacja Lidl Plus. Wymagana osobna aktywacja kuponu. Cena poza promocją podana przez sklep: 4.99 zł."
+      }
+    },
+    {
+      "page": 7,
+      "priceBbox": [
+        14.46,
+        551.13,
+        115.42,
+        631.13
+      ],
+      "sourcePrice": "5.99",
+      "decision": "IGNORE",
+      "reason": "REPEATED_PRODUCT_OR_SECOND_PRICE_LABEL"
+    },
+    {
+      "page": 7,
+      "priceBbox": [
+        162.4,
+        553.65,
+        262.08,
+        630.45
+      ],
+      "sourcePrice": "2.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Awokado zielone",
+        "ingredientKey": "avocado",
+        "ingredientName": "awokado",
+        "category": "FRUIT",
+        "weighted": false,
+        "amount": "1",
+        "unit": "pcs",
+        "price": null,
+        "bundlePrice": "5.99",
+        "bundleSize": 2,
+        "minimum": 2,
+        "multiple": 2,
+        "maximum": 6,
+        "maximumAmount": null,
+        "loyalty": true,
+        "coupon": true,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": "5.99",
+        "conditions": "Gazetka Lidla 12.11, str. 7. 1+1 gratis: dokładna cena zestawu 2 szt. = 5.99 zł. Limit: 3 szt. gratis na kupon (6 szt. łącznie). Wymagana aplikacja Lidl Plus. Wymagana osobna aktywacja kuponu. Cena poza promocją podana przez sklep: 5.99 zł."
+      }
+    },
+    {
+      "page": 8,
+      "priceBbox": [
+        14.17,
+        660.61,
+        150.09,
+        740.61
+      ],
+      "sourcePrice": "14.90",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "PIKOK Kiełbasa śląska, XXL",
+        "ingredientKey": "silesian-sausage",
+        "ingredientName": "kiełbasa śląska",
+        "category": "MEAT_FISH",
+        "weighted": false,
+        "amount": "1500",
+        "unit": "g",
+        "price": "14.90",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": 3,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": "33.90",
+        "conditions": "Gazetka Lidla 12.11, str. 8. Cena za wskazane opakowanie lub wagę. Limit: 3 opak. na paragon. Cena poza promocją podana przez sklep: 33.90 zł."
+      }
+    },
+    {
+      "page": 9,
+      "priceBbox": [
+        14.17,
+        311.48,
+        147.05,
+        391.48
+      ],
+      "sourcePrice": "14.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "MLEKOVITA Ser gouda Kuchmistrza w plastrach, XXL",
+        "ingredientKey": "gouda",
+        "ingredientName": "ser gouda",
+        "category": "DAIRY",
+        "weighted": false,
+        "amount": "1000",
+        "unit": "g",
+        "price": "14.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": 3,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": "29.89",
+        "conditions": "Gazetka Lidla 12.11, str. 9. Cena za wskazane opakowanie lub wagę. Limit: 3 opak. na paragon. Cena poza promocją podana przez sklep: 29.89 zł."
+      }
+    },
+    {
+      "page": 9,
+      "priceBbox": [
+        14.17,
+        657.47,
+        128.49,
+        737.47
+      ],
+      "sourcePrice": "2.25",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "ŁACIATE Mleko UHT 3,2%",
+        "ingredientKey": "milk",
+        "ingredientName": "mleko",
+        "category": "DAIRY",
+        "weighted": false,
+        "amount": "1000",
+        "unit": "ml",
+        "price": "2.25",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 6,
+        "multiple": 6,
+        "maximum": 12,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-25",
+        "regularPrice": "4.49",
+        "conditions": "Gazetka Lidla 12.11, str. 9. Cena za opakowanie przy zakupie co najmniej 6 opak. i wielokrotności 6 opak. Limit: 12 opak. na paragon. Cena poza promocją podana przez sklep: 4.49 zł."
+      }
+    },
+    {
+      "page": 10,
+      "priceBbox": [
+        14.17,
+        310.88,
+        154.09,
+        390.88
+      ],
+      "sourcePrice": "39.90",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 14,
+      "priceBbox": [
+        14.17,
+        309.32,
+        108.65,
+        389.32
+      ],
+      "sourcePrice": "7.98",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 14,
+      "priceBbox": [
+        14.17,
+        661.02,
+        145.05,
+        741.02
+      ],
+      "sourcePrice": "12.98",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 15,
+      "priceBbox": [
+        14.17,
+        657.72,
+        142.17,
+        737.72
+      ],
+      "sourcePrice": "15.98",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 16,
+      "priceBbox": [
+        14.17,
+        332.46,
+        116.17,
+        412.46
+      ],
+      "sourcePrice": "3.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 16,
+      "priceBbox": [
+        14.17,
+        659.27,
+        148.57,
+        739.27
+      ],
+      "sourcePrice": "23.92",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 17,
+      "priceBbox": [
+        14.79,
+        339.43,
+        114.79,
+        419.43
+      ],
+      "sourcePrice": "5.69",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 17,
+      "priceBbox": [
+        14.79,
+        659.46,
+        118.79,
+        739.46
+      ],
+      "sourcePrice": "4.39",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 19,
+      "priceBbox": [
+        394.7,
+        517.9,
+        443.46,
+        557.9
+      ],
+      "sourcePrice": "5.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 19,
+      "priceBbox": [
+        14.17,
+        573.89,
+        66.45,
+        613.89
+      ],
+      "sourcePrice": "9.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 20,
+      "priceBbox": [
+        279.56,
+        246.69,
+        341.64,
+        286.69
+      ],
+      "sourcePrice": "11.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 21,
+      "priceBbox": [
+        14.17,
+        164.65,
+        65.17,
+        204.65
+      ],
+      "sourcePrice": "3.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 21,
+      "priceBbox": [
+        162.97,
+        164.65,
+        213.97,
+        204.65
+      ],
+      "sourcePrice": "4.49",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 21,
+      "priceBbox": [
+        311.77,
+        164.65,
+        362.65,
+        204.65
+      ],
+      "sourcePrice": "8.49",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 21,
+      "priceBbox": [
+        14.17,
+        395.67,
+        66.77,
+        435.67
+      ],
+      "sourcePrice": "8.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 21,
+      "priceBbox": [
+        162.97,
+        395.67,
+        215.57,
+        435.67
+      ],
+      "sourcePrice": "8.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 21,
+      "priceBbox": [
+        313.27,
+        395.67,
+        365.87,
+        435.67
+      ],
+      "sourcePrice": "8.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 21,
+      "priceBbox": [
+        14.17,
+        651.26,
+        76.25,
+        691.26
+      ],
+      "sourcePrice": "11.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 21,
+      "priceBbox": [
+        166.87,
+        651.26,
+        228.95,
+        691.26
+      ],
+      "sourcePrice": "11.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 21,
+      "priceBbox": [
+        311.77,
+        651.26,
+        380.77,
+        691.26
+      ],
+      "sourcePrice": "22.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 22,
+      "priceBbox": [
+        246.84,
+        184.91,
+        297.84,
+        224.91
+      ],
+      "sourcePrice": "3.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 23,
+      "priceBbox": [
+        14.17,
+        147.64,
+        65.17,
+        187.64
+      ],
+      "sourcePrice": "3.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 23,
+      "priceBbox": [
+        164.55,
+        147.64,
+        215.55,
+        187.64
+      ],
+      "sourcePrice": "4.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 23,
+      "priceBbox": [
+        311.77,
+        147.64,
+        359.21,
+        187.64
+      ],
+      "sourcePrice": "7.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 23,
+      "priceBbox": [
+        14.17,
+        387.64,
+        64.45,
+        427.64
+      ],
+      "sourcePrice": "3.39",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 23,
+      "priceBbox": [
+        312.25,
+        387.64,
+        364.17,
+        427.64
+      ],
+      "sourcePrice": "2.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 23,
+      "priceBbox": [
+        162.97,
+        393.16,
+        213.25,
+        433.16
+      ],
+      "sourcePrice": "3.39",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 23,
+      "priceBbox": [
+        14.17,
+        626.69,
+        60.85,
+        666.69
+      ],
+      "sourcePrice": "3.19",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 23,
+      "priceBbox": [
+        162.97,
+        626.69,
+        213.25,
+        666.69
+      ],
+      "sourcePrice": "3.39",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 23,
+      "priceBbox": [
+        311.77,
+        626.69,
+        362.05,
+        666.69
+      ],
+      "sourcePrice": "3.39",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 24,
+      "priceBbox": [
+        344.44,
+        308.25,
+        395.44,
+        348.25
+      ],
+      "sourcePrice": "3.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 25,
+      "priceBbox": [
+        14.33,
+        147.92,
+        65.33,
+        187.92
+      ],
+      "sourcePrice": "3.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 25,
+      "priceBbox": [
+        236.53,
+        147.92,
+        289.25,
+        187.92
+      ],
+      "sourcePrice": "4.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 25,
+      "priceBbox": [
+        14.17,
+        396.62,
+        66.89,
+        436.62
+      ],
+      "sourcePrice": "4.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 25,
+      "priceBbox": [
+        236.72,
+        396.62,
+        287.72,
+        436.62
+      ],
+      "sourcePrice": "3.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 25,
+      "priceBbox": [
+        239.94,
+        630.0,
+        287.38,
+        670.0
+      ],
+      "sourcePrice": "7.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 25,
+      "priceBbox": [
+        14.17,
+        630.08,
+        66.89,
+        670.08
+      ],
+      "sourcePrice": "4.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 32,
+      "priceBbox": [
+        162.63,
+        687.13,
+        249.13,
+        737.13
+      ],
+      "sourcePrice": "24.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 33,
+      "priceBbox": [
+        31.38,
+        687.56,
+        113.43,
+        737.56
+      ],
+      "sourcePrice": "12.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 36,
+      "priceBbox": [
+        14.17,
+        689.15,
+        77.27,
+        739.15
+      ],
+      "sourcePrice": "5.99",
+      "decision": "IGNORE",
+      "reason": "REPEATED_PRODUCT_OR_SECOND_PRICE_LABEL"
+    },
+    {
+      "page": 37,
+      "priceBbox": [
+        248.03,
+        501.52,
+        314.48,
+        551.52
+      ],
+      "sourcePrice": "6.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Śliwki okrągłe, luzem",
+        "ingredientKey": "plum",
+        "ingredientName": "śliwka",
+        "category": "FRUIT",
+        "weighted": true,
+        "amount": "1000",
+        "unit": "g",
+        "price": "6.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": null,
+        "conditions": "Gazetka Lidla 12.11, str. 37. Cena za wskazane opakowanie lub wagę."
+      }
+    },
+    {
+      "page": 37,
+      "priceBbox": [
+        14.17,
+        612.2,
+        80.07,
+        662.2
+      ],
+      "sourcePrice": "4.99",
+      "decision": "IGNORE",
+      "reason": "REPEATED_PRODUCT_OR_SECOND_PRICE_LABEL"
+    },
+    {
+      "page": 37,
+      "priceBbox": [
+        125.36,
+        613.78,
+        185.6,
+        661.78
+      ],
+      "sourcePrice": "2.49",
+      "decision": "IGNORE",
+      "reason": "REPEATED_PRODUCT_OR_SECOND_PRICE_LABEL"
+    },
+    {
+      "page": 37,
+      "priceBbox": [
+        248.03,
+        689.1,
+        325.63,
+        739.1
+      ],
+      "sourcePrice": "11.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Granaty, luzem",
+        "ingredientKey": "pomegranate",
+        "ingredientName": "granat",
+        "category": "FRUIT",
+        "weighted": true,
+        "amount": "1000",
+        "unit": "g",
+        "price": "11.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": "2000",
+        "loyalty": true,
+        "coupon": true,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": "19.99",
+        "conditions": "Gazetka Lidla 12.11, str. 37. Cena za wskazane opakowanie lub wagę. Limit: 2000 g na kupon. Wymagana aplikacja Lidl Plus. Wymagana osobna aktywacja kuponu. Cena poza promocją podana przez sklep: 19.99 zł."
+      }
+    },
+    {
+      "page": 38,
+      "priceBbox": [
+        14.17,
+        239.8,
+        77.27,
+        289.8
+      ],
+      "sourcePrice": "5.99",
+      "decision": "IGNORE",
+      "reason": "REPEATED_PRODUCT_OR_SECOND_PRICE_LABEL"
+    },
+    {
+      "page": 38,
+      "priceBbox": [
+        125.36,
+        241.37,
+        187.66,
+        289.37
+      ],
+      "sourcePrice": "2.99",
+      "decision": "IGNORE",
+      "reason": "REPEATED_PRODUCT_OR_SECOND_PRICE_LABEL"
+    },
+    {
+      "page": 38,
+      "priceBbox": [
+        14.17,
+        514.04,
+        76.92,
+        564.04
+      ],
+      "sourcePrice": "2.49",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Polskie jabłka czerwone, luzem",
+        "ingredientKey": "apple",
+        "ingredientName": "jabłko",
+        "category": "FRUIT",
+        "weighted": true,
+        "amount": "1000",
+        "unit": "g",
+        "price": "2.49",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": null,
+        "conditions": "Gazetka Lidla 12.11, str. 38. Cena za wskazane opakowanie lub wagę."
+      }
+    },
+    {
+      "page": 38,
+      "priceBbox": [
+        260.79,
+        514.04,
+        344.39,
+        564.04
+      ],
+      "sourcePrice": "16.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Nektarynki, luzem",
+        "ingredientKey": "nectarine",
+        "ingredientName": "nektarynka",
+        "category": "FRUIT",
+        "weighted": true,
+        "amount": "1000",
+        "unit": "g",
+        "price": "16.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": null,
+        "conditions": "Gazetka Lidla 12.11, str. 38. Cena za wskazane opakowanie lub wagę."
+      }
+    },
+    {
+      "page": 38,
+      "priceBbox": [
+        14.17,
+        689.1,
+        77.92,
+        739.1
+      ],
+      "sourcePrice": "3.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Polskie gruszki",
+        "ingredientKey": "pear",
+        "ingredientName": "gruszka",
+        "category": "FRUIT",
+        "weighted": false,
+        "amount": "1000",
+        "unit": "g",
+        "price": "3.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-09",
+        "validTo": "2026-11-14",
+        "regularPrice": null,
+        "conditions": "Gazetka Lidla 12.11, str. 38. Cena za wskazane opakowanie lub wagę."
+      }
+    },
+    {
+      "page": 38,
+      "priceBbox": [
+        260.79,
+        689.1,
+        320.09,
+        739.1
+      ],
+      "sourcePrice": "7.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Awokado Hass",
+        "ingredientKey": "avocado",
+        "ingredientName": "awokado",
+        "category": "FRUIT",
+        "weighted": false,
+        "amount": "500",
+        "unit": "g",
+        "price": "7.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": null,
+        "conditions": "Gazetka Lidla 12.11, str. 38. Cena za wskazane opakowanie lub wagę."
+      }
+    },
+    {
+      "page": 39,
+      "priceBbox": [
+        14.17,
+        311.67,
+        79.07,
+        361.67
+      ],
+      "sourcePrice": "2.99",
+      "decision": "IGNORE",
+      "reason": "REPEATED_PRODUCT_OR_SECOND_PRICE_LABEL"
+    },
+    {
+      "page": 39,
+      "priceBbox": [
+        14.17,
+        612.98,
+        75.77,
+        662.98
+      ],
+      "sourcePrice": "3.49",
+      "decision": "IGNORE",
+      "reason": "REPEATED_PRODUCT_OR_SECOND_PRICE_LABEL"
+    },
+    {
+      "page": 39,
+      "priceBbox": [
+        125.36,
+        614.56,
+        182.38,
+        662.56
+      ],
+      "sourcePrice": "1.74",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Kiwi Gold",
+        "ingredientKey": "kiwi-gold",
+        "ingredientName": "kiwi gold",
+        "category": "FRUIT",
+        "weighted": false,
+        "amount": "1",
+        "unit": "pcs",
+        "price": null,
+        "bundlePrice": "3.49",
+        "bundleSize": 2,
+        "minimum": 2,
+        "multiple": 2,
+        "maximum": 6,
+        "maximumAmount": null,
+        "loyalty": true,
+        "coupon": true,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": "3.49",
+        "conditions": "Gazetka Lidla 12.11, str. 39. 1+1 gratis: dokładna cena zestawu 2 szt. = 3.49 zł. Limit: 3 szt. gratis na kupon (6 szt. łącznie). Wymagana aplikacja Lidl Plus. Wymagana osobna aktywacja kuponu. Cena poza promocją podana przez sklep: 3.49 zł."
+      }
+    },
+    {
+      "page": 39,
+      "priceBbox": [
+        247.67,
+        689.1,
+        306.97,
+        739.1
+      ],
+      "sourcePrice": "7.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Pomelo żółte, luzem",
+        "ingredientKey": "pomelo",
+        "ingredientName": "pomelo",
+        "category": "FRUIT",
+        "weighted": true,
+        "amount": "1000",
+        "unit": "g",
+        "price": "7.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": "3000",
+        "loyalty": true,
+        "coupon": true,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": "11.99",
+        "conditions": "Gazetka Lidla 12.11, str. 39. Cena za wskazane opakowanie lub wagę. Limit: 3000 g na kupon. Wymagana aplikacja Lidl Plus. Wymagana osobna aktywacja kuponu. Cena poza promocją podana przez sklep: 11.99 zł."
+      }
+    },
+    {
+      "page": 40,
+      "priceBbox": [
+        14.17,
+        310.26,
+        80.07,
+        360.26
+      ],
+      "sourcePrice": "4.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Cukinia, luzem",
+        "ingredientKey": "zucchini",
+        "ingredientName": "cukinia",
+        "category": "VEGETABLES",
+        "weighted": true,
+        "amount": "1000",
+        "unit": "g",
+        "price": "4.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": "2000",
+        "loyalty": true,
+        "coupon": true,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": null,
+        "conditions": "Gazetka Lidla 12.11, str. 40. Cena za wskazane opakowanie lub wagę. Limit: 2000 g na kupon. Wymagana aplikacja Lidl Plus. Wymagana osobna aktywacja kuponu."
+      }
+    },
+    {
+      "page": 40,
+      "priceBbox": [
+        14.17,
+        689.1,
+        77.92,
+        739.1
+      ],
+      "sourcePrice": "3.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Polska dynia Hokkaido, luzem",
+        "ingredientKey": "hokkaido-squash",
+        "ingredientName": "dynia hokkaido",
+        "category": "VEGETABLES",
+        "weighted": true,
+        "amount": "1000",
+        "unit": "g",
+        "price": "3.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": null,
+        "conditions": "Gazetka Lidla 12.11, str. 40. Cena za wskazane opakowanie lub wagę."
+      }
+    },
+    {
+      "page": 40,
+      "priceBbox": [
+        274.96,
+        689.1,
+        335.91,
+        739.1
+      ],
+      "sourcePrice": "5.49",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Grejpfrut czerwony, luzem",
+        "ingredientKey": "grapefruit",
+        "ingredientName": "grejpfrut czerwony",
+        "category": "FRUIT",
+        "weighted": true,
+        "amount": "1000",
+        "unit": "g",
+        "price": "5.49",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": null,
+        "conditions": "Gazetka Lidla 12.11, str. 40. Cena za wskazane opakowanie lub wagę."
+      }
+    },
+    {
+      "page": 41,
+      "priceBbox": [
+        14.17,
+        310.26,
+        86.12,
+        360.26
+      ],
+      "sourcePrice": "2.39",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Ogórki zielone",
+        "ingredientKey": "cucumber",
+        "ingredientName": "ogórek",
+        "category": "VEGETABLES",
+        "weighted": false,
+        "amount": "1",
+        "unit": "pcs",
+        "price": "2.39",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 2,
+        "multiple": 2,
+        "maximum": 6,
+        "maximumAmount": null,
+        "loyalty": true,
+        "coupon": true,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": "3.99",
+        "conditions": "Gazetka Lidla 12.11, str. 41. Cena za opakowanie przy zakupie co najmniej 2 opak. i wielokrotności 2 opak. Limit: 6 opak. na kupon. Wymagana aplikacja Lidl Plus. Wymagana osobna aktywacja kuponu. Cena poza promocją podana przez sklep: 3.99 zł."
+      }
+    },
+    {
+      "page": 41,
+      "priceBbox": [
+        14.17,
+        499.42,
+        96.22,
+        549.42
+      ],
+      "sourcePrice": "12.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Pomidory koktajlowe kiściowe",
+        "ingredientKey": "tomato",
+        "ingredientName": "pomidor",
+        "category": "VEGETABLES",
+        "weighted": false,
+        "amount": "200",
+        "unit": "g",
+        "price": "12.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": null,
+        "conditions": "Gazetka Lidla 12.11, str. 41. Cena za wskazane opakowanie lub wagę."
+      }
+    },
+    {
+      "page": 41,
+      "priceBbox": [
+        14.17,
+        689.1,
+        74.62,
+        739.1
+      ],
+      "sourcePrice": "1.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Polskie ziemniaki jadalne myte, luzem",
+        "ingredientKey": "potato",
+        "ingredientName": "ziemniak",
+        "category": "VEGETABLES",
+        "weighted": true,
+        "amount": "1000",
+        "unit": "g",
+        "price": "1.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-09",
+        "validTo": "2026-11-14",
+        "regularPrice": null,
+        "conditions": "Gazetka Lidla 12.11, str. 41. Cena za wskazane opakowanie lub wagę."
+      }
+    },
+    {
+      "page": 41,
+      "priceBbox": [
+        269.01,
+        689.1,
+        334.16,
+        739.1
+      ],
+      "sourcePrice": "4.89",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Polska kapusta stożkowa, luzem",
+        "ingredientKey": "pointed-cabbage",
+        "ingredientName": "kapusta stożkowa",
+        "category": "VEGETABLES",
+        "weighted": true,
+        "amount": "1000",
+        "unit": "g",
+        "price": "4.89",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": null,
+        "conditions": "Gazetka Lidla 12.11, str. 41. Cena za wskazane opakowanie lub wagę."
+      }
+    },
+    {
+      "page": 42,
+      "priceBbox": [
+        14.17,
+        472.25,
+        77.27,
+        522.25
+      ],
+      "sourcePrice": "5.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 42,
+      "priceBbox": [
+        247.56,
+        472.25,
+        310.31,
+        522.25
+      ],
+      "sourcePrice": "2.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 42,
+      "priceBbox": [
+        14.24,
+        689.1,
+        77.34,
+        739.1
+      ],
+      "sourcePrice": "5.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 42,
+      "priceBbox": [
+        247.56,
+        689.1,
+        311.31,
+        739.1
+      ],
+      "sourcePrice": "3.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 43,
+      "priceBbox": [
+        14.17,
+        224.33,
+        85.87,
+        274.33
+      ],
+      "sourcePrice": "3.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 43,
+      "priceBbox": [
+        14.17,
+        469.52,
+        78.97,
+        519.52
+      ],
+      "sourcePrice": "2.29",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 43,
+      "priceBbox": [
+        252.28,
+        469.52,
+        321.83,
+        519.52
+      ],
+      "sourcePrice": "3.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 43,
+      "priceBbox": [
+        14.17,
+        689.1,
+        80.62,
+        739.1
+      ],
+      "sourcePrice": "6.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 43,
+      "priceBbox": [
+        252.28,
+        689.1,
+        315.38,
+        739.1
+      ],
+      "sourcePrice": "5.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 44,
+      "priceBbox": [
+        14.17,
+        227.06,
+        75.12,
+        277.06
+      ],
+      "sourcePrice": "5.49",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "DELUXE Chleb z musztardą francuską",
+        "ingredientKey": "mustard-bread",
+        "ingredientName": "chleb z musztardą francuską",
+        "category": "DRY",
+        "weighted": false,
+        "amount": "500",
+        "unit": "g",
+        "price": "5.49",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-09",
+        "validTo": "2026-11-14",
+        "regularPrice": null,
+        "conditions": "Gazetka Lidla 12.11, str. 44. Cena za wskazane opakowanie lub wagę."
+      }
+    },
+    {
+      "page": 44,
+      "priceBbox": [
+        14.17,
+        465.77,
+        85.27,
+        515.77
+      ],
+      "sourcePrice": "3.69",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Chleb górski",
+        "ingredientKey": "mountain-bread",
+        "ingredientName": "chleb górski",
+        "category": "DRY",
+        "weighted": false,
+        "amount": "375",
+        "unit": "g",
+        "price": "3.69",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 2,
+        "multiple": 2,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-09",
+        "validTo": "2026-11-14",
+        "regularPrice": "4.49",
+        "conditions": "Gazetka Lidla 12.11, str. 44. Cena za opakowanie przy zakupie co najmniej 2 opak. i wielokrotności 2 opak. Cena poza promocją podana przez sklep: 4.49 zł."
+      }
+    },
+    {
+      "page": 44,
+      "priceBbox": [
+        242.65,
+        465.77,
+        308.95,
+        515.77
+      ],
+      "sourcePrice": "3.19",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Chleb drwala",
+        "ingredientKey": "lumberjack-bread",
+        "ingredientName": "chleb drwala",
+        "category": "DRY",
+        "weighted": false,
+        "amount": "405",
+        "unit": "g",
+        "price": "3.19",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 2,
+        "multiple": 2,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-09",
+        "validTo": "2026-11-14",
+        "regularPrice": "3.89",
+        "conditions": "Gazetka Lidla 12.11, str. 44. Cena za opakowanie przy zakupie co najmniej 2 opak. i wielokrotności 2 opak. Cena poza promocją podana przez sklep: 3.89 zł."
+      }
+    },
+    {
+      "page": 44,
+      "priceBbox": [
+        14.17,
+        689.1,
+        77.17,
+        739.1
+      ],
+      "sourcePrice": "1.19",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Bułka na zakwasie z wydłużonej fermentacji",
+        "ingredientKey": "sourdough-roll",
+        "ingredientName": "bułka na zakwasie",
+        "category": "DRY",
+        "weighted": false,
+        "amount": "60",
+        "unit": "g",
+        "price": "1.19",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 3,
+        "multiple": 3,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-09",
+        "validTo": "2026-11-14",
+        "regularPrice": "1.39",
+        "conditions": "Gazetka Lidla 12.11, str. 44. Cena za opakowanie przy zakupie co najmniej 3 opak. i wielokrotności 3 opak. Cena poza promocją podana przez sklep: 1.39 zł."
+      }
+    },
+    {
+      "page": 44,
+      "priceBbox": [
+        242.65,
+        689.1,
+        317.3,
+        739.1
+      ],
+      "sourcePrice": "0.79",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Bułka poznańska, XXL",
+        "ingredientKey": "poznan-roll",
+        "ingredientName": "bułka poznańska",
+        "category": "DRY",
+        "weighted": false,
+        "amount": "95",
+        "unit": "g",
+        "price": "0.79",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 6,
+        "multiple": 6,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-09",
+        "validTo": "2026-11-14",
+        "regularPrice": "0.90",
+        "conditions": "Gazetka Lidla 12.11, str. 44. Cena za opakowanie przy zakupie co najmniej 6 opak. i wielokrotności 6 opak. Cena poza promocją podana przez sklep: 0.90 zł."
+      }
+    },
+    {
+      "page": 45,
+      "priceBbox": [
+        15.59,
+        218.55,
+        85.09,
+        268.55
+      ],
+      "sourcePrice": "3.75",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 45,
+      "priceBbox": [
+        238.11,
+        218.55,
+        303.06,
+        268.55
+      ],
+      "sourcePrice": "1.45",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Bułka z wydłużonej fermentacji z oliwą z oliwek",
+        "ingredientKey": "olive-oil-roll",
+        "ingredientName": "bułka z oliwą z oliwek",
+        "category": "DRY",
+        "weighted": false,
+        "amount": "80",
+        "unit": "g",
+        "price": "1.45",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 2,
+        "multiple": 2,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-09",
+        "validTo": "2026-11-14",
+        "regularPrice": "1.65",
+        "conditions": "Gazetka Lidla 12.11, str. 45. Cena za opakowanie przy zakupie co najmniej 2 opak. i wielokrotności 2 opak. Cena poza promocją podana przez sklep: 1.65 zł."
+      }
+    },
+    {
+      "page": 45,
+      "priceBbox": [
+        14.17,
+        465.77,
+        81.17,
+        515.77
+      ],
+      "sourcePrice": "1.25",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Bułka ze skyrem",
+        "ingredientKey": "skyr-roll",
+        "ingredientName": "bułka ze skyrem",
+        "category": "DRY",
+        "weighted": false,
+        "amount": "80",
+        "unit": "g",
+        "price": "1.25",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 4,
+        "multiple": 4,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-09",
+        "validTo": "2026-11-14",
+        "regularPrice": "1.45",
+        "conditions": "Gazetka Lidla 12.11, str. 45. Cena za opakowanie przy zakupie co najmniej 4 opak. i wielokrotności 4 opak. Cena poza promocją podana przez sklep: 1.45 zł."
+      }
+    },
+    {
+      "page": 45,
+      "priceBbox": [
+        238.11,
+        465.77,
+        299.81,
+        515.77
+      ],
+      "sourcePrice": "1.15",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Bułka mleczna",
+        "ingredientKey": "milk-roll",
+        "ingredientName": "bułka mleczna",
+        "category": "DRY",
+        "weighted": false,
+        "amount": "60",
+        "unit": "g",
+        "price": "1.15",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 4,
+        "multiple": 4,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-09",
+        "validTo": "2026-11-14",
+        "regularPrice": "1.29",
+        "conditions": "Gazetka Lidla 12.11, str. 45. Cena za opakowanie przy zakupie co najmniej 4 opak. i wielokrotności 4 opak. Cena poza promocją podana przez sklep: 1.29 zł."
+      }
+    },
+    {
+      "page": 45,
+      "priceBbox": [
+        14.17,
+        689.1,
+        81.67,
+        739.1
+      ],
+      "sourcePrice": "1.79",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 46,
+      "priceBbox": [
+        14.17,
+        421.46,
+        62.01,
+        461.46
+      ],
+      "sourcePrice": "3.45",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 46,
+      "priceBbox": [
+        14.17,
+        659.74,
+        80.42,
+        709.74
+      ],
+      "sourcePrice": "1.49",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Bułka pełnoziarnista Provita z niskim indeksem glikemicznym",
+        "ingredientKey": "provita-roll",
+        "ingredientName": "bułka pełnoziarnista Provita",
+        "category": "DRY",
+        "weighted": false,
+        "amount": "100",
+        "unit": "g",
+        "price": "1.49",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 4,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": "1.75",
+        "conditions": "Gazetka Lidla 12.11, str. 46. Cena za opakowanie przy zakupie co najmniej 4 opak. Cena poza promocją podana przez sklep: 1.75 zł."
+      }
+    },
+    {
+      "page": 46,
+      "priceBbox": [
+        273.61,
+        659.74,
+        328.66,
+        709.74
+      ],
+      "sourcePrice": "1.19",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Bułka wysokobłonnikowa z mąką żytnią, z niskim indeksem glikemicznym",
+        "ingredientKey": "rye-fibre-roll",
+        "ingredientName": "bułka wysokobłonnikowa z mąką żytnią",
+        "category": "DRY",
+        "weighted": false,
+        "amount": "60",
+        "unit": "g",
+        "price": "1.19",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": null,
+        "conditions": "Gazetka Lidla 12.11, str. 46. Cena za wskazane opakowanie lub wagę."
+      }
+    },
+    {
+      "page": 47,
+      "priceBbox": [
+        14.17,
+        151.17,
+        80.07,
+        201.17
+      ],
+      "sourcePrice": "4.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 47,
+      "priceBbox": [
+        14.17,
+        390.05,
+        77.27,
+        440.05
+      ],
+      "sourcePrice": "5.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 47,
+      "priceBbox": [
+        247.89,
+        390.05,
+        307.19,
+        440.05
+      ],
+      "sourcePrice": "7.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 47,
+      "priceBbox": [
+        14.17,
+        655.49,
+        77.92,
+        705.49
+      ],
+      "sourcePrice": "3.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 47,
+      "priceBbox": [
+        247.89,
+        655.49,
+        311.64,
+        705.49
+      ],
+      "sourcePrice": "4.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 48,
+      "priceBbox": [
+        14.17,
+        194.71,
+        80.07,
+        244.71
+      ],
+      "sourcePrice": "4.99",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 48,
+      "priceBbox": [
+        14.17,
+        428.07,
+        73.47,
+        478.07
+      ],
+      "sourcePrice": "7.99",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 48,
+      "priceBbox": [
+        245.91,
+        428.07,
+        330.66,
+        478.07
+      ],
+      "sourcePrice": "10.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "RZEŹNIK Mięso mielone z karkówki",
+        "ingredientKey": "pork-neck-mince",
+        "ingredientName": "mięso mielone z karkówki",
+        "category": "MEAT_FISH",
+        "weighted": false,
+        "amount": "400",
+        "unit": "g",
+        "price": "10.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": 4,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-09",
+        "validTo": "2026-11-14",
+        "regularPrice": "13.99",
+        "conditions": "Gazetka Lidla 12.11, str. 48. Cena za wskazane opakowanie lub wagę. Limit: 4 opak. na paragon. Cena poza promocją podana przez sklep: 13.99 zł."
+      }
+    },
+    {
+      "page": 48,
+      "priceBbox": [
+        14.17,
+        689.1,
+        100.62,
+        739.1
+      ],
+      "sourcePrice": "54.99",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 48,
+      "priceBbox": [
+        245.91,
+        689.1,
+        330.66,
+        739.1
+      ],
+      "sourcePrice": "10.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "DELUXE Burgery cielęce",
+        "ingredientKey": "veal-burger",
+        "ingredientName": "burger cielęcy",
+        "category": "MEAT_FISH",
+        "weighted": false,
+        "amount": "250",
+        "unit": "g",
+        "price": "10.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": 4,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": "14.99",
+        "conditions": "Gazetka Lidla 12.11, str. 48. Cena za wskazane opakowanie lub wagę. Limit: 4 opak. na paragon. Cena poza promocją podana przez sklep: 14.99 zł."
+      }
+    },
+    {
+      "page": 49,
+      "priceBbox": [
+        14.17,
+        194.71,
+        94.42,
+        244.71
+      ],
+      "sourcePrice": "15.99",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 49,
+      "priceBbox": [
+        14.17,
+        428.07,
+        102.77,
+        478.07
+      ],
+      "sourcePrice": "29.90",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 49,
+      "priceBbox": [
+        258.52,
+        428.07,
+        339.42,
+        478.07
+      ],
+      "sourcePrice": "13.99",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 49,
+      "priceBbox": [
+        14.17,
+        689.1,
+        79.52,
+        739.1
+      ],
+      "sourcePrice": "9.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "RZEŹNIK Polski kurczak Biesiadny, z chowu bez antybiotyków – mięso mielone",
+        "ingredientKey": "chicken-mince",
+        "ingredientName": "mięso mielone z kurczaka",
+        "category": "MEAT_FISH",
+        "weighted": false,
+        "amount": "400",
+        "unit": "g",
+        "price": "9.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": 3,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-09",
+        "validTo": "2026-11-14",
+        "regularPrice": "12.99",
+        "conditions": "Gazetka Lidla 12.11, str. 49. Cena za wskazane opakowanie lub wagę. Limit: 3 opak. na paragon. Cena poza promocją podana przez sklep: 12.99 zł."
+      }
+    },
+    {
+      "page": 49,
+      "priceBbox": [
+        258.52,
+        689.1,
+        341.57,
+        739.1
+      ],
+      "sourcePrice": "14.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "RZEŹNIK Rolada indycza z pietruszką",
+        "ingredientKey": "turkey-parsley-roll",
+        "ingredientName": "rolada indycza z pietruszką",
+        "category": "MEAT_FISH",
+        "weighted": false,
+        "amount": "600",
+        "unit": "g",
+        "price": "14.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": 3,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-09",
+        "validTo": "2026-11-14",
+        "regularPrice": "19.99",
+        "conditions": "Gazetka Lidla 12.11, str. 49. Cena za wskazane opakowanie lub wagę. Limit: 3 opak. na paragon. Cena poza promocją podana przez sklep: 19.99 zł."
+      }
+    },
+    {
+      "page": 50,
+      "priceBbox": [
+        173.39,
+        619.29,
+        234.34,
+        669.29
+      ],
+      "sourcePrice": "5.49",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "OLEWNIK Kiełbasa krakowska sucha staropolska",
+        "ingredientKey": "dry-krakowska",
+        "ingredientName": "kiełbasa krakowska sucha staropolska",
+        "category": "MEAT_FISH",
+        "weighted": false,
+        "amount": "100",
+        "unit": "g",
+        "price": "5.49",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": 6,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-09",
+        "validTo": "2026-11-14",
+        "regularPrice": "6.99",
+        "conditions": "Gazetka Lidla 12.11, str. 50. Cena za wskazane opakowanie lub wagę. Limit: 6 opak. na paragon. Cena poza promocją podana przez sklep: 6.99 zł."
+      }
+    },
+    {
+      "page": 50,
+      "priceBbox": [
+        339.01,
+        619.29,
+        404.76,
+        669.29
+      ],
+      "sourcePrice": "8.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "OLEWNIK Kiełbasa myśliwska staropolska",
+        "ingredientKey": "mysliwska-sausage",
+        "ingredientName": "kiełbasa myśliwska staropolska",
+        "category": "MEAT_FISH",
+        "weighted": false,
+        "amount": "220",
+        "unit": "g",
+        "price": "8.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": 6,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-09",
+        "validTo": "2026-11-14",
+        "regularPrice": "10.99",
+        "conditions": "Gazetka Lidla 12.11, str. 50. Cena za wskazane opakowanie lub wagę. Limit: 6 opak. na paragon. Cena poza promocją podana przez sklep: 10.99 zł."
+      }
+    },
+    {
+      "page": 50,
+      "priceBbox": [
+        29.54,
+        680.6,
+        95.29,
+        730.6
+      ],
+      "sourcePrice": "8.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "OLEWNIK Kabanosy staropolskie",
+        "ingredientKey": "kabanos",
+        "ingredientName": "kabanosy staropolskie",
+        "category": "MEAT_FISH",
+        "weighted": false,
+        "amount": "170",
+        "unit": "g",
+        "price": "8.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": 6,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-09",
+        "validTo": "2026-11-14",
+        "regularPrice": "9.99",
+        "conditions": "Gazetka Lidla 12.11, str. 50. Cena za wskazane opakowanie lub wagę. Limit: 6 opak. na paragon. Cena poza promocją podana przez sklep: 9.99 zł."
+      }
+    },
+    {
+      "page": 51,
+      "priceBbox": [
+        14.17,
+        288.74,
+        85.87,
+        338.74
+      ],
+      "sourcePrice": "4.49",
+      "decision": "UNSUPPORTED",
+      "reason": "DIFFERENT_INGREDIENT_VARIANTS_SHARE_ONE_PRICE"
+    },
+    {
+      "page": 51,
+      "priceBbox": [
+        229.61,
+        288.74,
+        312.11,
+        338.74
+      ],
+      "sourcePrice": "19.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "PIKOK Frankfurterki z szynki, XXL",
+        "ingredientKey": "ham-frankfurter",
+        "ingredientName": "frankfurterki z szynki",
+        "category": "MEAT_FISH",
+        "weighted": false,
+        "amount": "700",
+        "unit": "g",
+        "price": "19.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": 6,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": "21.99",
+        "conditions": "Gazetka Lidla 12.11, str. 51. Cena za wskazane opakowanie lub wagę. Limit: 6 opak. na paragon. Cena poza promocją podana przez sklep: 21.99 zł."
+      }
+    },
+    {
+      "page": 51,
+      "priceBbox": [
+        362.24,
+        288.74,
+        422.69,
+        338.74
+      ],
+      "sourcePrice": "1.99",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 51,
+      "priceBbox": [
+        14.17,
+        481.54,
+        99.12,
+        531.54
+      ],
+      "sourcePrice": "14.90",
+      "decision": "IGNORE",
+      "reason": "REPEATED_PRODUCT_OR_SECOND_PRICE_LABEL"
+    },
+    {
+      "page": 51,
+      "priceBbox": [
+        229.61,
+        481.54,
+        295.36,
+        531.54
+      ],
+      "sourcePrice": "8.99",
+      "decision": "UNSUPPORTED",
+      "reason": "DIFFERENT_INGREDIENT_VARIANTS_SHARE_ONE_PRICE"
+    },
+    {
+      "page": 52,
+      "priceBbox": [
+        15.03,
+        239.27,
+        79.33,
+        289.27
+      ],
+      "sourcePrice": "6.49",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 52,
+      "priceBbox": [
+        14.27,
+        439.4,
+        72.67,
+        489.4
+      ],
+      "sourcePrice": "7.39",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 52,
+      "priceBbox": [
+        241.55,
+        439.4,
+        304.65,
+        489.4
+      ],
+      "sourcePrice": "5.99",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 52,
+      "priceBbox": [
+        14.27,
+        689.15,
+        77.12,
+        739.15
+      ],
+      "sourcePrice": "3.79",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 52,
+      "priceBbox": [
+        241.55,
+        689.15,
+        307.45,
+        739.15
+      ],
+      "sourcePrice": "4.99",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 53,
+      "priceBbox": [
+        14.17,
+        239.27,
+        101.62,
+        289.27
+      ],
+      "sourcePrice": "39.90",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 53,
+      "priceBbox": [
+        14.17,
+        439.4,
+        79.07,
+        489.4
+      ],
+      "sourcePrice": "2.99",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 53,
+      "priceBbox": [
+        245.85,
+        439.4,
+        303.0,
+        489.4
+      ],
+      "sourcePrice": "7.49",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 53,
+      "priceBbox": [
+        14.17,
+        689.15,
+        101.97,
+        739.15
+      ],
+      "sourcePrice": "26.99",
+      "decision": "UNSUPPORTED",
+      "reason": "UNKNOWN_PACK_WEIGHT_OR_OPEN_ENDED_VALIDITY"
+    },
+    {
+      "page": 53,
+      "priceBbox": [
+        245.85,
+        689.15,
+        336.3,
+        739.15
+      ],
+      "sourcePrice": "19.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "Krewetki całe gotowane, z głową",
+        "ingredientKey": "cooked-whole-shrimp",
+        "ingredientName": "krewetki całe gotowane z głową",
+        "category": "MEAT_FISH",
+        "weighted": false,
+        "amount": "500",
+        "unit": "g",
+        "price": "19.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 2,
+        "multiple": 2,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": "24.99",
+        "conditions": "Gazetka Lidla 12.11, str. 53. Cena za opakowanie przy zakupie co najmniej 2 opak. i wielokrotności 2 opak. Cena poza promocją podana przez sklep: 24.99 zł."
+      }
+    },
+    {
+      "page": 55,
+      "priceBbox": [
+        14.17,
+        230.55,
+        85.62,
+        280.55
+      ],
+      "sourcePrice": "2.25",
+      "decision": "IGNORE",
+      "reason": "REPEATED_PRODUCT_OR_SECOND_PRICE_LABEL"
+    },
+    {
+      "page": 55,
+      "priceBbox": [
+        240.94,
+        230.55,
+        318.54,
+        280.55
+      ],
+      "sourcePrice": "11.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "SERENADA Ser dojrzewający Królewiecki Szwajcar",
+        "ingredientKey": "krolewiecki-cheese",
+        "ingredientName": "ser Królewiecki Szwajcar",
+        "category": "DAIRY",
+        "weighted": false,
+        "amount": "500",
+        "unit": "g",
+        "price": "11.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": 6,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": "16.99",
+        "conditions": "Gazetka Lidla 12.11, str. 55. Cena za wskazane opakowanie lub wagę. Limit: 6 opak. na paragon. Cena poza promocją podana przez sklep: 16.99 zł."
+      }
+    },
+    {
+      "page": 55,
+      "priceBbox": [
+        14.17,
+        473.67,
+        85.87,
+        523.67
+      ],
+      "sourcePrice": "4.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 55,
+      "priceBbox": [
+        240.94,
+        473.67,
+        321.84,
+        523.67
+      ],
+      "sourcePrice": "13.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "PILOS Holenderska gouda tarta, XXL",
+        "ingredientKey": "gouda",
+        "ingredientName": "ser gouda",
+        "category": "DAIRY",
+        "weighted": false,
+        "amount": "500",
+        "unit": "g",
+        "price": "13.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": 6,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": "15.99",
+        "conditions": "Gazetka Lidla 12.11, str. 55. Cena za wskazane opakowanie lub wagę. Limit: 6 opak. na paragon. Cena poza promocją podana przez sklep: 15.99 zł."
+      }
+    },
+    {
+      "page": 55,
+      "priceBbox": [
+        240.94,
+        689.15,
+        313.79,
+        739.15
+      ],
+      "sourcePrice": "2.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "ŁACIATY Skyr owocowy",
+        "ingredientKey": "fruit-skyr",
+        "ingredientName": "skyr owocowy",
+        "category": "DAIRY",
+        "weighted": false,
+        "amount": "150",
+        "unit": "g",
+        "price": "2.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 2,
+        "multiple": 2,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": "3.49",
+        "conditions": "Gazetka Lidla 12.11, str. 55. Cena za opakowanie przy zakupie co najmniej 2 opak. i wielokrotności 2 opak. Cena poza promocją podana przez sklep: 3.49 zł."
+      }
+    },
+    {
+      "page": 55,
+      "priceBbox": [
+        15.69,
+        690.93,
+        87.39,
+        740.93
+      ],
+      "sourcePrice": "3.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "ŁACIATY Serek proteinowy",
+        "ingredientKey": "protein-cream-cheese",
+        "ingredientName": "serek proteinowy",
+        "category": "DAIRY",
+        "weighted": false,
+        "amount": "135",
+        "unit": "g",
+        "price": "3.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 2,
+        "multiple": 2,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": "4.99",
+        "conditions": "Gazetka Lidla 12.11, str. 55. Cena za opakowanie przy zakupie co najmniej 2 opak. i wielokrotności 2 opak. Cena poza promocją podana przez sklep: 4.99 zł."
+      }
+    },
+    {
+      "page": 56,
+      "priceBbox": [
+        14.17,
+        192.87,
+        116.17,
+        272.87
+      ],
+      "sourcePrice": "3.99",
+      "decision": "UNSUPPORTED",
+      "reason": "REGIONAL_AVAILABILITY"
+    },
+    {
+      "page": 56,
+      "priceBbox": [
+        280.97,
+        210.63,
+        382.97,
+        290.63
+      ],
+      "sourcePrice": "3.99",
+      "decision": "UNSUPPORTED",
+      "reason": "REGIONAL_AVAILABILITY"
+    },
+    {
+      "page": 56,
+      "priceBbox": [
+        215.31,
+        660.09,
+        315.71,
+        740.09
+      ],
+      "sourcePrice": "2.49",
+      "decision": "UNSUPPORTED",
+      "reason": "REGIONAL_AVAILABILITY"
+    },
+    {
+      "page": 57,
+      "priceBbox": [
+        20.13,
+        260.41,
+        123.97,
+        340.41
+      ],
+      "sourcePrice": "2.99",
+      "decision": "UNSUPPORTED",
+      "reason": "REGIONAL_AVAILABILITY"
+    },
+    {
+      "page": 57,
+      "priceBbox": [
+        20.03,
+        568.63,
+        120.43,
+        648.63
+      ],
+      "sourcePrice": "2.49",
+      "decision": "UNSUPPORTED",
+      "reason": "REGIONAL_AVAILABILITY"
+    },
+    {
+      "page": 57,
+      "priceBbox": [
+        152.45,
+        660.09,
+        252.85,
+        740.09
+      ],
+      "sourcePrice": "2.49",
+      "decision": "UNSUPPORTED",
+      "reason": "REGIONAL_AVAILABILITY"
+    },
+    {
+      "page": 57,
+      "priceBbox": [
+        349.8,
+        660.09,
+        450.76,
+        740.09
+      ],
+      "sourcePrice": "5.99",
+      "decision": "UNSUPPORTED",
+      "reason": "REGIONAL_AVAILABILITY"
+    },
+    {
+      "page": 63,
+      "priceBbox": [
+        14.17,
+        251.53,
+        78.47,
+        301.53
+      ],
+      "sourcePrice": "6.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 63,
+      "priceBbox": [
+        235.91,
+        251.53,
+        313.51,
+        301.53
+      ],
+      "sourcePrice": "11.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 63,
+      "priceBbox": [
+        14.24,
+        468.17,
+        91.84,
+        518.17
+      ],
+      "sourcePrice": "11.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 63,
+      "priceBbox": [
+        235.91,
+        468.17,
+        313.51,
+        518.17
+      ],
+      "sourcePrice": "11.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 63,
+      "priceBbox": [
+        14.17,
+        689.1,
+        100.67,
+        739.1
+      ],
+      "sourcePrice": "24.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 63,
+      "priceBbox": [
+        235.84,
+        689.1,
+        322.54,
+        739.1
+      ],
+      "sourcePrice": "29.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 64,
+      "priceBbox": [
+        147.47,
+        227.98,
+        213.92,
+        277.98
+      ],
+      "sourcePrice": "6.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 64,
+      "priceBbox": [
+        287.94,
+        227.98,
+        345.09,
+        277.98
+      ],
+      "sourcePrice": "7.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 64,
+      "priceBbox": [
+        14.24,
+        229.48,
+        74.09,
+        279.48
+      ],
+      "sourcePrice": "1.69",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 64,
+      "priceBbox": [
+        14.24,
+        460.2,
+        90.69,
+        510.2
+      ],
+      "sourcePrice": "17.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 64,
+      "priceBbox": [
+        233.93,
+        460.2,
+        315.98,
+        510.2
+      ],
+      "sourcePrice": "12.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 64,
+      "priceBbox": [
+        14.24,
+        688.51,
+        97.84,
+        738.51
+      ],
+      "sourcePrice": "16.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 65,
+      "priceBbox": [
+        13.03,
+        358.19,
+        78.78,
+        408.19
+      ],
+      "sourcePrice": "8.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 65,
+      "priceBbox": [
+        235.34,
+        358.19,
+        320.09,
+        408.19
+      ],
+      "sourcePrice": "10.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 65,
+      "priceBbox": [
+        14.17,
+        594.43,
+        80.62,
+        644.43
+      ],
+      "sourcePrice": "6.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 65,
+      "priceBbox": [
+        235.34,
+        594.43,
+        298.94,
+        644.43
+      ],
+      "sourcePrice": "8.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 66,
+      "priceBbox": [
+        14.17,
+        250.05,
+        100.87,
+        300.05
+      ],
+      "sourcePrice": "29.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 66,
+      "priceBbox": [
+        250.16,
+        250.05,
+        326.61,
+        300.05
+      ],
+      "sourcePrice": "17.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 66,
+      "priceBbox": [
+        14.17,
+        471.16,
+        100.87,
+        521.16
+      ],
+      "sourcePrice": "29.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 66,
+      "priceBbox": [
+        250.16,
+        471.16,
+        337.86,
+        521.16
+      ],
+      "sourcePrice": "49.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 66,
+      "priceBbox": [
+        14.17,
+        689.1,
+        103.17,
+        739.1
+      ],
+      "sourcePrice": "44.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 67,
+      "priceBbox": [
+        14.17,
+        195.88,
+        77.27,
+        245.88
+      ],
+      "sourcePrice": "5.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 67,
+      "priceBbox": [
+        247.32,
+        195.88,
+        330.22,
+        245.88
+      ],
+      "sourcePrice": "18.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 67,
+      "priceBbox": [
+        14.17,
+        350.68,
+        96.67,
+        400.68
+      ],
+      "sourcePrice": "19.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 67,
+      "priceBbox": [
+        247.32,
+        350.68,
+        332.72,
+        400.68
+      ],
+      "sourcePrice": "59.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 67,
+      "priceBbox": [
+        284.95,
+        682.23,
+        361.4,
+        732.23
+      ],
+      "sourcePrice": "17.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 68,
+      "priceBbox": [
+        238.96,
+        162.58,
+        302.96,
+        212.58
+      ],
+      "sourcePrice": "2.39",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 68,
+      "priceBbox": [
+        14.17,
+        215.56,
+        76.92,
+        265.56
+      ],
+      "sourcePrice": "2.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 68,
+      "priceBbox": [
+        14.17,
+        442.85,
+        80.62,
+        492.85
+      ],
+      "sourcePrice": "6.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 68,
+      "priceBbox": [
+        238.96,
+        442.85,
+        298.26,
+        492.85
+      ],
+      "sourcePrice": "7.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 68,
+      "priceBbox": [
+        14.17,
+        689.1,
+        79.52,
+        739.1
+      ],
+      "sourcePrice": "9.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 68,
+      "priceBbox": [
+        238.96,
+        689.1,
+        322.56,
+        739.1
+      ],
+      "sourcePrice": "16.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 69,
+      "priceBbox": [
+        14.17,
+        258.83,
+        80.62,
+        308.83
+      ],
+      "sourcePrice": "6.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 69,
+      "priceBbox": [
+        233.86,
+        258.83,
+        305.61,
+        308.83
+      ],
+      "sourcePrice": "9.59",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 69,
+      "priceBbox": [
+        14.17,
+        442.85,
+        77.92,
+        492.85
+      ],
+      "sourcePrice": "3.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 69,
+      "priceBbox": [
+        233.86,
+        442.85,
+        314.76,
+        492.85
+      ],
+      "sourcePrice": "13.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 69,
+      "priceBbox": [
+        14.17,
+        689.1,
+        95.07,
+        739.1
+      ],
+      "sourcePrice": "13.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 69,
+      "priceBbox": [
+        233.86,
+        689.1,
+        318.61,
+        739.1
+      ],
+      "sourcePrice": "10.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 70,
+      "priceBbox": [
+        240.9,
+        203.18,
+        306.65,
+        253.18
+      ],
+      "sourcePrice": "8.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 70,
+      "priceBbox": [
+        239.66,
+        380.56,
+        306.11,
+        430.56
+      ],
+      "sourcePrice": "6.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 70,
+      "priceBbox": [
+        14.17,
+        492.08,
+        80.52,
+        542.08
+      ],
+      "sourcePrice": "6.29",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 70,
+      "priceBbox": [
+        14.17,
+        689.1,
+        79.52,
+        739.1
+      ],
+      "sourcePrice": "9.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 70,
+      "priceBbox": [
+        232.91,
+        689.1,
+        318.46,
+        739.1
+      ],
+      "sourcePrice": "11.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 71,
+      "priceBbox": [
+        14.17,
+        318.32,
+        95.97,
+        368.32
+      ],
+      "sourcePrice": "21.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 71,
+      "priceBbox": [
+        149.45,
+        318.32,
+        230.35,
+        368.32
+      ],
+      "sourcePrice": "13.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 71,
+      "priceBbox": [
+        290.08,
+        318.32,
+        376.33,
+        368.32
+      ],
+      "sourcePrice": "22.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 71,
+      "priceBbox": [
+        14.17,
+        492.08,
+        109.67,
+        542.08
+      ],
+      "sourcePrice": "20.39",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 71,
+      "priceBbox": [
+        14.17,
+        655.09,
+        97.12,
+        705.09
+      ],
+      "sourcePrice": "23.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 72,
+      "priceBbox": [
+        234.64,
+        131.12,
+        295.59,
+        181.12
+      ],
+      "sourcePrice": "5.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 72,
+      "priceBbox": [
+        14.17,
+        256.65,
+        75.12,
+        306.65
+      ],
+      "sourcePrice": "5.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 72,
+      "priceBbox": [
+        14.17,
+        437.68,
+        76.92,
+        487.68
+      ],
+      "sourcePrice": "2.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 72,
+      "priceBbox": [
+        234.64,
+        437.68,
+        298.39,
+        487.68
+      ],
+      "sourcePrice": "4.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 72,
+      "priceBbox": [
+        14.24,
+        689.1,
+        73.29,
+        739.1
+      ],
+      "sourcePrice": "7.98",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 72,
+      "priceBbox": [
+        234.71,
+        689.1,
+        314.71,
+        739.1
+      ],
+      "sourcePrice": "15.98",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 73,
+      "priceBbox": [
+        14.17,
+        169.58,
+        79.47,
+        219.58
+      ],
+      "sourcePrice": "4.69",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 73,
+      "priceBbox": [
+        14.17,
+        459.7,
+        78.47,
+        509.7
+      ],
+      "sourcePrice": "6.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 73,
+      "priceBbox": [
+        229.86,
+        459.7,
+        292.61,
+        509.7
+      ],
+      "sourcePrice": "2.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 73,
+      "priceBbox": [
+        14.17,
+        689.1,
+        79.42,
+        739.1
+      ],
+      "sourcePrice": "9.29",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 73,
+      "priceBbox": [
+        229.92,
+        689.1,
+        315.12,
+        739.1
+      ],
+      "sourcePrice": "22.74",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 74,
+      "priceBbox": [
+        242.65,
+        292.01,
+        306.4,
+        342.01
+      ],
+      "sourcePrice": "3.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 74,
+      "priceBbox": [
+        14.17,
+        366.0,
+        98.17,
+        416.0
+      ],
+      "sourcePrice": "23.92",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 74,
+      "priceBbox": [
+        14.17,
+        689.1,
+        102.47,
+        739.1
+      ],
+      "sourcePrice": "20.94",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 74,
+      "priceBbox": [
+        242.65,
+        689.1,
+        319.6,
+        739.1
+      ],
+      "sourcePrice": "19.14",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 75,
+      "priceBbox": [
+        244.72,
+        302.01,
+        310.62,
+        352.01
+      ],
+      "sourcePrice": "4.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 75,
+      "priceBbox": [
+        14.17,
+        366.0,
+        77.27,
+        416.0
+      ],
+      "sourcePrice": "5.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 75,
+      "priceBbox": [
+        14.17,
+        689.1,
+        79.52,
+        739.1
+      ],
+      "sourcePrice": "9.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 75,
+      "priceBbox": [
+        123.31,
+        689.1,
+        184.26,
+        739.1
+      ],
+      "sourcePrice": "5.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 75,
+      "priceBbox": [
+        244.72,
+        689.1,
+        306.32,
+        739.1
+      ],
+      "sourcePrice": "3.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 75,
+      "priceBbox": [
+        358.76,
+        689.1,
+        421.86,
+        739.1
+      ],
+      "sourcePrice": "5.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 76,
+      "priceBbox": [
+        14.24,
+        246.09,
+        71.94,
+        296.09
+      ],
+      "sourcePrice": "5.19",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 76,
+      "priceBbox": [
+        225.71,
+        246.09,
+        288.91,
+        296.09
+      ],
+      "sourcePrice": "9.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 76,
+      "priceBbox": [
+        14.24,
+        441.75,
+        77.34,
+        491.75
+      ],
+      "sourcePrice": "5.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 76,
+      "priceBbox": [
+        225.71,
+        441.75,
+        291.46,
+        491.75
+      ],
+      "sourcePrice": "8.99",
+      "decision": "IGNORE",
+      "reason": "FLAVOURED_SNACK_NOT_GENERIC_MEAL_INGREDIENT"
+    },
+    {
+      "page": 76,
+      "priceBbox": [
+        14.24,
+        689.1,
+        78.54,
+        739.1
+      ],
+      "sourcePrice": "6.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 76,
+      "priceBbox": [
+        225.71,
+        689.1,
+        291.26,
+        739.1
+      ],
+      "sourcePrice": "6.79",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 77,
+      "priceBbox": [
+        14.17,
+        246.09,
+        79.92,
+        296.09
+      ],
+      "sourcePrice": "8.99",
+      "decision": "IGNORE",
+      "reason": "FLAVOURED_SNACK_NOT_GENERIC_MEAL_INGREDIENT"
+    },
+    {
+      "page": 77,
+      "priceBbox": [
+        222.59,
+        246.09,
+        287.94,
+        296.09
+      ],
+      "sourcePrice": "9.99",
+      "decision": "IGNORE",
+      "reason": "FLAVOURED_SNACK_NOT_GENERIC_MEAL_INGREDIENT"
+    },
+    {
+      "page": 77,
+      "priceBbox": [
+        14.17,
+        462.47,
+        95.07,
+        512.47
+      ],
+      "sourcePrice": "13.99",
+      "decision": "IGNORE",
+      "reason": "FLAVOURED_SNACK_NOT_GENERIC_MEAL_INGREDIENT"
+    },
+    {
+      "page": 77,
+      "priceBbox": [
+        222.59,
+        462.47,
+        307.34,
+        512.47
+      ],
+      "sourcePrice": "10.99",
+      "decision": "IGNORE",
+      "reason": "FLAVOURED_SNACK_NOT_GENERIC_MEAL_INGREDIENT"
+    },
+    {
+      "page": 77,
+      "priceBbox": [
+        14.17,
+        659.8,
+        98.02,
+        709.8
+      ],
+      "sourcePrice": "10.79",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "ALESTO Truskawka liofilizowana",
+        "ingredientKey": "freeze-dried-strawberry",
+        "ingredientName": "truskawka liofilizowana",
+        "category": "FRUIT",
+        "weighted": false,
+        "amount": "30",
+        "unit": "g",
+        "price": "10.79",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": null,
+        "conditions": "Gazetka Lidla 12.11, str. 77. Cena za wskazane opakowanie lub wagę."
+      }
+    },
+    {
+      "page": 77,
+      "priceBbox": [
+        222.59,
+        659.8,
+        286.19,
+        709.8
+      ],
+      "sourcePrice": "8.49",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 78,
+      "priceBbox": [
+        14.17,
+        506.52,
+        79.52,
+        556.52
+      ],
+      "sourcePrice": "9.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 78,
+      "priceBbox": [
+        239.89,
+        506.52,
+        316.34,
+        556.52
+      ],
+      "sourcePrice": "17.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 78,
+      "priceBbox": [
+        14.17,
+        689.1,
+        73.47,
+        739.1
+      ],
+      "sourcePrice": "7.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 78,
+      "priceBbox": [
+        239.89,
+        689.1,
+        316.34,
+        739.1
+      ],
+      "sourcePrice": "17.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 79,
+      "priceBbox": [
+        14.17,
+        329.55,
+        102.92,
+        379.55
+      ],
+      "sourcePrice": "69.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 79,
+      "priceBbox": [
+        168.26,
+        329.55,
+        257.01,
+        379.55
+      ],
+      "sourcePrice": "69.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 79,
+      "priceBbox": [
+        337.32,
+        329.55,
+        424.02,
+        379.55
+      ],
+      "sourcePrice": "29.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 79,
+      "priceBbox": [
+        14.17,
+        658.28,
+        87.12,
+        708.28
+      ],
+      "sourcePrice": "4.79",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 79,
+      "priceBbox": [
+        226.77,
+        658.28,
+        309.82,
+        708.28
+      ],
+      "sourcePrice": "14.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 79,
+      "priceBbox": [
+        337.32,
+        658.28,
+        402.22,
+        708.28
+      ],
+      "sourcePrice": "2.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 80,
+      "priceBbox": [
+        14.24,
+        238.92,
+        71.39,
+        288.92
+      ],
+      "sourcePrice": "7.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 80,
+      "priceBbox": [
+        13.67,
+        378.72,
+        79.42,
+        428.72
+      ],
+      "sourcePrice": "8.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 80,
+      "priceBbox": [
+        14.17,
+        518.2,
+        94.42,
+        568.2
+      ],
+      "sourcePrice": "15.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 80,
+      "priceBbox": [
+        13.67,
+        689.46,
+        90.12,
+        739.46
+      ],
+      "sourcePrice": "17.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 81,
+      "priceBbox": [
+        16.51,
+        231.81,
+        98.56,
+        281.81
+      ],
+      "sourcePrice": "12.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 81,
+      "priceBbox": [
+        14.17,
+        465.5,
+        96.22,
+        515.5
+      ],
+      "sourcePrice": "12.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 81,
+      "priceBbox": [
+        253.23,
+        465.5,
+        318.78,
+        515.5
+      ],
+      "sourcePrice": "3.20",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 81,
+      "priceBbox": [
+        14.17,
+        689.1,
+        79.17,
+        739.1
+      ],
+      "sourcePrice": "4.39",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 81,
+      "priceBbox": [
+        253.23,
+        689.1,
+        339.73,
+        739.1
+      ],
+      "sourcePrice": "24.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 82,
+      "priceBbox": [
+        318.31,
+        659.8,
+        381.06,
+        709.8
+      ],
+      "sourcePrice": "2.49",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "KUCHNIA LIDLA Groch łuskany",
+        "ingredientKey": "split-peas",
+        "ingredientName": "groch łuskany",
+        "category": "DRY",
+        "weighted": false,
+        "amount": "500",
+        "unit": "g",
+        "price": "2.49",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 1,
+        "multiple": 1,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-12",
+        "validTo": "2026-11-14",
+        "regularPrice": null,
+        "conditions": "Gazetka Lidla 12.11, str. 82. Cena za wskazane opakowanie lub wagę."
+      }
+    },
+    {
+      "page": 83,
+      "priceBbox": [
+        14.17,
+        170.79,
+        73.07,
+        220.79
+      ],
+      "sourcePrice": "1.59",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 83,
+      "priceBbox": [
+        239.53,
+        170.79,
+        303.18,
+        220.79
+      ],
+      "sourcePrice": "3.29",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 83,
+      "priceBbox": [
+        241.56,
+        318.75,
+        324.06,
+        368.75
+      ],
+      "sourcePrice": "19.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 83,
+      "priceBbox": [
+        14.17,
+        436.46,
+        86.37,
+        486.46
+      ],
+      "sourcePrice": "6.75",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 83,
+      "priceBbox": [
+        14.17,
+        659.8,
+        91.77,
+        709.8
+      ],
+      "sourcePrice": "11.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 83,
+      "priceBbox": [
+        170.7,
+        659.8,
+        236.35,
+        709.8
+      ],
+      "sourcePrice": "5.19",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "HORTEX Warzywa do Airfryera",
+        "ingredientKey": "airfryer-vegetables",
+        "ingredientName": "mieszanka warzyw do airfryera",
+        "category": "VEGETABLES",
+        "weighted": false,
+        "amount": "450",
+        "unit": "g",
+        "price": "5.19",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 2,
+        "multiple": 2,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-09",
+        "validTo": "2026-11-14",
+        "regularPrice": "6.49",
+        "conditions": "Gazetka Lidla 12.11, str. 83. Cena za opakowanie przy zakupie co najmniej 2 opak. i wielokrotności 2 opak. Cena poza promocją podana przez sklep: 6.49 zł."
+      }
+    },
+    {
+      "page": 83,
+      "priceBbox": [
+        324.38,
+        659.8,
+        397.18,
+        709.8
+      ],
+      "sourcePrice": "8.79",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 84,
+      "priceBbox": [
+        157.8,
+        269.58,
+        223.55,
+        319.58
+      ],
+      "sourcePrice": "8.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 84,
+      "priceBbox": [
+        14.17,
+        269.93,
+        80.52,
+        319.93
+      ],
+      "sourcePrice": "6.29",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 84,
+      "priceBbox": [
+        289.13,
+        269.93,
+        361.98,
+        319.93
+      ],
+      "sourcePrice": "2.99",
+      "decision": "PUBLISH",
+      "reason": "SOURCE_FIELDS_AND_INGREDIENT_MAPPING_CHECKED",
+      "offer": {
+        "title": "OWOLOVO Mus owocowy, XXL",
+        "ingredientKey": "fruit-puree",
+        "ingredientName": "mus owocowy",
+        "category": "FRUIT",
+        "weighted": false,
+        "amount": "200",
+        "unit": "g",
+        "price": "2.99",
+        "bundlePrice": null,
+        "bundleSize": null,
+        "minimum": 2,
+        "multiple": 2,
+        "maximum": null,
+        "maximumAmount": null,
+        "loyalty": false,
+        "coupon": false,
+        "validFrom": "2026-11-09",
+        "validTo": "2026-11-21",
+        "regularPrice": "3.45",
+        "conditions": "Gazetka Lidla 12.11, str. 84. Cena za opakowanie przy zakupie co najmniej 2 opak. i wielokrotności 2 opak. Cena poza promocją podana przez sklep: 3.45 zł."
+      }
+    },
+    {
+      "page": 84,
+      "priceBbox": [
+        14.17,
+        436.46,
+        75.12,
+        486.46
+      ],
+      "sourcePrice": "5.49",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 84,
+      "priceBbox": [
+        243.85,
+        436.46,
+        309.75,
+        486.46
+      ],
+      "sourcePrice": "4.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 84,
+      "priceBbox": [
+        14.17,
+        689.1,
+        73.47,
+        739.1
+      ],
+      "sourcePrice": "7.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 84,
+      "priceBbox": [
+        243.85,
+        689.1,
+        309.2,
+        739.1
+      ],
+      "sourcePrice": "9.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 85,
+      "priceBbox": [
+        39.69,
+        176.75,
+        124.44,
+        226.75
+      ],
+      "sourcePrice": "10.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 85,
+      "priceBbox": [
+        39.75,
+        618.24,
+        105.3,
+        668.24
+      ],
+      "sourcePrice": "6.79",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 86,
+      "priceBbox": [
+        14.24,
+        241.61,
+        80.14,
+        291.61
+      ],
+      "sourcePrice": "4.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 86,
+      "priceBbox": [
+        224.95,
+        241.61,
+        284.25,
+        291.61
+      ],
+      "sourcePrice": "7.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 86,
+      "priceBbox": [
+        14.24,
+        463.4,
+        77.09,
+        513.4
+      ],
+      "sourcePrice": "3.79",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 86,
+      "priceBbox": [
+        224.95,
+        463.4,
+        286.55,
+        513.4
+      ],
+      "sourcePrice": "3.49",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 86,
+      "priceBbox": [
+        14.24,
+        689.1,
+        77.44,
+        739.1
+      ],
+      "sourcePrice": "9.49",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 86,
+      "priceBbox": [
+        224.95,
+        689.1,
+        307.0,
+        739.1
+      ],
+      "sourcePrice": "12.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 87,
+      "priceBbox": [
+        14.17,
+        349.55,
+        79.52,
+        399.55
+      ],
+      "sourcePrice": "9.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 87,
+      "priceBbox": [
+        236.12,
+        349.55,
+        322.82,
+        399.55
+      ],
+      "sourcePrice": "29.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 87,
+      "priceBbox": [
+        14.93,
+        689.1,
+        101.63,
+        739.1
+      ],
+      "sourcePrice": "29.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 88,
+      "priceBbox": [
+        14.24,
+        386.01,
+        73.54,
+        436.01
+      ],
+      "sourcePrice": "7.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 88,
+      "priceBbox": [
+        241.01,
+        386.01,
+        306.76,
+        436.01
+      ],
+      "sourcePrice": "8.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 88,
+      "priceBbox": [
+        14.24,
+        660.76,
+        94.49,
+        710.76
+      ],
+      "sourcePrice": "15.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 88,
+      "priceBbox": [
+        170.15,
+        660.76,
+        235.9,
+        710.76
+      ],
+      "sourcePrice": "8.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 88,
+      "priceBbox": [
+        327.33,
+        660.76,
+        392.68,
+        710.76
+      ],
+      "sourcePrice": "9.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 89,
+      "priceBbox": [
+        14.24,
+        216.38,
+        96.29,
+        266.38
+      ],
+      "sourcePrice": "12.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 89,
+      "priceBbox": [
+        229.68,
+        216.38,
+        314.43,
+        266.38
+      ],
+      "sourcePrice": "10.99",
+      "decision": "UNSUPPORTED",
+      "reason": "NO_EXPLICIT_VALIDITY_END_OR_UNAMBIGUOUS_PACK"
+    },
+    {
+      "page": 89,
+      "priceBbox": [
+        14.24,
+        416.02,
+        79.99,
+        466.02
+      ],
+      "sourcePrice": "8.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 89,
+      "priceBbox": [
+        229.68,
+        416.02,
+        295.03,
+        466.02
+      ],
+      "sourcePrice": "9.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 89,
+      "priceBbox": [
+        14.24,
+        660.76,
+        75.84,
+        710.76
+      ],
+      "sourcePrice": "3.49",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 89,
+      "priceBbox": [
+        175.82,
+        660.76,
+        257.87,
+        710.76
+      ],
+      "sourcePrice": "12.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 89,
+      "priceBbox": [
+        302.43,
+        660.76,
+        367.78,
+        710.76
+      ],
+      "sourcePrice": "9.99",
+      "decision": "IGNORE",
+      "reason": "OUTSIDE_MEAL_INGREDIENT_SCOPE"
+    },
+    {
+      "page": 90,
+      "priceBbox": [
+        14.24,
+        314.28,
+        90.69,
+        364.28
+      ],
+      "sourcePrice": "17.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 90,
+      "priceBbox": [
+        281.56,
+        314.28,
+        363.36,
+        364.28
+      ],
+      "sourcePrice": "21.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 90,
+      "priceBbox": [
+        200.55,
+        506.08,
+        263.65,
+        556.08
+      ],
+      "sourcePrice": "5.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 90,
+      "priceBbox": [
+        14.17,
+        689.1,
+        104.62,
+        739.1
+      ],
+      "sourcePrice": "19.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 90,
+      "priceBbox": [
+        200.55,
+        689.1,
+        261.5,
+        739.1
+      ],
+      "sourcePrice": "5.49",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 91,
+      "priceBbox": [
+        246.61,
+        444.02,
+        324.21,
+        494.02
+      ],
+      "sourcePrice": "11.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 91,
+      "priceBbox": [
+        14.17,
+        689.1,
+        106.87,
+        739.1
+      ],
+      "sourcePrice": "10.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 91,
+      "priceBbox": [
+        246.61,
+        689.1,
+        334.81,
+        739.1
+      ],
+      "sourcePrice": "15.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 92,
+      "priceBbox": [
+        14.24,
+        250.56,
+        94.89,
+        300.56
+      ],
+      "sourcePrice": "27.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 92,
+      "priceBbox": [
+        232.18,
+        250.56,
+        312.43,
+        300.56
+      ],
+      "sourcePrice": "15.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 92,
+      "priceBbox": [
+        14.24,
+        461.83,
+        99.79,
+        511.83
+      ],
+      "sourcePrice": "39.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 92,
+      "priceBbox": [
+        232.18,
+        461.83,
+        321.18,
+        511.83
+      ],
+      "sourcePrice": "44.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 92,
+      "priceBbox": [
+        14.17,
+        689.1,
+        102.92,
+        739.1
+      ],
+      "sourcePrice": "69.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 92,
+      "priceBbox": [
+        230.14,
+        689.1,
+        318.54,
+        739.1
+      ],
+      "sourcePrice": "99.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 93,
+      "priceBbox": [
+        14.17,
+        225.92,
+        99.72,
+        275.92
+      ],
+      "sourcePrice": "39.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 93,
+      "priceBbox": [
+        250.6,
+        225.92,
+        336.15,
+        275.92
+      ],
+      "sourcePrice": "39.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 93,
+      "priceBbox": [
+        14.24,
+        393.0,
+        100.94,
+        443.0
+      ],
+      "sourcePrice": "29.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 93,
+      "priceBbox": [
+        250.67,
+        393.0,
+        337.37,
+        443.0
+      ],
+      "sourcePrice": "29.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 93,
+      "priceBbox": [
+        14.24,
+        583.87,
+        102.04,
+        633.87
+      ],
+      "sourcePrice": "26.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 93,
+      "priceBbox": [
+        250.67,
+        584.52,
+        337.17,
+        634.52
+      ],
+      "sourcePrice": "24.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 94,
+      "priceBbox": [
+        14.24,
+        249.35,
+        101.09,
+        299.35
+      ],
+      "sourcePrice": "34.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 94,
+      "priceBbox": [
+        213.54,
+        249.35,
+        299.99,
+        299.35
+      ],
+      "sourcePrice": "54.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 94,
+      "priceBbox": [
+        14.24,
+        489.55,
+        90.69,
+        539.55
+      ],
+      "sourcePrice": "17.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 94,
+      "priceBbox": [
+        160.7,
+        489.55,
+        245.15,
+        539.55
+      ],
+      "sourcePrice": "25.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 94,
+      "priceBbox": [
+        308.57,
+        489.55,
+        394.12,
+        539.55
+      ],
+      "sourcePrice": "39.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 94,
+      "priceBbox": [
+        14.24,
+        689.1,
+        94.14,
+        739.1
+      ],
+      "sourcePrice": "12.49",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    },
+    {
+      "page": 94,
+      "priceBbox": [
+        213.54,
+        689.1,
+        289.99,
+        739.1
+      ],
+      "sourcePrice": "17.99",
+      "decision": "IGNORE",
+      "reason": "NON_FOOD"
+    }
+  ],
+  "unmatchedPriceAnchors": 10,
+  "unmatchedPolicy": "No publication without an identified product and an independently reviewed source anchor.",
+  "nonNumericPromotionPages": [
+    4,
+    5,
+    8,
+    10,
+    11,
+    12,
+    13,
+    15,
+    18,
+    58,
+    59,
+    60,
+    61,
+    62
+  ]
+}

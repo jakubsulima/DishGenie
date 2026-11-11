@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useFridge } from "../context/fridgeContext";
 import { useUser } from "../context/context";
+import { useOffersAccess } from "../context/offersAccessContext";
 import type { WeekException } from "../lib/weekCycle";
 import { durableIntent, readyPortions, type ReadyPortions } from "../lib/weekCycle";
 import DealSelection from "./DealSelection";
@@ -13,6 +14,7 @@ export default function MealPlanForm({ busy, onCreate, initialSettings, onDraftC
   const { t, locale } = useLanguage();
   const advanced = useRef<HTMLDetailsElement>(null);
   const { user } = useUser();
+  const offersAvailable = useOffersAccess();
   const { fridgeItems, updateFridgeItem, removeFridgeItem } = useFridge();
   const [exceptionDate, setExceptionDate] = useState<string | null>(null);
   const [weekExceptions, setWeekExceptions] = useState<WeekException[]>([]);
@@ -56,16 +58,17 @@ export default function MealPlanForm({ busy, onCreate, initialSettings, onDraftC
   const clearOffers = () => { setSelectedOffers([]); setConfirmedCouponOffers([]); };
   const today = localDateInput();
   const nextWeek = localDateInput(7);
-  const latestShoppingDate = planningMode === "PRACTICAL" ? startDate : startDate < nextWeek ? startDate : nextWeek;
+  const effectiveMode = offersAvailable ? planningMode : "PRACTICAL";
+  const latestShoppingDate = effectiveMode === "PRACTICAL" ? startDate : startDate < nextWeek ? startDate : nextWeek;
   const historicalShopping = Boolean(initialSettings && (initialSettings.startDate < today
     || initialSettings.shopping?.shoppingDate && initialSettings.shopping.shoppingDate < today));
   const inputClass = "mt-1 w-full rounded-lg border border-primary/20 bg-white p-3 text-primary";
   const submit = (event: FormEvent) => {
     event.preventDefault();
     const fields = { startDate, dayCount, servings, budget: budget === "" ? null : Number(budget), maxMinutes, mealTypes: meals, stores, locale: initialSettings?.locale ?? "pl" as const,
-      planningMode, budgetMode: budget === "" ? "NONE" as const : "SOFT" as const,
+      planningMode: effectiveMode, budgetMode: budget === "" ? "NONE" as const : "SOFT" as const,
       weekExceptions: weekExceptions.filter(e => e.date >= startDate && e.date < localDateAfter(startDate, dayCount) && meals.includes(e.mealType)), priorityFridgeIds,
-      shopping: { shoppingDate: shoppingDate || null, maxStores, loyaltyStores, confirmedCouponOffers, selectedOffers, allowRepeats } };
+      shopping: { shoppingDate: shoppingDate || null, maxStores, loyaltyStores, confirmedCouponOffers: offersAvailable ? confirmedCouponOffers : [], selectedOffers: offersAvailable ? selectedOffers : [], allowRepeats } };
     const intent = initialSettings ? { body: fields, requestId: initialSettings.requestId } : durableIntent(`form:${user?.id ?? "current"}`, fields);
     onCreate({ ...intent.body, requestId: intent.requestId });
   };
@@ -119,7 +122,7 @@ export default function MealPlanForm({ busy, onCreate, initialSettings, onDraftC
           {!fridgeItems.length && <p>{t("Your fridge is empty.")}</p>}
         </details>
       </>}
-        <label>{t("Planning style")}<select className={inputClass} value={planningMode} onChange={e => { setPlanningMode(e.target.value as "PRACTICAL"|"PROMOTIONS_FIRST"); clearOffers(); }}><option value="PRACTICAL">{t("Practical week — prices optional")}</option><option value="PROMOTIONS_FIRST">{t("Plan from promotions")}</option></select></label>
+        <label>{t("Planning style")}<select className={inputClass} value={effectiveMode} onChange={e => { setPlanningMode(e.target.value as "PRACTICAL"|"PROMOTIONS_FIRST"); clearOffers(); }}><option value="PRACTICAL">{t("Practical week — prices optional")}</option>{offersAvailable && <option value="PROMOTIONS_FIRST">{t("Plan from promotions")}</option>}</select></label>
         <label>{t("Maximum minutes per meal")}<input type="number" required min={5} max={240} value={maxMinutes} onChange={e => setMaxMinutes(Number(e.target.value))} className={inputClass} /></label>
       <div className="grid gap-6 sm:grid-cols-2">
         <div><label htmlFor="plan-budget">{t("Budget for this plan (PLN)")}</label>
@@ -144,7 +147,7 @@ export default function MealPlanForm({ busy, onCreate, initialSettings, onDraftC
         <p className="mt-2 text-sm">{t("A loyalty card does not activate coupons. Confirm each required coupon separately.")}</p>
       </fieldset>
       <label className="flex items-center gap-2"><input type="checkbox" checked={allowRepeats} onChange={e => setAllowRepeats(e.target.checked)} />{t("Allow repeated meals")}</label>
-      <DealSelection stores={stores} shoppingDate={shoppingDate} loyaltyStores={loyaltyStores} selected={selectedOffers} confirmed={confirmedCouponOffers} onSelected={setSelectedOffers} onConfirmed={setConfirmedCouponOffers} />
+      {offersAvailable && <DealSelection stores={stores} shoppingDate={shoppingDate} loyaltyStores={loyaltyStores} selected={selectedOffers} confirmed={confirmedCouponOffers} onSelected={setSelectedOffers} onConfirmed={setConfirmedCouponOffers} />}
       <p className="rounded-xl bg-amber-50 p-4 text-sm text-amber-950">{t("Budget is optional and never blocks your plan. We remember these settings on your account.")}</p>
         </div>
       </details>

@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @EnabledIfEnvironmentVariable(named = "RUN_LIVE_PRICE_SMOKE", matches = "1")
 @SpringBootTest(properties = {"spring.datasource.url=jdbc:h2:mem:live-price-smoke", "security.jwt.token.secret-key=live-price-smoke-secret-key-at-least-32-characters",
-        "posthog.enabled=false", "spring.jpa.show-sql=false", "app.planner.jobs-enabled=false", "app.offers.lidl-price-import-enabled=true", "app.offers.initial-delay-ms=86400000"})
+        "posthog.enabled=false", "spring.jpa.show-sql=false", "app.planner.jobs-enabled=false", "app.offers.lidl-price-import-enabled=true", "app.offers.lidl-leaflet-import-enabled=false", "app.offers.initial-delay-ms=86400000"})
 class LivePriceCatalogSmokeIT {
     @Autowired LidlPriceCatalogService catalog;
     @Autowired StoreOfferService offers;
@@ -28,6 +28,11 @@ class LivePriceCatalogSmokeIT {
         var imported = catalog.refresh(true); assertThat(imported.published()).isPositive();
         assertThat(imported.status()).isEqualTo("LIVE_PARTIAL");
         LocalDate today = LocalDate.now(ZoneId.of("Europe/Warsaw"));
+        var catalogOffers = java.util.stream.IntStream.rangeClosed(0, 7).boxed()
+                .flatMap(day -> offers.eligible(Set.of(Store.LIDL), today.plusDays(day), Instant.now()).stream())
+                .collect(java.util.stream.Collectors.toMap(StoreOfferDto.Offer::id, o -> o, (a, b) -> a)).values();
+        System.out.println("LIVE_PRICE_COVERAGE: products=" + catalogOffers.stream().map(o -> o.details().sourceUrl()).distinct().count()
+                + ", categories=" + catalogOffers.stream().map(o -> o.details().category()).collect(java.util.stream.Collectors.toSet()));
         var offer = java.util.stream.IntStream.rangeClosed(0, 7).boxed()
                 .flatMap(day -> offers.eligible(Set.of(Store.LIDL), today.plusDays(day), Instant.now()).stream())
                 .filter(o -> !o.details().loyaltyRequired() && !Boolean.TRUE.equals(o.details().couponRequired())).findFirst().orElseThrow();

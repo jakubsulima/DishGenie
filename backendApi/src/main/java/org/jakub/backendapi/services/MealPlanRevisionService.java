@@ -116,7 +116,7 @@ public class MealPlanRevisionService {
             var shoppingAfter = plans.previewShopping(email, planId, slots);
             var date = settings.shopping().shoppingDate() == null ? LocalDate.now(ZoneId.of("Europe/Warsaw")) : settings.shopping().shoppingDate();
             var quoteRequest = new StoreOfferDto.QuoteRequest(plan.version(), date, settings.shopping().loyaltyStores(), settings.shopping().confirmedCouponOffers());
-            var now = Instant.now(); var available = offers.eligible(settings.stores(), date, now);
+            var now = Instant.now(); var available = offers.eligibleForUser(email, settings.stores(), date, now);
             var beforeView = new View(plan.id(), plan.version(), plan.createdAt(), new Document(2, settings, plan.plan().status(), plan.plan().slots(), shoppingBefore));
             var afterView = new View(plan.id(), plan.version(), plan.createdAt(), new Document(2, settings, plan.plan().status(), slots, shoppingAfter));
             var preview = new RevisionPreview(input.requestId(), input.version(), slotId, slot.recipe(), after,

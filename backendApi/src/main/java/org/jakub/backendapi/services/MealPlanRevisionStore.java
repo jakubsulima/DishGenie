@@ -63,7 +63,7 @@ public class MealPlanRevisionStore {
         if (preview == null || !preview.expiresAt().isAfter(Instant.now()) || preview.planVersion() != input.version()) throw error(HttpStatus.CONFLICT);
         var plan = plans.get(email, planId);
         if (preview.quoteAfter() != null) {
-            var available = offers.eligible(plan.plan().settings().stores(), preview.quoteAfter().shoppingDate(), Instant.now());
+            var available = offers.eligibleForUser(email, plan.plan().settings().stores(), preview.quoteAfter().shoppingDate(), Instant.now());
             var used = preview.quoteAfter().baskets().stream().flatMap(b -> b.items().stream()).map(i -> i.offer()).filter(Objects::nonNull).toList();
             if (used.stream().anyMatch(old -> available.stream().noneMatch(current -> current.id().equals(old.id()) && current.version() == old.version()))) throw error(HttpStatus.CONFLICT);
         }

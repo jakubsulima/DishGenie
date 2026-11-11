@@ -30,12 +30,17 @@ export interface PlanQuote {
 export const quoteMealPlan = (plan: MealPlan, shoppingDate: string, loyaltyStores: PlanStore[]) =>
   apiClient<PlanQuote>(`v${plan.plan.schemaVersion >= 4 ? 4 : 3}/meal-plans/${plan.id}/quote-preview`, true,
     { version: plan.version, shoppingDate, loyaltyStores, confirmedCouponOffers: plan.plan.settings.shopping?.confirmedCouponOffers ?? [] }, { timeoutMs: 60_000 });
-export const refreshStorePrices = () => apiClient("v2/offers/reload-prices", true, {}, { timeoutMs: 60_000 });
+export const refreshStorePrices = () => apiClient("v2/offers/reload-prices", true, {}, { timeoutMs: 120_000 });
 export const savePlanPrice = (plan: MealPlan, input: { key: string; store: PlanStore; shoppingDate: string; packageAmount: number; packagePrice: number }) =>
   apiClient<MealPlan>(`v${plan.plan.schemaVersion >= 4 ? 4 : 3}/meal-plans/${plan.id}/prices`, true, { version: plan.version, ...input });
 export const removePlanPrice = (plan: MealPlan, id: string) =>
   apiClient<MealPlan>(`v${plan.plan.schemaVersion >= 4 ? 4 : 3}/meal-plans/${plan.id}/prices/${id}/remove`, true, { version: plan.version });
 
 export interface CatalogOffer { id: string; version: number; details: StoreOfferDetails; sourceType?: string; ingredientKey?: string | null }
+export interface LeafletImportSummary {
+  title: string; sourceUrl: string; pdfSha256: string; startDate?: string; pages: number; candidates: number;
+  reviewedCandidates: number; products: number; priceVariants: number; excludedReasons: Record<string, number>;
+  importSeconds: number; paidApiCostUsd: string; cacheHit: boolean;
+}
 export const getOffers = (stores: PlanStore[], shoppingDate: string) =>
-  apiClient<{ offers: CatalogOffer[]; sourceStatus: string }>(`v2/offers?stores=${stores.join(",")}&shoppingDate=${shoppingDate}`, false, null, { timeoutMs: 60_000 });
+  apiClient<{ offers: CatalogOffer[]; sourceStatus: string; importSummary?: LeafletImportSummary | null }>(`v2/offers?stores=${stores.join(",")}&shoppingDate=${shoppingDate}`, false, null, { timeoutMs: 120_000 });

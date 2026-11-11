@@ -20,7 +20,15 @@ public class LidlPriceParser {
     public record Price(String productId, String variant, String title, PriceIngredientKeys.Product ingredient,
                         BigDecimal amount, String unit, BigDecimal price, int minimum, int multiple,
                         Integer maximum, BigDecimal maximumAmount, boolean loyalty, boolean coupon,
-                        LocalDate from, LocalDate to, String sourceUrl, String conditions) {}
+                        LocalDate from, LocalDate to, String sourceUrl, String conditions, BigDecimal bundlePrice, Integer bundleSize) {
+        public Price(String productId, String variant, String title, PriceIngredientKeys.Product ingredient,
+                     BigDecimal amount, String unit, BigDecimal price, int minimum, int multiple,
+                     Integer maximum, BigDecimal maximumAmount, boolean loyalty, boolean coupon,
+                     LocalDate from, LocalDate to, String sourceUrl, String conditions) {
+            this(productId, variant, title, ingredient, amount, unit, price, minimum, multiple, maximum,
+                    maximumAmount, loyalty, coupon, from, to, sourceUrl, conditions, null, null);
+        }
+    }
 
     public List<Price> parse(JsonNode product, Instant now) {
         String title = product.path("keyfacts").path("title").asText("");

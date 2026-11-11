@@ -58,7 +58,7 @@ public class ShoppingTripService {
                 var date=d.settings().shopping().shoppingDate();if(date==null||date.isBefore(LocalDate.now(ZoneId.of("Europe/Warsaw"))))date=LocalDate.now(ZoneId.of("Europe/Warsaw"));
                 var input=new org.jakub.backendapi.dto.StoreOfferDto.QuoteRequest(plan.getVersion(),date,d.settings().shopping().loyaltyStores(),d.settings().shopping().confirmedCouponOffers());
                 // Use available saved prices only. Opening a visit never refreshes a remote catalog.
-                currentQuote=pricing.calculateForUser(email,new View(plan.getId(),plan.getVersion(),plan.getCreatedAt(),d.withSlots(d.slots(),d.status(),requirements)),input,offers.eligible(d.settings().stores(),date,Instant.now()),Instant.now());
+                currentQuote=pricing.calculateForUser(email,new View(plan.getId(),plan.getVersion(),plan.getCreatedAt(),d.withSlots(d.slots(),d.status(),requirements)),input,offers.eligibleForUser(email, d.settings().stores(),date,Instant.now()),Instant.now());
             }
             if(plan!=null) for(var need:requirements.items()) {
                 String identity=identity(need.name(),need.unit(),d.settings().locale());

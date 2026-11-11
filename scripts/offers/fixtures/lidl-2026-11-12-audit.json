@@ -1,0 +1,1044 @@
+{
+  "pdfSha256": "7d3f8c3749d977c09111462714f45cdf9989786d87f36405721c66fa8bd7442b",
+  "method": "Visual comparison against rendered source pages; convenience sample of complete food records plus one difficult 1+1 case. Not a random sample and not a recall measurement.",
+  "reviewer": "Codex source-image audit, 2026-11-11",
+  "fieldsChecked": [
+    "name",
+    "advertisedPrice",
+    "quantity.amount",
+    "quantity.unit",
+    "quantity.meaning",
+    "validity.from",
+    "validity.to",
+    "minimumItems",
+    "multipleItems",
+    "loyaltyRequired",
+    "couponRequired",
+    "limit"
+  ],
+  "records": [
+    {
+      "page": 6,
+      "priceBbox": [
+        14.17,
+        311.24,
+        118.01,
+        391.24
+      ],
+      "expected": {
+        "name": "Banany, luzem",
+        "advertisedPrice": "2.99",
+        "quantity.amount": "1000",
+        "quantity.unit": "g",
+        "quantity.meaning": "WEIGHT_PRICE_BASIS",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": true,
+        "couponRequired": true,
+        "limit": {
+          "value": "2",
+          "unit": "kg"
+        }
+      }
+    },
+    {
+      "page": 6,
+      "priceBbox": [
+        14.17,
+        656.12,
+        115.13,
+        736.12
+      ],
+      "expected": {
+        "name": "Mandarynki, luzem",
+        "advertisedPrice": "5.99",
+        "quantity.amount": "1000",
+        "quantity.unit": "g",
+        "quantity.meaning": "WEIGHT_PRICE_BASIS",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": true,
+        "couponRequired": true,
+        "limit": {
+          "value": "3",
+          "unit": "kg"
+        }
+      }
+    },
+    {
+      "page": 8,
+      "priceBbox": [
+        14.17,
+        660.61,
+        150.09,
+        740.61
+      ],
+      "expected": {
+        "name": "PIKOK Kiełbasa śląska, XXL",
+        "advertisedPrice": "14.90",
+        "quantity.amount": "1500",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": {
+          "value": "3",
+          "unit": "opak."
+        }
+      }
+    },
+    {
+      "page": 9,
+      "priceBbox": [
+        14.17,
+        657.47,
+        128.49,
+        737.47
+      ],
+      "expected": {
+        "name": "ŁACIATE Mleko UHT 3,2%",
+        "advertisedPrice": "2.25",
+        "quantity.amount": "1000",
+        "quantity.unit": "ml",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-25",
+        "minimumItems": 6,
+        "multipleItems": 6,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": {
+          "value": "12",
+          "unit": "opak."
+        }
+      }
+    },
+    {
+      "page": 9,
+      "priceBbox": [
+        14.17,
+        311.48,
+        147.05,
+        391.48
+      ],
+      "expected": {
+        "name": "MLEKOVITA Ser gouda Kuchmistrza w plastrach, XXL",
+        "advertisedPrice": "14.99",
+        "quantity.amount": "1000",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": {
+          "value": "3",
+          "unit": "opak."
+        }
+      }
+    },
+    {
+      "page": 36,
+      "priceBbox": [
+        14.17,
+        689.15,
+        77.27,
+        739.15
+      ],
+      "expected": {
+        "name": "Mandarynki, luzem",
+        "advertisedPrice": "5.99",
+        "quantity.amount": "1000",
+        "quantity.unit": "g",
+        "quantity.meaning": "WEIGHT_PRICE_BASIS",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": true,
+        "couponRequired": true,
+        "limit": {
+          "value": "3",
+          "unit": "kg"
+        }
+      }
+    },
+    {
+      "page": 37,
+      "priceBbox": [
+        248.03,
+        501.52,
+        314.48,
+        551.52
+      ],
+      "expected": {
+        "name": "Śliwki okrągłe, luzem",
+        "advertisedPrice": "6.99",
+        "quantity.amount": "1000",
+        "quantity.unit": "g",
+        "quantity.meaning": "WEIGHT_PRICE_BASIS",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 38,
+      "priceBbox": [
+        260.79,
+        514.04,
+        344.39,
+        564.04
+      ],
+      "expected": {
+        "name": "Nektarynki, luzem",
+        "advertisedPrice": "16.99",
+        "quantity.amount": "1000",
+        "quantity.unit": "g",
+        "quantity.meaning": "WEIGHT_PRICE_BASIS",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 38,
+      "priceBbox": [
+        260.79,
+        689.1,
+        320.09,
+        739.1
+      ],
+      "expected": {
+        "name": "Awokado Hass",
+        "advertisedPrice": "7.99",
+        "quantity.amount": "500",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 38,
+      "priceBbox": [
+        14.17,
+        514.04,
+        76.92,
+        564.04
+      ],
+      "expected": {
+        "name": "Polskie jabłka czerwone, luzem",
+        "advertisedPrice": "2.49",
+        "quantity.amount": "1000",
+        "quantity.unit": "g",
+        "quantity.meaning": "WEIGHT_PRICE_BASIS",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 38,
+      "priceBbox": [
+        14.17,
+        689.1,
+        77.92,
+        739.1
+      ],
+      "expected": {
+        "name": "Polskie gruszki",
+        "advertisedPrice": "3.99",
+        "quantity.amount": "1000",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-09",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 39,
+      "priceBbox": [
+        14.17,
+        311.67,
+        79.07,
+        361.67
+      ],
+      "expected": {
+        "name": "Banany, luzem",
+        "advertisedPrice": "2.99",
+        "quantity.amount": "1000",
+        "quantity.unit": "g",
+        "quantity.meaning": "WEIGHT_PRICE_BASIS",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": true,
+        "couponRequired": true,
+        "limit": {
+          "value": "2",
+          "unit": "kg"
+        }
+      }
+    },
+    {
+      "page": 40,
+      "priceBbox": [
+        14.17,
+        689.1,
+        77.92,
+        739.1
+      ],
+      "expected": {
+        "name": "Polska dynia Hokkaido, luzem",
+        "advertisedPrice": "3.99",
+        "quantity.amount": "1000",
+        "quantity.unit": "g",
+        "quantity.meaning": "WEIGHT_PRICE_BASIS",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 40,
+      "priceBbox": [
+        14.17,
+        310.26,
+        80.07,
+        360.26
+      ],
+      "expected": {
+        "name": "Cukinia, luzem",
+        "advertisedPrice": "4.99",
+        "quantity.amount": "1000",
+        "quantity.unit": "g",
+        "quantity.meaning": "WEIGHT_PRICE_BASIS",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": true,
+        "couponRequired": true,
+        "limit": {
+          "value": "2",
+          "unit": "kg"
+        }
+      }
+    },
+    {
+      "page": 41,
+      "priceBbox": [
+        14.17,
+        689.1,
+        74.62,
+        739.1
+      ],
+      "expected": {
+        "name": "Polskie ziemniaki jadalne myte, luzem",
+        "advertisedPrice": "1.99",
+        "quantity.amount": "1000",
+        "quantity.unit": "g",
+        "quantity.meaning": "WEIGHT_PRICE_BASIS",
+        "validity.from": "2026-11-09",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 41,
+      "priceBbox": [
+        14.17,
+        499.42,
+        96.22,
+        549.42
+      ],
+      "expected": {
+        "name": "Pomidory koktajlowe kiściowe",
+        "advertisedPrice": "12.99",
+        "quantity.amount": "200",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 41,
+      "priceBbox": [
+        14.17,
+        310.26,
+        86.12,
+        360.26
+      ],
+      "expected": {
+        "name": "Ogórki zielone",
+        "advertisedPrice": "2.39",
+        "quantity.amount": "1",
+        "quantity.unit": "pcs",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 2,
+        "multipleItems": 2,
+        "loyaltyRequired": true,
+        "couponRequired": true,
+        "limit": {
+          "value": "6",
+          "unit": "szt."
+        }
+      }
+    },
+    {
+      "page": 43,
+      "priceBbox": [
+        14.17,
+        224.33,
+        85.87,
+        274.33
+      ],
+      "expected": {
+        "name": "Malinianka",
+        "advertisedPrice": "3.99",
+        "quantity.amount": "140",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-09",
+        "validity.to": "2026-11-14",
+        "minimumItems": 2,
+        "multipleItems": 2,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 44,
+      "priceBbox": [
+        14.17,
+        465.77,
+        85.27,
+        515.77
+      ],
+      "expected": {
+        "name": "Chleb górski",
+        "advertisedPrice": "3.69",
+        "quantity.amount": "375",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-09",
+        "validity.to": "2026-11-14",
+        "minimumItems": 2,
+        "multipleItems": 2,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 44,
+      "priceBbox": [
+        14.17,
+        689.1,
+        77.17,
+        739.1
+      ],
+      "expected": {
+        "name": "Bułka na zakwasie z wydłużonej fermentacji",
+        "advertisedPrice": "1.19",
+        "quantity.amount": "60",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-09",
+        "validity.to": "2026-11-14",
+        "minimumItems": 3,
+        "multipleItems": 3,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 44,
+      "priceBbox": [
+        242.65,
+        465.77,
+        308.95,
+        515.77
+      ],
+      "expected": {
+        "name": "Chleb drwala",
+        "advertisedPrice": "3.19",
+        "quantity.amount": "405",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-09",
+        "validity.to": "2026-11-14",
+        "minimumItems": 2,
+        "multipleItems": 2,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 45,
+      "priceBbox": [
+        15.59,
+        218.55,
+        85.09,
+        268.55
+      ],
+      "expected": {
+        "name": "Zapiekanka z pieczarkami i serem",
+        "advertisedPrice": "3.75",
+        "quantity.amount": "150",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-09",
+        "validity.to": "2026-11-14",
+        "minimumItems": 2,
+        "multipleItems": 2,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 48,
+      "priceBbox": [
+        245.91,
+        689.1,
+        330.66,
+        739.1
+      ],
+      "expected": {
+        "name": "DELUXE Burgery cielęce",
+        "advertisedPrice": "10.99",
+        "quantity.amount": "250",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": {
+          "value": "4",
+          "unit": "opak."
+        }
+      }
+    },
+    {
+      "page": 48,
+      "priceBbox": [
+        245.91,
+        428.07,
+        330.66,
+        478.07
+      ],
+      "expected": {
+        "name": "RZEŹNIK Mięso mielone z karkówki",
+        "advertisedPrice": "10.99",
+        "quantity.amount": "400",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-09",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": {
+          "value": "4",
+          "unit": "opak."
+        }
+      }
+    },
+    {
+      "page": 49,
+      "priceBbox": [
+        14.17,
+        689.1,
+        79.52,
+        739.1
+      ],
+      "expected": {
+        "name": "RZEŹNIK Polski kurczak Biesiadny, z chowu bez antybiotyków – mięso mielone",
+        "advertisedPrice": "9.99",
+        "quantity.amount": "400",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-09",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": {
+          "value": "3",
+          "unit": "opak."
+        }
+      }
+    },
+    {
+      "page": 50,
+      "priceBbox": [
+        339.01,
+        619.29,
+        404.76,
+        669.29
+      ],
+      "expected": {
+        "name": "OLEWNIK Kiełbasa myśliwska staropolska",
+        "advertisedPrice": "8.99",
+        "quantity.amount": "220",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-09",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": {
+          "value": "6",
+          "unit": "opak."
+        }
+      }
+    },
+    {
+      "page": 51,
+      "priceBbox": [
+        229.61,
+        288.74,
+        312.11,
+        338.74
+      ],
+      "expected": {
+        "name": "PIKOK Frankfurterki z szynki, XXL",
+        "advertisedPrice": "19.99",
+        "quantity.amount": "700",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": {
+          "value": "6",
+          "unit": "opak."
+        }
+      }
+    },
+    {
+      "page": 51,
+      "priceBbox": [
+        14.17,
+        481.54,
+        99.12,
+        531.54
+      ],
+      "expected": {
+        "name": "PIKOK Kiełbasa śląska, XXL",
+        "advertisedPrice": "14.90",
+        "quantity.amount": "1500",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": {
+          "value": "3",
+          "unit": "opak."
+        }
+      }
+    },
+    {
+      "page": 55,
+      "priceBbox": [
+        240.94,
+        473.67,
+        321.84,
+        523.67
+      ],
+      "expected": {
+        "name": "PILOS Holenderska gouda tarta, XXL",
+        "advertisedPrice": "13.99",
+        "quantity.amount": "500",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": {
+          "value": "6",
+          "unit": "opak."
+        }
+      }
+    },
+    {
+      "page": 55,
+      "priceBbox": [
+        240.94,
+        230.55,
+        318.54,
+        280.55
+      ],
+      "expected": {
+        "name": "SERENADA Ser dojrzewający Królewiecki Szwajcar",
+        "advertisedPrice": "11.99",
+        "quantity.amount": "500",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": {
+          "value": "6",
+          "unit": "opak."
+        }
+      }
+    },
+    {
+      "page": 55,
+      "priceBbox": [
+        14.17,
+        230.55,
+        85.62,
+        280.55
+      ],
+      "expected": {
+        "name": "ŁACIATE Mleko UHT 3,2%",
+        "advertisedPrice": "2.25",
+        "quantity.amount": "1000",
+        "quantity.unit": "ml",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-25",
+        "minimumItems": 6,
+        "multipleItems": 6,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": {
+          "value": "12",
+          "unit": "opak."
+        }
+      }
+    },
+    {
+      "page": 55,
+      "priceBbox": [
+        15.69,
+        690.93,
+        87.39,
+        740.93
+      ],
+      "expected": {
+        "name": "ŁACIATY Serek proteinowy",
+        "advertisedPrice": "3.99",
+        "quantity.amount": "135",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 2,
+        "multipleItems": 2,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 77,
+      "priceBbox": [
+        222.59,
+        246.09,
+        287.94,
+        296.09
+      ],
+      "expected": {
+        "name": "ALESTO Migdały smakowe",
+        "advertisedPrice": "9.99",
+        "quantity.amount": "125",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 77,
+      "priceBbox": [
+        222.59,
+        462.47,
+        307.34,
+        512.47
+      ],
+      "expected": {
+        "name": "ALESTO Orzechy nerkowca",
+        "advertisedPrice": "10.99",
+        "quantity.amount": "150",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 77,
+      "priceBbox": [
+        14.17,
+        659.8,
+        98.02,
+        709.8
+      ],
+      "expected": {
+        "name": "ALESTO Truskawka liofilizowana",
+        "advertisedPrice": "10.79",
+        "quantity.amount": "30",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 77,
+      "priceBbox": [
+        14.17,
+        246.09,
+        79.92,
+        296.09
+      ],
+      "expected": {
+        "name": "ALESTO Sport lub Protein Mix – mieszanki orzechów",
+        "advertisedPrice": "8.99",
+        "quantity.amount": "150",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 82,
+      "priceBbox": [
+        318.31,
+        659.8,
+        381.06,
+        709.8
+      ],
+      "expected": {
+        "name": "KUCHNIA LIDLA Groch łuskany",
+        "advertisedPrice": "2.49",
+        "quantity.amount": "500",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 83,
+      "priceBbox": [
+        14.17,
+        436.46,
+        86.37,
+        486.46
+      ],
+      "expected": {
+        "name": "CHEF SELECT Antipasti",
+        "advertisedPrice": "6.75",
+        "quantity.amount": "150",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 2,
+        "multipleItems": 2,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 83,
+      "priceBbox": [
+        170.7,
+        659.8,
+        236.35,
+        709.8
+      ],
+      "expected": {
+        "name": "HORTEX Warzywa do Airfryera",
+        "advertisedPrice": "5.19",
+        "quantity.amount": "450",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-09",
+        "validity.to": "2026-11-14",
+        "minimumItems": 2,
+        "multipleItems": 2,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 83,
+      "priceBbox": [
+        324.38,
+        659.8,
+        397.18,
+        709.8
+      ],
+      "expected": {
+        "name": "HORTEX Zupa azjatycka",
+        "advertisedPrice": "8.79",
+        "quantity.amount": "450",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-09",
+        "validity.to": "2026-11-14",
+        "minimumItems": 2,
+        "multipleItems": 2,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 85,
+      "priceBbox": [
+        39.69,
+        176.75,
+        124.44,
+        226.75
+      ],
+      "expected": {
+        "name": "JEMY JEMY Dania gotowe",
+        "advertisedPrice": "10.99",
+        "quantity.amount": "360",
+        "quantity.unit": "g",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 1,
+        "multipleItems": 1,
+        "loyaltyRequired": false,
+        "couponRequired": false,
+        "limit": null
+      }
+    },
+    {
+      "page": 37,
+      "priceBbox": [
+        125.36,
+        613.78,
+        185.6,
+        661.78
+      ],
+      "expected": {
+        "name": "Kaki",
+        "advertisedPrice": "2.49",
+        "quantity.amount": "1",
+        "quantity.unit": "pcs",
+        "quantity.meaning": "ADVERTISED_AMOUNT",
+        "validity.from": "2026-11-12",
+        "validity.to": "2026-11-14",
+        "minimumItems": 2,
+        "multipleItems": 2,
+        "loyaltyRequired": true,
+        "couponRequired": true,
+        "limit": {
+          "value": "3",
+          "unit": "szt. gratis"
+        }
+      }
+    }
+  ]
+}

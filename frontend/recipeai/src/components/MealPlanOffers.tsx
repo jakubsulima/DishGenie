@@ -4,13 +4,16 @@ import StorePriceSources from "./StorePriceSources";
 import { useLanguage } from "../context/languageContext";
 import { getPlanningOffers, type MealPlan } from "../lib/mealPlans";
 import { type CatalogOffer } from "../lib/planPricing";
+import { useOffersAccess } from "../context/offersAccessContext";
 
 export default function MealPlanOffers({ plan, disabled, onReplan }: { plan: MealPlan; disabled: boolean; onReplan: () => void }) {
   const { t, locale } = useLanguage();
+  const available = useOffersAccess();
   const [offers, setOffers] = useState<CatalogOffer[]>([]);
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
   const planId = plan.id; const version = plan.version;
   useEffect(() => {
+    if (!available) return;
     let ignore = false;
     setState("loading");
     void getPlanningOffers({ id: planId, version }).then(result => {
@@ -19,11 +22,12 @@ export default function MealPlanOffers({ plan, disabled, onReplan }: { plan: Mea
       setOffers(result.offers); setState("ready");
     }).catch(() => { if (!ignore) setState("error"); });
     return () => { ignore = true; };
-  }, [planId, version]);
+  }, [planId, version, available]);
   const money = (n: number) => new Intl.NumberFormat(locale, { style: "currency", currency: "PLN" }).format(n);
   const unique = offers.filter((o, index) => offers.findIndex(other => (other.ingredientKey ?? other.details.ingredientId ?? other.id)
     === (o.ingredientKey ?? o.details.ingredientId ?? o.id) && other.details.store === o.details.store) === index);
   const unlocked = plan.plan.slots.some(s => !s.locked && !s.skipped);
+  if (!available) return null;
   return <section className="py-3" aria-label={t("Offers for this plan")}>
     <h2 className="text-xl font-bold">{t("Offers for this plan")}</h2>
     <p className="mt-2 text-sm">{t("Offers match your stores, shopping date and dietary preferences.")}</p>

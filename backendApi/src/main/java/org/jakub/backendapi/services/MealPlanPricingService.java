@@ -35,17 +35,17 @@ public class MealPlanPricingService {
             throw new AppException("Choose a shopping date in the next seven days, no later than the next planned meal.", HttpStatus.BAD_REQUEST);
         if (preview) plan = new View(plan.id(), plan.version(), plan.createdAt(), new Document(2,
                 plan.plan().settings(), plan.plan().status(), plan.plan().slots(), plans.previewShopping(email, id, plan.plan().slots())));
-        if (catalog != null) catalog.ensureFresh(plan.plan().settings().stores());
+        if (catalog != null && offers.availableTo(email)) catalog.ensureFresh(plan.plan().settings().stores());
         Instant now = Instant.now();
-        var available = offers.eligible(plan.plan().settings().stores(), input.shoppingDate(), now);
+        var available = offers.eligibleForUser(email, plan.plan().settings().stores(), input.shoppingDate(), now);
         // The original accepted-plan endpoint retains the fixed-package contract for older clients.
         if (!preview) available = available.stream().filter(o -> o.details().fixedPackage() && o.details().bundlePrice() == null).toList();
         var result = preview ? calculateForUser(email, plan, input, available, now) : calculate(plan, input, available, now);
         return catalog == null ? result : new Quote(result.planId(), result.planVersion(), result.shoppingDate(), result.calculatedAt(),
-                result.expiresAt(), result.budget(), result.baskets(), catalog.status(plan.plan().settings().stores(), input.shoppingDate()));
+                result.expiresAt(), result.budget(), result.baskets(), catalog.statusForUser(email, plan.plan().settings().stores(), input.shoppingDate()));
     }
     public Quote calculateForUser(String email, View plan, QuoteRequest input, List<Offer> available, Instant now) {
-        var quote = calculate(plan, input, available, now);
+        var quote = calculate(plan, input, offers.availableTo(email) ? available : List.of(), now);
         return manualPrices == null ? quote : withManualPrices(quote, plan,
                 manualPrices.prices(email, plan.id(), input.shoppingDate(), plan.plan().settings().stores()));
     }

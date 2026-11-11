@@ -52,6 +52,7 @@ const TermsOfServicePage = lazy(() =>
   })),
 );
 import { AuthProvider } from "./context/context";
+import { OffersAccessProvider } from "./context/offersAccessContext";
 import { AnalyticsConsentProvider } from "./context/analyticsConsentContext";
 import { FridgeProvider } from "./context/fridgeContext.tsx";
 import { GuestRoute, ProtectedRoute } from "./components/RouteGuards";
@@ -160,12 +161,14 @@ function App() {
 
   return (
     <AuthProvider>
-      <AnalyticsConsentProvider>
-        <FridgeProvider>
-          <AnalyticsIdentitySync />
-          <RouterProvider router={router} />
-        </FridgeProvider>
-      </AnalyticsConsentProvider>
+      <OffersAccessProvider>
+        <AnalyticsConsentProvider>
+          <FridgeProvider>
+            <AnalyticsIdentitySync />
+            <RouterProvider router={router} />
+          </FridgeProvider>
+        </AnalyticsConsentProvider>
+      </OffersAccessProvider>
     </AuthProvider>
   );
 }

@@ -69,6 +69,9 @@ app:
     jobs-enabled: ${PLANNER_JOBS_ENABLED:true}
   offers:
     lidl-price-import-enabled: ${LIDL_PRICE_IMPORT_ENABLED:false}
+    lidl-leaflet-import-enabled: ${LIDL_LEAFLET_IMPORT_ENABLED:true}
+    lidl-leaflet-python: ${LIDL_LEAFLET_PYTHON:python3}
+    lidl-leaflet-url: ${LIDL_LEAFLET_URL:https://www.lidl.pl/l/pl/gazetki/gazetka-12-11-czw-kw46/ar/0}
     lidl-review-capture-enabled: ${LIDL_REVIEW_CAPTURE_ENABLED:false}
   frontend-url: ${FRONTEND_URL:http://localhost:5173}
   limits:

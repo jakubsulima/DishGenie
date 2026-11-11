@@ -11,7 +11,7 @@ for (const width of [360,390]) test(`five day mobile journey ${width}`, async ({
  await page.goto('/ShoppingList');
  const refresh=page.waitForResponse(r=>r.url().endsWith('/offers/reload-prices'));
  await page.getByRole('button',{name:'Pobierz promocje',exact:true}).tap(); expect((await refresh).ok()).toBe(true);
- await expect(page.getByText(/Dostępne produkty:/)).toBeVisible();
+ await expect(page.getByText(/Dostępne produkty z obsługiwaną ceną:/)).toBeVisible();
  await expect(page.getByText('Ryż — kontrolowane dane testowe',{exact:true})).toBeHidden();
  await page.getByText('Zobacz promocje (1)',{exact:true}).tap();
  await expect(page.getByText('Ryż — kontrolowane dane testowe',{exact:true})).toBeVisible();
