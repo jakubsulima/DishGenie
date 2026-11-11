@@ -27,6 +27,23 @@ class PlanIngredientAggregationServiceTest {
     }
 
     @Test
+    void usesEachRecipeLanguageWhenOnlyPartOfAnEnglishPlanHasBeenTranslated() {
+        var ingredient = new Ingredient(42L, "ryż", List.of());
+        var found = new IngredientNormalizationService.Resolution(IngredientNormalizationService.Status.ALIAS, ingredient, "ryż", List.of());
+        when(names.resolve("ziarno ryżowe", "pl")).thenReturn(found);
+        when(names.resolve("rice grains", "en")).thenReturn(found);
+        var polish = slot(day, 100, "g", 2); polish.recipe().setLocale(org.jakub.backendapi.entities.Enums.ContentLocale.pl);
+        polish.recipe().setIngredients(List.of(new RecipeIngredientDto("ziarno ryżowe", 100, "g")));
+        var english = slot(day.plusDays(1), 200, "g", 2); english.recipe().setLocale(org.jakub.backendapi.entities.Enums.ContentLocale.en);
+        english.recipe().setIngredients(List.of(new RecipeIngredientDto("rice grains", 200, "g")));
+        var result = service.aggregate(List.of(polish, english), List.of(), "en");
+        assertThat(result.items()).hasSize(1);
+        assertThat(result.items().get(0).amount()).isEqualTo(300d);
+        verify(names).resolve("ziarno ryżowe", "pl");
+        verify(names).resolve("rice grains", "en");
+    }
+
+    @Test
     void allocatesFridgeOnceAcrossMealsAndConvertsUnits() {
         var result = service.aggregate(List.of(slot(day, 300, "g", 2), slot(day.plusDays(1), .3, "kg", 2)),
                 List.of(stock(400d, Unit.GRAMS, null)), "pl");

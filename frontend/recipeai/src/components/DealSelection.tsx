@@ -23,7 +23,7 @@ export default function DealSelection({ stores, shoppingDate, loyaltyStores, sel
   return <details className="rounded-2xl border border-primary/15 p-4">
     <summary className="cursor-pointer font-semibold">{t("Offers for this week (optional)")}</summary>
     <p className="mt-3 text-sm">{t("We choose useful offers automatically. Optionally select products to build your week around.")}</p>
-    <p className="mt-2 text-sm">{t("Automatic offer updates are not connected yet. Only offers checked by an administrator can be used.")}</p>
+    <p className="mt-2 text-sm">{t("The available catalog can be partial. Check each offer's dates and conditions.")}</p>
     {status && <p role="status" className="mt-3">{t(status)}</p>}
     <ul className="mt-4 grid gap-4 sm:grid-cols-2">{offers.map(offer => {
       const d = offer.details;

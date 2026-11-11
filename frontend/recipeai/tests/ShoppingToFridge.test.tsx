@@ -1,3 +1,4 @@
+import { MemoryRouter } from "react-router-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { LanguageProvider } from "../src/context/languageContext";
@@ -54,6 +55,8 @@ vi.mock("../src/lib/shoppingList", () => ({
   writeShoppingList,
 }));
 
+vi.mock("../src/lib/weekCycle", () => ({listTrips: vi.fn().mockResolvedValue([])}));
+
 describe("ShoppingList fridge import", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -80,7 +83,7 @@ describe("ShoppingList fridge import", () => {
   test("waits for confirmation and sends estimated shopping quantities", async () => {
     render(
       <LanguageProvider initialLocale="en">
-        <ShoppingList />
+        <MemoryRouter><ShoppingList /></MemoryRouter>
       </LanguageProvider>,
     );
 
@@ -132,7 +135,7 @@ describe("ShoppingList fridge import", () => {
   test("removes imported items while keeping unchecked items on the list", async () => {
     render(
       <LanguageProvider initialLocale="en">
-        <ShoppingList />
+        <MemoryRouter><ShoppingList /></MemoryRouter>
       </LanguageProvider>,
     );
 

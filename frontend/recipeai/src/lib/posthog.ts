@@ -8,6 +8,7 @@ import {
 } from "./runtimeConfig";
 
 type AnalyticsEventName =
+  | "week_cycle_started" | "week_cycle_ready" | "shopping_trip_opened" | "shopping_trip_completed" | "cooking_batch_recorded" | "post_shopping_change_previewed" | "post_shopping_change_applied"
   | "$pageview"
   | "marketing_cta_click"
   | "auth_login_success"

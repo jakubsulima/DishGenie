@@ -1,0 +1,2626 @@
+[
+  {
+    "ageRestriction": false,
+    "hasColors": false,
+    "awards": [],
+    "brand": {
+      "name": "RZEŹNIK",
+      "url": "/q/search?q=rze%C5%BAnik",
+      "showBrand": true
+    },
+    "canonicalPath": "/p/rzeznik-filet-z-indyka-xxl/p11263684",
+    "canonicalUrl": "/p/rzeznik-filet-z-indyka-xxl/p11263684",
+    "category": "Food",
+    "cutoutimageV2": [],
+    "dealOfDay": {
+      "active": false
+    },
+    "designTheme": "default",
+    "disclaimers": [
+      {
+        "id": "code_11263684_0b65a38f",
+        "type": "CODE",
+        "value": "Basic"
+      }
+    ],
+    "displayFreeDelivery": false,
+    "energyLabels": [],
+    "erpNumber": "11263684",
+    "flashSales": false,
+    "fullTitle": "RZEŹNIK Filet z indyka, XXL",
+    "gs1Attributes": [],
+    "guaranteeLabels": [],
+    "havingPrice": true,
+    "havingThreesixty": false,
+    "havingVideos": false,
+    "highlightedSeals": 0,
+    "ians": [
+      "5533555"
+    ],
+    "image": "https://www.lidl.pl/assets/gcp4d30427aa18a404487657b7ea89c069b.png",
+    "image_V1": {
+      "image": "https://www.lidl.pl/assets/gcp4d30427aa18a404487657b7ea89c069b.png",
+      "accessibility": "Świeża pierś z indyka SKONIO ŽENKLAS na talerzu z przyprawami."
+    },
+    "isLidlGiftCard": false,
+    "isUsedProduct": false,
+    "itemId": 11263684,
+    "imageList": [
+      "https://www.lidl.pl/assets/gcp4d30427aa18a404487657b7ea89c069b.png",
+      "https://www.lidl.pl/assets/gcpd0719e31992a4685bb978797e76466df.png"
+    ],
+    "imageList_V1": [
+      {
+        "image": "https://www.lidl.pl/assets/gcp4d30427aa18a404487657b7ea89c069b.png",
+        "accessibility": "Świeża pierś z indyka SKONIO ŽENKLAS na talerzu z przyprawami."
+      },
+      {
+        "image": "https://www.lidl.pl/assets/gcpd0719e31992a4685bb978797e76466df.png",
+        "accessibility": "Świeży filet z piersi indyka Rzeźnik XXL w opakowaniu próżniowym."
+      }
+    ],
+    "imageList_V2": [
+      {
+        "accessibility": "Świeża pierś z indyka SKONIO ŽENKLAS na talerzu z przyprawami.",
+        "variants": [
+          {
+            "ratio": "3:4",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcpb20fe9a520a24b4a8d9275e3e6dd3dbc.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcpff2fa030721344b3b47f67797f7c711e.png"
+            }
+          },
+          {
+            "ratio": "4:3",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcpe2f30cffdf57430c96737dd75338281e.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp4d30427aa18a404487657b7ea89c069b.png"
+            }
+          }
+        ]
+      },
+      {
+        "accessibility": "Świeży filet z piersi indyka Rzeźnik XXL w opakowaniu próżniowym.",
+        "variants": [
+          {
+            "ratio": "3:4",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcpddc68c5283794483b3ae8b09e546399f.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp3768805cfb644f118ff5615a9576ec50.png"
+            }
+          },
+          {
+            "ratio": "4:3",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcp4a5974665f744106830bd392bfbd67d7.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcpd0719e31992a4685bb978797e76466df.png"
+            }
+          }
+        ]
+      }
+    ],
+    "keyfacts": {
+      "analyticsCategory": "Food",
+      "description": "<ul><li>XXL</li></ul>",
+      "fullTitle": "RZEŹNIK Filet z indyka, XXL",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Filet z indyka, XXL",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Mięso i drób/Drób",
+      "wonCategoryPrimaryPath": "0/17/1738/173810"
+    },
+    "lidlPlus": [
+      {
+        "price": {
+          "basePrice": {
+            "prefix": false,
+            "text": "* cena przed obniżką/ cena poza promocją: 1 kg = 33,99 Limit: 3 kg na kupon. Szczegóły promocji dostępne w aplikacji Lidl Plus."
+          },
+          "discount": {
+            "discountHasStar": false,
+            "fromNormalPriceForLidlPlus": false,
+            "fromRecommendedPrice": false,
+            "showDiscount": false,
+            "showFrom": false,
+            "showPercentage": false,
+            "showUpTo": false
+          },
+          "hasStar": false,
+          "hasVat": false,
+          "packaging": {
+            "text": "1 kg"
+          },
+          "price": 19.99,
+          "priceTheme": "red_yellow",
+          "specialTaxes": [],
+          "superscript": ""
+        },
+        "lidlPlusText": "Aktywuj kupon i zeskanuj aplikację",
+        "highlightText": "-41%"
+      }
+    ],
+    "multipack": false,
+    "nat": "5533555",
+    "online": false,
+    "preventSelling": false,
+    "price": {
+      "currencyCode": "PLN",
+      "currencyCodeSecond": "",
+      "currencySymbol": "zł",
+      "currencySymbolSecond": "",
+      "displayedCurrency": "zł",
+      "hasStar": false,
+      "hasVat": false,
+      "specialTaxes": [],
+      "variantsHaveDifferentPrices": false
+    },
+    "productId": 11263684,
+    "productType": "RETAIL",
+    "productOrigin": "progress_event",
+    "quickAddToCart": false,
+    "regions": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      18,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentLidlPlusPrice": {
+          "price": {
+            "basePrice": {
+              "prefix": false,
+              "text": "* cena przed obniżką/ cena poza promocją: 1 kg = 33,99 Limit: 3 kg na kupon. Szczegóły promocji dostępne w aplikacji Lidl Plus."
+            },
+            "currencyCode": "PLN",
+            "currencyCodeSecond": "",
+            "currencySymbol": "zł",
+            "currencySymbolSecond": "",
+            "discount": {
+              "deletedPrice": 33.99,
+              "discountHasStar": false,
+              "discountText": "-41%",
+              "fromNormalPriceForLidlPlus": false,
+              "fromRecommendedPrice": false,
+              "hideBargainHint": false,
+              "bargainHintEnabled": false,
+              "bargainHintText": "Megaokazja",
+              "showDiscount": true,
+              "showFrom": false,
+              "showPercentage": true,
+              "showUpTo": false,
+              "suffix": "*"
+            },
+            "displayedCurrency": "zł",
+            "endDate": "2026-11-07T22:59:59Z",
+            "endDateExclusive": "2026-11-07T23:00Z",
+            "hasStar": false,
+            "hasVat": true,
+            "oldPrice": 33.99,
+            "packaging": {
+              "text": "1 kg"
+            },
+            "price": 19.99,
+            "priceTheme": "white_red",
+            "specialTaxes": [],
+            "startDate": "2026-11-03T09:22:04.195Z",
+            "superscript": "",
+            "variantsHaveDifferentPrices": false
+          },
+          "lidlPlusText": "Aktywuj kupon i zeskanuj aplikację",
+          "highlightText": "-41%"
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "ribbons": [],
+    "renderedTs": 1793919713,
+    "seals": [],
+    "stockAvailability": {
+      "availabilityIndicator": 0,
+      "badgeInfo": {
+        "badges": [
+          {
+            "text": "tylko w sklepach stacjonarnych 06.11. - 07.11.",
+            "type": "IN_STORE_TODAY_DATE_RANGE"
+          }
+        ]
+      },
+      "badgeInfoV2": [
+        {
+          "badges": [
+            {
+              "text": "tylko w sklepach stacjonarnych 06.11. - 07.11.",
+              "type": "IN_STORE_TODAY_DATE_RANGE"
+            }
+          ],
+          "validFrom": 1793919600,
+          "validUntil": 1794092399
+        }
+      ],
+      "onlineAvailable": false,
+      "minOrderableQuantity": 1,
+      "backInStockNotification": false,
+      "backInStockNotificationSoldOut": false
+    },
+    "store": true,
+    "storeStartDate": 1793919600,
+    "storeEndDate": 1794092399,
+    "title": "Filet z indyka, XXL",
+    "timezoneId": "Europe/Warsaw",
+    "zones": {},
+    "relevancyScore": "orPBhDTnF1rr8S3uwt+Zpug9X8qZZ1aYra5h+cDOWAMMQkRJtzGJzn9slKg=",
+    "keywordScore": "XjQMKvugZ2+sv5INZtYBCprQnwzIeEURm8Qz0LQqKA1RlCR1jzj6gCCJ8tk=",
+    "semanticScore": "MyJTci4EG9XeRI3kifALMbGIFEkgD2IAw5ckWwOExg0ARoxge982+wmHl5U=",
+    "keywordScoreRaw": "LzyLfeA+rHO5MHTDmstjHQ2eLptOg3AxBwdXwc2+HXfQz/Ix6AsLQiFrwGI=",
+    "ratingScore": "jHRSe0109SDdsxwr5K/IhZ3xtYD3onKE25vTYXxE8xRp9VCY6MQEnl3IeQg=",
+    "freshnessScore": "crbmVLf/WkMt+fS3AxBM+MNC3CSMTsyWQmEd1ortl/76XUnqWlNJT7r8kws=",
+    "searchHubImpressions": "cY5OZUMvltmuWuvlrvXGSs486tUeTSiofLWPpVBIAtLsOOu5fQN6IKqdf6Q=",
+    "searchHubClicks": "MM6iGgOahnr0h8O3NfzvA2EpT6Fh1NT15n12ACR1/N93hH7tmLkEqxka2oY=",
+    "searchHubCarts": "4PHS/iXOqSHVLXW71Xqelpa6aVsXPjUKCXRVLHnaeh8G8H5k4jUsaLx14qA=",
+    "businessRuleFactor": "uxJDdz8CumPr132LF5nw+1bk9do31s1h8+GQdx2KCHfJ9wrRYo6tL5thzJY=",
+    "position": 6,
+    "origPos": null,
+    "simi": null,
+    "list": "/h/mieso-i-drob/h10095752",
+    "listId": "10095752",
+    "listName": "mieso-i-drob",
+    "hashParams": "searchTrackingMasterId=Product.11263684&searchTrackingTitle=Filet%2Bz%2Bindyka%252C%2BXXL&searchTrackingPageSize=48&searchTrackingPage=1&searchTrackingEvent=click&searchTrackingId=Product.11263684&searchTrackingOrigPos=1&searchTrackingPos=6&searchTrackingOrigPageSize=48&searchTrackingChannel=PL"
+  },
+  {
+    "ageRestriction": false,
+    "hasColors": false,
+    "awards": [],
+    "brand": {
+      "name": "RZEŹNIK",
+      "url": "/q/search?q=rze%C5%BAnik",
+      "showBrand": true
+    },
+    "canonicalPath": "/p/rzeznik-szynka-wieprzowa-xxl/p11305114",
+    "canonicalUrl": "/p/rzeznik-szynka-wieprzowa-xxl/p11305114",
+    "category": "Food",
+    "cutoutimageV2": [],
+    "dealOfDay": {
+      "active": false
+    },
+    "designTheme": "default",
+    "disclaimers": [
+      {
+        "id": "code_11305114_56ba90ed",
+        "type": "CODE",
+        "value": "Basic"
+      }
+    ],
+    "displayFreeDelivery": false,
+    "energyLabels": [],
+    "erpNumber": "11305114",
+    "flashSales": false,
+    "fullTitle": "RZEŹNIK Szynka wieprzowa, XXL",
+    "gs1Attributes": [],
+    "guaranteeLabels": [],
+    "havingPrice": true,
+    "havingThreesixty": false,
+    "havingVideos": false,
+    "highlightedSeals": 0,
+    "ians": [
+      "5508206"
+    ],
+    "image": "https://www.lidl.pl/assets/gcp8e92625ccfbc465a830e7d0352bde2a9.png",
+    "image_V1": {
+      "image": "https://www.lidl.pl/assets/gcp8e92625ccfbc465a830e7d0352bde2a9.png",
+      "accessibility": "Szynka wieprzowa XXL marki Rzeźnik w opakowaniu próżniowym."
+    },
+    "isLidlGiftCard": false,
+    "isUsedProduct": false,
+    "itemId": 11305114,
+    "imageList": [
+      "https://www.lidl.pl/assets/gcp8e92625ccfbc465a830e7d0352bde2a9.png"
+    ],
+    "imageList_V1": [
+      {
+        "image": "https://www.lidl.pl/assets/gcp8e92625ccfbc465a830e7d0352bde2a9.png",
+        "accessibility": "Szynka wieprzowa XXL marki Rzeźnik w opakowaniu próżniowym."
+      }
+    ],
+    "imageList_V2": [
+      {
+        "accessibility": "Szynka wieprzowa XXL marki Rzeźnik w opakowaniu próżniowym.",
+        "variants": [
+          {
+            "ratio": "3:4",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcp127a251998fe4beb9e495072342a492d.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp4606483ce46a41bf934345890fc5851c.png"
+            }
+          },
+          {
+            "ratio": "4:3",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcp9ad1d06aebf94c9b96d8a628dc582b2d.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp8e92625ccfbc465a830e7d0352bde2a9.png"
+            }
+          }
+        ]
+      }
+    ],
+    "keyfacts": {
+      "analyticsCategory": "Food",
+      "fullTitle": "RZEŹNIK Szynka wieprzowa, XXL",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Szynka wieprzowa, XXL",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Mięso i drób/Wieprzowina",
+      "wonCategoryPrimaryPath": "0/17/1738/173812"
+    },
+    "lidlPlus": [
+      {
+        "price": {
+          "basePrice": {
+            "prefix": false,
+            "text": "* cena przed obniżką/ cena poza promocją: 1 kg = 15,49 Limit: 5 kg na kupon. Szczegóły promocji dostępne w aplikacji Lidl Plus."
+          },
+          "discount": {
+            "discountHasStar": false,
+            "fromNormalPriceForLidlPlus": false,
+            "fromRecommendedPrice": false,
+            "showDiscount": false,
+            "showFrom": false,
+            "showPercentage": false,
+            "showUpTo": false
+          },
+          "hasStar": false,
+          "hasVat": false,
+          "packaging": {
+            "text": "1 kg"
+          },
+          "price": 9.99,
+          "priceTheme": "red_yellow",
+          "specialTaxes": [],
+          "superscript": ""
+        },
+        "lidlPlusText": "Aktywuj kupon i zeskanuj aplikację",
+        "highlightText": "-35%"
+      }
+    ],
+    "multipack": false,
+    "nat": "5508206",
+    "online": false,
+    "preventSelling": false,
+    "price": {
+      "currencyCode": "PLN",
+      "currencyCodeSecond": "",
+      "currencySymbol": "zł",
+      "currencySymbolSecond": "",
+      "displayedCurrency": "zł",
+      "hasStar": false,
+      "hasVat": false,
+      "specialTaxes": [],
+      "variantsHaveDifferentPrices": false
+    },
+    "productId": 11305114,
+    "productType": "RETAIL",
+    "productOrigin": "progress_event",
+    "quickAddToCart": false,
+    "regions": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      18,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentLidlPlusPrice": {
+          "price": {
+            "basePrice": {
+              "prefix": false,
+              "text": "* cena przed obniżką/ cena poza promocją: 1 kg = 15,49 Limit: 5 kg na kupon. Szczegóły promocji dostępne w aplikacji Lidl Plus."
+            },
+            "currencyCode": "PLN",
+            "currencyCodeSecond": "",
+            "currencySymbol": "zł",
+            "currencySymbolSecond": "",
+            "discount": {
+              "deletedPrice": 15.49,
+              "discountHasStar": false,
+              "discountText": "-35%",
+              "fromNormalPriceForLidlPlus": false,
+              "fromRecommendedPrice": false,
+              "hideBargainHint": false,
+              "bargainHintEnabled": false,
+              "bargainHintText": "Megaokazja",
+              "showDiscount": true,
+              "showFrom": false,
+              "showPercentage": true,
+              "showUpTo": false,
+              "suffix": "*"
+            },
+            "displayedCurrency": "zł",
+            "endDate": "2026-11-07T22:59:59Z",
+            "endDateExclusive": "2026-11-07T23:00Z",
+            "hasStar": false,
+            "hasVat": true,
+            "oldPrice": 15.49,
+            "packaging": {
+              "text": "1 kg"
+            },
+            "price": 9.99,
+            "priceTheme": "white_red",
+            "specialTaxes": [],
+            "startDate": "2026-11-03T09:28:54.045Z",
+            "superscript": "",
+            "variantsHaveDifferentPrices": false
+          },
+          "lidlPlusText": "Aktywuj kupon i zeskanuj aplikację",
+          "highlightText": "-35%"
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "ribbons": [],
+    "renderedTs": 1793925542,
+    "seals": [],
+    "stockAvailability": {
+      "availabilityIndicator": 0,
+      "badgeInfo": {
+        "badges": [
+          {
+            "text": "tylko w sklepach stacjonarnych 05.11. - 07.11.",
+            "type": "IN_STORE_PAST_DATE_RANGE"
+          }
+        ]
+      },
+      "badgeInfoV2": [
+        {
+          "badges": [
+            {
+              "text": "tylko w sklepach stacjonarnych 05.11. - 07.11.",
+              "type": "IN_STORE_PAST_DATE_RANGE"
+            }
+          ],
+          "validFrom": 1793833200,
+          "validUntil": 1794092399
+        }
+      ],
+      "onlineAvailable": false,
+      "minOrderableQuantity": 1,
+      "backInStockNotification": false,
+      "backInStockNotificationSoldOut": false
+    },
+    "store": true,
+    "storeStartDate": 1793833200,
+    "storeEndDate": 1794092399,
+    "title": "Szynka wieprzowa, XXL",
+    "timezoneId": "Europe/Warsaw",
+    "zones": {},
+    "relevancyScore": "bXVxzC8BVq1yYWz3o2kz6CgwNJoRlUX1UU8Oa3Kw/iyosumYb6OgRkryIwU=",
+    "keywordScore": "2LP5VigXl6wXMo6qN1CgSH8DuM8v34S+wIrqKxmYXIU7WVrks4TWgXkhvNo=",
+    "semanticScore": "EYbXCWgtYoJJWAlA65hV9EzhV7xO2QD2TXHaxCRdA2hPKpVGvVwqB4D1pjs=",
+    "keywordScoreRaw": "D0C5ghJCtRTGK7wgkDvpphyjJaKJASBQtGKyvSNdkZQinDtZSADY3CyQyoE=",
+    "ratingScore": "zc/cCyXXvGKRKDWlpGgtRebXMcZ/gOueMaG0ofnMrezSAeVH/+A2/Y53IxM=",
+    "freshnessScore": "16lZFDBFVts3Xa7TVCFfxZdK8m6EcsqBgsEg2ZsATl66RAtndLtQMhPIa8E=",
+    "searchHubImpressions": "50TeDkb6V8U2cUIFnLRbR2eVGHnd2USt43NS+B1+rah+fNTfuFOXUqBKHj0=",
+    "searchHubClicks": "a8WyqyDztc4aCjmtz8/HMqMnryRepFxw/Dox0SOgmx0Qx0E2TvNqeFMjCPk=",
+    "searchHubCarts": "GgwOJU+AvN9Xg+7pvLiz+yVMQIor8tnnREGlqUK8ByRz1cUNEkC2ntjveYs=",
+    "businessRuleFactor": "fvcftfOY3ep/jXIXIGUnTlDnFZ5MAcYmg94ipM0Eh55TIm3KmpLDvQj3s0o=",
+    "position": 3,
+    "origPos": null,
+    "simi": null,
+    "list": "/h/mieso-i-drob/h10095752",
+    "listId": "10095752",
+    "listName": "mieso-i-drob",
+    "hashParams": "searchTrackingMasterId=Product.11305114&searchTrackingTitle=Szynka%2Bwieprzowa%252C%2BXXL&searchTrackingPageSize=48&searchTrackingPage=1&searchTrackingEvent=click&searchTrackingId=Product.11305114&searchTrackingOrigPos=1&searchTrackingPos=3&searchTrackingOrigPageSize=48&searchTrackingChannel=PL"
+  },
+  {
+    "ageRestriction": false,
+    "hasColors": false,
+    "awards": [],
+    "brand": {
+      "name": "RZEŹNIK",
+      "url": "/q/search?q=rze%C5%BAnik",
+      "showBrand": true
+    },
+    "canonicalPath": "/p/rzeznik-kaczka-tuszka/p11407883",
+    "canonicalUrl": "/p/rzeznik-kaczka-tuszka/p11407883",
+    "category": "Food",
+    "cutoutimageV2": [],
+    "dealOfDay": {
+      "active": false
+    },
+    "designTheme": "default",
+    "disclaimers": [
+      {
+        "id": "code_11407883_99a52996",
+        "type": "CODE",
+        "value": "Basic"
+      },
+      {
+        "id": "code_11407883_149ccdce",
+        "type": "CODE",
+        "value": "StrikePrice_LowestPrice30days"
+      }
+    ],
+    "displayFreeDelivery": false,
+    "energyLabels": [],
+    "erpNumber": "11407883",
+    "flashSales": false,
+    "fullTitle": "RZEŹNIK Kaczka – tuszka",
+    "gs1Attributes": [],
+    "guaranteeLabels": [],
+    "havingPrice": true,
+    "havingThreesixty": false,
+    "havingVideos": false,
+    "highlightedSeals": 0,
+    "ians": [
+      "5500745"
+    ],
+    "image": "https://www.lidl.pl/assets/gcp5634fbe176154c3fbef257714d27a3dd.png",
+    "image_V1": {
+      "image": "https://www.lidl.pl/assets/gcp5634fbe176154c3fbef257714d27a3dd.png",
+      "accessibility": "Cała pieczona kaczka na białym talerzu z ziołami i pieprzem."
+    },
+    "isLidlGiftCard": false,
+    "isUsedProduct": false,
+    "itemId": 11407883,
+    "imageList": [
+      "https://www.lidl.pl/assets/gcp5634fbe176154c3fbef257714d27a3dd.png",
+      "https://www.lidl.pl/assets/gcp746031ac9ee945b5a94397bae89db988.png",
+      "https://www.lidl.pl/assets/gcpa1c09cd5db9145049d51433376245357.png"
+    ],
+    "imageList_V1": [
+      {
+        "image": "https://www.lidl.pl/assets/gcp5634fbe176154c3fbef257714d27a3dd.png",
+        "accessibility": "Cała pieczona kaczka na białym talerzu z ziołami i pieprzem."
+      },
+      {
+        "image": "https://www.lidl.pl/assets/gcp746031ac9ee945b5a94397bae89db988.png",
+        "accessibility": "Pieczona kaczka z jabłkami, rozmarynem i czosnkiem na talerzu"
+      },
+      {
+        "image": "https://www.lidl.pl/assets/gcpa1c09cd5db9145049d51433376245357.png",
+        "accessibility": "Surowa kaczka w całości przyprawiona ziołami na czarnej płycie łupkowej"
+      }
+    ],
+    "imageList_V2": [
+      {
+        "accessibility": "Cała pieczona kaczka na białym talerzu z ziołami i pieprzem.",
+        "variants": [
+          {
+            "ratio": "3:4",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcpc06365a89274416cba77f2595389382a.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcpcd36cff2dfcb4b8186c9d073b4338a3f.png"
+            }
+          },
+          {
+            "ratio": "4:3",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcp3ddb2a5db15c44499240211ae5bad1bc.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp5634fbe176154c3fbef257714d27a3dd.png"
+            }
+          }
+        ]
+      },
+      {
+        "accessibility": "Pieczona kaczka z jabłkami, rozmarynem i czosnkiem na talerzu",
+        "variants": [
+          {
+            "ratio": "3:4",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcp3daf6bceda18417e8349763165fae34d.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp1b01739b256d494b966494f04bad0eb9.png"
+            }
+          },
+          {
+            "ratio": "4:3",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcp73e279ec6bbf466380c6fcb889a31884.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp746031ac9ee945b5a94397bae89db988.png"
+            }
+          }
+        ]
+      },
+      {
+        "accessibility": "Surowa kaczka w całości przyprawiona ziołami na czarnej płycie łupkowej",
+        "variants": [
+          {
+            "ratio": "3:4",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcp4c5ac3bb2b9f44b4bff82b1626e0586d.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp13d77d3b58434c69b368e3b57f2b860b.png"
+            }
+          },
+          {
+            "ratio": "4:3",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcp9451e6cfed904c7f88e9c3a7db67f903.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcpa1c09cd5db9145049d51433376245357.png"
+            }
+          }
+        ]
+      }
+    ],
+    "keyfacts": {
+      "analyticsCategory": "Food",
+      "fullTitle": "RZEŹNIK Kaczka – tuszka",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Kaczka – tuszka",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Mięso i drób/Drób",
+      "wonCategoryPrimaryPath": "0/17/1738/173810"
+    },
+    "lidlPlus": [],
+    "multipack": false,
+    "nat": "5500745",
+    "online": false,
+    "preventSelling": false,
+    "price": {
+      "basePrice": {
+        "prefix": false,
+        "text": "* cena przed obniżką/ cena poza promocją: 1 kg = 16,99 Limit: 9 kg na paragon."
+      },
+      "currencyCode": "PLN",
+      "currencyCodeSecond": "",
+      "currencySymbol": "zł",
+      "currencySymbolSecond": "",
+      "discount": {
+        "absoluteDiscount": 7,
+        "deletedPrice": 16.99,
+        "discountHasStar": false,
+        "fromRecommendedPrice": false,
+        "hideBargainHint": false,
+        "bargainHintEnabled": false,
+        "bargainHintText": "Megaokazja",
+        "percentageDiscount": 41,
+        "showDiscount": true,
+        "showFrom": false,
+        "showPercentage": true,
+        "showUpTo": false,
+        "suffix": "*"
+      },
+      "displayedCurrency": "zł",
+      "hasStar": false,
+      "hasVat": false,
+      "oldPrice": 16.99,
+      "packaging": {
+        "text": "1 kg"
+      },
+      "price": 9.99,
+      "priceTheme": "white_red",
+      "specialTaxes": [],
+      "variantsHaveDifferentPrices": false
+    },
+    "productId": 11407883,
+    "productType": "RETAIL",
+    "productOrigin": "progress_event",
+    "quickAddToCart": false,
+    "regions": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      18,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentPrice": {
+          "basePrice": {
+            "prefix": false,
+            "text": "* cena przed obniżką/ cena poza promocją: 1 kg = 16,99 Limit: 9 kg na paragon."
+          },
+          "currencyCode": "PLN",
+          "currencyCodeSecond": "",
+          "currencySymbol": "zł",
+          "currencySymbolSecond": "",
+          "discount": {
+            "absoluteDiscount": 7,
+            "deletedPrice": 16.99,
+            "discountHasStar": false,
+            "discountText": "-41%",
+            "fromNormalPriceForLidlPlus": false,
+            "fromRecommendedPrice": false,
+            "hideBargainHint": false,
+            "bargainHintEnabled": false,
+            "bargainHintText": "Megaokazja",
+            "percentageDiscount": 41,
+            "showDiscount": true,
+            "showFrom": false,
+            "showPercentage": true,
+            "showUpTo": false,
+            "suffix": "*"
+          },
+          "displayedCurrency": "zł",
+          "endDate": "2026-11-07T22:59:59Z",
+          "endDateExclusive": "2026-11-07T23:00Z",
+          "hasStar": false,
+          "hasVat": true,
+          "oldPrice": 16.99,
+          "packaging": {
+            "text": "1 kg"
+          },
+          "price": 9.99,
+          "priceTheme": "white_red",
+          "specialTaxes": [],
+          "startDate": "2026-11-03T11:43:36.040Z",
+          "superscript": "",
+          "variantsHaveDifferentPrices": false
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "ribbons": [],
+    "renderedTs": 1793937095,
+    "seals": [],
+    "stockAvailability": {
+      "availabilityIndicator": 0,
+      "badgeInfo": {
+        "badges": [
+          {
+            "text": "tylko w sklepach stacjonarnych 05.11. - 07.11.",
+            "type": "IN_STORE_PAST_DATE_RANGE"
+          }
+        ]
+      },
+      "badgeInfoV2": [
+        {
+          "badges": [
+            {
+              "text": "tylko w sklepach stacjonarnych 05.11. - 07.11.",
+              "type": "IN_STORE_PAST_DATE_RANGE"
+            }
+          ],
+          "validFrom": 1793833200,
+          "validUntil": 1794092399
+        }
+      ],
+      "onlineAvailable": false,
+      "minOrderableQuantity": 1,
+      "backInStockNotification": false,
+      "backInStockNotificationSoldOut": false
+    },
+    "store": true,
+    "storeStartDate": 1793833200,
+    "storeEndDate": 1794092399,
+    "title": "Kaczka – tuszka",
+    "timezoneId": "Europe/Warsaw",
+    "zones": {},
+    "relevancyScore": "YezixOwvhgjusZRdf5am6hijV2DJ5C9njZj9e9cFEGmZ1esmWylsJrUM1yg=",
+    "keywordScore": "urMbAnh9qlLF5OcPxgbqT6ra5zxoEaj9jNoXLRdP9ij8sYagEYwlwzpddJs=",
+    "semanticScore": "8vsXbZxklPbe52ntrvITvtQlkNEEBWPhbYZUBi8JE9WOx/hu5tlsodSWleA=",
+    "keywordScoreRaw": "i4dZh9ko1WKAngCGVlB2hls809K6EzqtlKR2Jv/INJrrvhlJUspjp9wItck=",
+    "ratingScore": "qfQtc+bNmapcKjpN/UagRocfSSslbqy6mgkIipkpb0AlMmj+UwELHWnyBhM=",
+    "freshnessScore": "W8P0ENLwqs6UZzUwCPBoqUzzSLYOaiFCRufXeCFu/UZIs3Upub8zt6rg9mg=",
+    "searchHubImpressions": "9VeFJctX9rUvF7bU/vTKklAcrvhBWYO6/4smpg1RBHDho8u1Q1hpcrCWarA=",
+    "searchHubClicks": "EWs25gvCvvinxEWqXtq3Eal7I7lHq5DaF10q4yAYgR01wR8zJL4Ujrusa1w=",
+    "searchHubCarts": "hICHpu8Zj9btzPlc/sOrgUZ5WMJW4jUUJEtY8ilT1GnymzvMn0kSoZKhXxM=",
+    "businessRuleFactor": "EDkOLe4v8XQ/Cd8SPX2fJcEVV9zCiP5XQkH1ScaXuvagVYzHXHLKfccvvBE=",
+    "position": 4,
+    "origPos": null,
+    "simi": null,
+    "list": "/h/mieso-i-drob/h10095752",
+    "listId": "10095752",
+    "listName": "mieso-i-drob",
+    "hashParams": "searchTrackingMasterId=Product.11407883&searchTrackingTitle=Kaczka%2B%25E2%2580%2593%2Btuszka&searchTrackingPageSize=48&searchTrackingPage=1&searchTrackingEvent=click&searchTrackingId=Product.11407883&searchTrackingOrigPos=1&searchTrackingPos=4&searchTrackingOrigPageSize=48&searchTrackingChannel=PL"
+  },
+  {
+    "ageRestriction": false,
+    "hasColors": false,
+    "awards": [],
+    "brand": {
+      "name": "PIKOK",
+      "url": "/q/search?q=pikok",
+      "showBrand": true
+    },
+    "canonicalPath": "/p/pikok-schab-wedzony-wisnia-xxl/p11433248",
+    "canonicalUrl": "/p/pikok-schab-wedzony-wisnia-xxl/p11433248",
+    "category": "Food",
+    "cutoutimageV2": [],
+    "dealOfDay": {
+      "active": false
+    },
+    "designTheme": "default",
+    "disclaimers": [
+      {
+        "id": "code_11433248_e597dc6c",
+        "type": "CODE",
+        "value": "Basic"
+      },
+      {
+        "id": "code_11433248_e4850faf",
+        "type": "CODE",
+        "value": "StrikePrice_LowestPrice30days"
+      }
+    ],
+    "displayFreeDelivery": false,
+    "energyLabels": [],
+    "erpNumber": "11433248",
+    "flashSales": false,
+    "fullTitle": "PIKOK Schab wędzony wiśnią, XXL",
+    "gs1Attributes": [],
+    "guaranteeLabels": [],
+    "havingPrice": true,
+    "havingThreesixty": false,
+    "havingVideos": false,
+    "highlightedSeals": 0,
+    "ians": [
+      "5574331"
+    ],
+    "image": "https://www.lidl.pl/assets/gcp905b1599311f4232a8ff851fdaec511d.png",
+    "image_V1": {
+      "image": "https://www.lidl.pl/assets/gcp905b1599311f4232a8ff851fdaec511d.png",
+      "accessibility": "Pikok Schab wędzony Wiśnia XXL, 400 g"
+    },
+    "isLidlGiftCard": false,
+    "isUsedProduct": false,
+    "itemId": 11433248,
+    "imageList": [
+      "https://www.lidl.pl/assets/gcp905b1599311f4232a8ff851fdaec511d.png",
+      "https://www.lidl.pl/assets/gcp92a474abcd664cfe923bd28ec3972b8f.png",
+      "https://www.lidl.pl/assets/gcp922e06df14904587a0d567f29f23bb66.png"
+    ],
+    "imageList_V1": [
+      {
+        "image": "https://www.lidl.pl/assets/gcp905b1599311f4232a8ff851fdaec511d.png",
+        "accessibility": "Pikok Schab wędzony Wiśnia XXL, 400 g"
+      },
+      {
+        "image": "https://www.lidl.pl/assets/gcp92a474abcd664cfe923bd28ec3972b8f.png",
+        "accessibility": "Pikok schab wędzony Wiśnia, 400 g"
+      },
+      {
+        "image": "https://www.lidl.pl/assets/gcp922e06df14904587a0d567f29f23bb66.png",
+        "accessibility": "Pikok schab wędzony Wiśnia, 400 g"
+      }
+    ],
+    "imageList_V2": [
+      {
+        "accessibility": "Pikok Schab wędzony Wiśnia XXL, 400 g",
+        "variants": [
+          {
+            "ratio": "3:4",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcpf28630f455a44868afad02f562834ca6.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp77f9a30571e0431d9957ff79ae730ead.png"
+            }
+          },
+          {
+            "ratio": "4:3",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcp1c558cc0856d48f8ac933510ba06751e.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp905b1599311f4232a8ff851fdaec511d.png"
+            }
+          }
+        ]
+      },
+      {
+        "accessibility": "Pikok schab wędzony Wiśnia, 400 g",
+        "variants": [
+          {
+            "ratio": "3:4",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcp3b2ea938b06740d08e6dbfda7b445286.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp916f2abab98a42c0a577e46fba40c029.png"
+            }
+          },
+          {
+            "ratio": "4:3",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcpff9663231910468887426c6a32d1ed0f.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp92a474abcd664cfe923bd28ec3972b8f.png"
+            }
+          }
+        ]
+      },
+      {
+        "accessibility": "Pikok schab wędzony Wiśnia, 400 g",
+        "variants": [
+          {
+            "ratio": "3:4",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcpf47a245126a3408db515b57f71eae98b.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp1b1f30e26777406db1b5330291d2b785.png"
+            }
+          },
+          {
+            "ratio": "4:3",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcp205a25073e8549fba37f815b152c37a2.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp922e06df14904587a0d567f29f23bb66.png"
+            }
+          }
+        ]
+      }
+    ],
+    "keyfacts": {
+      "analyticsCategory": "Food",
+      "description": "<ul><li>XXL</li></ul>",
+      "fullTitle": "PIKOK Schab wędzony wiśnią, XXL",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Schab wędzony wiśnią, XXL",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Mięso i drób/Kiełbasy i wędliny",
+      "wonCategoryPrimaryPath": "0/17/1738/173815"
+    },
+    "lidlPlus": [],
+    "multipack": false,
+    "nat": "5574331",
+    "online": false,
+    "preventSelling": false,
+    "price": {
+      "basePrice": {
+        "prefix": false,
+        "text": "1 kg = 22,48 * cena przed obniżką/ cena poza promocją: 15,99/opak., 1 kg = 39,98 Limit: 6 opak. na paragon."
+      },
+      "currencyCode": "PLN",
+      "currencyCodeSecond": "",
+      "currencySymbol": "zł",
+      "currencySymbolSecond": "",
+      "discount": {
+        "absoluteDiscount": 7,
+        "deletedPrice": 15.99,
+        "discountHasStar": false,
+        "fromRecommendedPrice": false,
+        "hideBargainHint": false,
+        "bargainHintEnabled": false,
+        "bargainHintText": "Megaokazja",
+        "percentageDiscount": 43,
+        "showDiscount": true,
+        "showFrom": false,
+        "showPercentage": true,
+        "showUpTo": false,
+        "suffix": "*"
+      },
+      "displayedCurrency": "zł",
+      "hasStar": false,
+      "hasVat": false,
+      "oldPrice": 15.99,
+      "packaging": {
+        "text": "400 g"
+      },
+      "price": 8.99,
+      "priceTheme": "white_red",
+      "specialTaxes": [],
+      "variantsHaveDifferentPrices": false
+    },
+    "productId": 11433248,
+    "productType": "RETAIL",
+    "productOrigin": "progress_event",
+    "quickAddToCart": false,
+    "regions": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      18,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentPrice": {
+          "basePrice": {
+            "prefix": false,
+            "text": "1 kg = 22,48 * cena przed obniżką/ cena poza promocją: 15,99/opak., 1 kg = 39,98 Limit: 6 opak. na paragon."
+          },
+          "currencyCode": "PLN",
+          "currencyCodeSecond": "",
+          "currencySymbol": "zł",
+          "currencySymbolSecond": "",
+          "discount": {
+            "absoluteDiscount": 7,
+            "deletedPrice": 15.99,
+            "discountHasStar": false,
+            "discountText": "-43%",
+            "fromNormalPriceForLidlPlus": false,
+            "fromRecommendedPrice": false,
+            "hideBargainHint": false,
+            "bargainHintEnabled": false,
+            "bargainHintText": "Megaokazja",
+            "percentageDiscount": 43,
+            "showDiscount": true,
+            "showFrom": false,
+            "showPercentage": true,
+            "showUpTo": false,
+            "suffix": "*"
+          },
+          "displayedCurrency": "zł",
+          "endDate": "2026-11-07T22:59:59Z",
+          "endDateExclusive": "2026-11-07T23:00Z",
+          "hasStar": false,
+          "hasVat": true,
+          "oldPrice": 15.99,
+          "packaging": {
+            "text": "400 g"
+          },
+          "price": 8.99,
+          "priceTheme": "white_red",
+          "specialTaxes": [],
+          "startDate": "2026-11-03T12:24:19.976Z",
+          "superscript": "",
+          "variantsHaveDifferentPrices": false
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "ribbons": [],
+    "renderedTs": 1793936036,
+    "seals": [],
+    "stockAvailability": {
+      "availabilityIndicator": 0,
+      "badgeInfo": {
+        "badges": [
+          {
+            "text": "tylko w sklepach stacjonarnych 05.11. - 07.11.",
+            "type": "IN_STORE_PAST_DATE_RANGE"
+          }
+        ]
+      },
+      "badgeInfoV2": [
+        {
+          "badges": [
+            {
+              "text": "tylko w sklepach stacjonarnych 05.11. - 07.11.",
+              "type": "IN_STORE_PAST_DATE_RANGE"
+            }
+          ],
+          "validFrom": 1793833200,
+          "validUntil": 1794092399
+        }
+      ],
+      "onlineAvailable": false,
+      "minOrderableQuantity": 1,
+      "backInStockNotification": false,
+      "backInStockNotificationSoldOut": false
+    },
+    "store": true,
+    "storeStartDate": 1793833200,
+    "storeEndDate": 1794092399,
+    "title": "Schab wędzony wiśnią, XXL",
+    "timezoneId": "Europe/Warsaw",
+    "zones": {},
+    "relevancyScore": "Up6ptU/5V2jYGDqADAx1DyjOPKrzS9Fi3jY/Ds7tgLwbZjLRZgIaudOf6xM=",
+    "keywordScore": "h3cUwckPrY0oln1b+w5IuY4ya4GLCMMRpFEqdlafLEafch8JIxfs+c0jzYI=",
+    "semanticScore": "X0fSXGm02E9KFyR9tEBJf0Qf6YXEoGYaKirwpRzHRwtydB4AsErPTMOeJGQ=",
+    "keywordScoreRaw": "iI6EcuUKVUIoj6dMUeg1NfisADhGw8Te6+pnGBhzxxhHdWc8BcHSrFeRNIQ=",
+    "ratingScore": "WaZjyn6xw4nngvNyORBTyca8hq5dFb2p+kwUyoGr7zC35uiA5qb4GDRpOJo=",
+    "freshnessScore": "ECjwMmxpLvb/t4rWJjLyB9v0j1buIZdjVvOJggVsOJZ/NVfYmgSNLzQDElQ=",
+    "searchHubImpressions": "K3iSubHE7VlK56hkZ4NT7eLGvZz4uhMYVG7JxTaFvZgOBg9939xPUmmBbLw=",
+    "searchHubClicks": "IicMC/2uqQqCWnQi6tMSAz2mUSgeD/MA2R0jP+blMkwYj9EO5Mq056+7bg0=",
+    "searchHubCarts": "7H0yIVm/CKEj5yqRkpbmNiaNUWDTOfDrMwlGB9WRadLb2w5gtzFJsjkwSsc=",
+    "businessRuleFactor": "hV43DtzYBFUgHLOUIdYzGSeLN8t4CIJQP8ldWJdDlVKlW1Ed5C/VUlyu780=",
+    "position": 1,
+    "origPos": null,
+    "simi": null,
+    "list": "/h/mieso-i-drob/h10095752",
+    "listId": "10095752",
+    "listName": "mieso-i-drob",
+    "hashParams": "searchTrackingMasterId=Product.11433248&searchTrackingTitle=Schab%2Bw%25C4%2599dzony%2Bwi%25C5%259Bni%25C4%2585%252C%2BXXL&searchTrackingPageSize=48&searchTrackingPage=1&searchTrackingEvent=click&searchTrackingId=Product.11433248&searchTrackingOrigPos=1&searchTrackingPos=1&searchTrackingOrigPageSize=48&searchTrackingChannel=PL"
+  },
+  {
+    "ageRestriction": false,
+    "hasColors": false,
+    "awards": [],
+    "brand": {
+      "name": "Pikok",
+      "url": "/q/search?q=pikok",
+      "showBrand": true
+    },
+    "canonicalPath": "/p/pikok-pikok-premium-kielbasa-krakowska-z-szynki-xxl/p11438030",
+    "canonicalUrl": "/p/pikok-pikok-premium-kielbasa-krakowska-z-szynki-xxl/p11438030",
+    "category": "Food",
+    "cutoutimageV2": [],
+    "dealOfDay": {
+      "active": false
+    },
+    "designTheme": "default",
+    "disclaimers": [
+      {
+        "id": "code_11438030_08a62d39",
+        "type": "CODE",
+        "value": "Basic"
+      }
+    ],
+    "displayFreeDelivery": false,
+    "energyLabels": [],
+    "erpNumber": "11438030",
+    "flashSales": false,
+    "fullTitle": "Pikok Pikok Premium Kiełbasa krakowska z szynki, XXL",
+    "gs1Attributes": [],
+    "guaranteeLabels": [],
+    "havingPrice": true,
+    "havingThreesixty": false,
+    "havingVideos": false,
+    "highlightedSeals": 0,
+    "ians": [
+      "5580517"
+    ],
+    "image": "https://www.lidl.pl/assets/gcp64eff289121d49cdb65129c70ccf0b29.png",
+    "image_V1": {
+      "image": "https://www.lidl.pl/assets/gcp64eff289121d49cdb65129c70ccf0b29.png",
+      "accessibility": "Pokrojona kiełbasa Pikok z koperkiem i pieprzem na talerzu."
+    },
+    "isLidlGiftCard": false,
+    "isUsedProduct": false,
+    "itemId": 11438030,
+    "imageList": [
+      "https://www.lidl.pl/assets/gcp64eff289121d49cdb65129c70ccf0b29.png",
+      "https://www.lidl.pl/assets/gcp827da27c86c248c3b499f6c2d987f94d.png"
+    ],
+    "imageList_V1": [
+      {
+        "image": "https://www.lidl.pl/assets/gcp64eff289121d49cdb65129c70ccf0b29.png",
+        "accessibility": "Pokrojona kiełbasa Pikok z koperkiem i pieprzem na talerzu."
+      },
+      {
+        "image": "https://www.lidl.pl/assets/gcp827da27c86c248c3b499f6c2d987f94d.png",
+        "accessibility": "Kiełbasa krakowska z szynki Pikok XXL 550 g"
+      }
+    ],
+    "imageList_V2": [
+      {
+        "accessibility": "Pokrojona kiełbasa Pikok z koperkiem i pieprzem na talerzu.",
+        "variants": [
+          {
+            "ratio": "4:3",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcp1e157c2bec774a999ef8ca7ab3d0cc23.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp64eff289121d49cdb65129c70ccf0b29.png"
+            }
+          },
+          {
+            "ratio": "3:4",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcp30e94fbbd52f4b5caaa02dd9a2dc664b.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp62818d47ed9948bda6a14d6e4e8b7bf3.png"
+            }
+          }
+        ]
+      },
+      {
+        "accessibility": "Kiełbasa krakowska z szynki Pikok XXL 550 g",
+        "variants": [
+          {
+            "ratio": "4:3",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcp2f17896431c1486981920006204dd04b.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp827da27c86c248c3b499f6c2d987f94d.png"
+            }
+          },
+          {
+            "ratio": "3:4",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcpbc4f7c70bfce460e8b7f2ed3f893e5dd.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp00d3defa3d394687a93c91879dacc7d1.png"
+            }
+          }
+        ]
+      }
+    ],
+    "keyfacts": {
+      "analyticsCategory": "Food",
+      "fullTitle": "Pikok Pikok Premium Kiełbasa krakowska z szynki, XXL",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Pikok Premium Kiełbasa krakowska z szynki, XXL",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Mięso i drób/Kiełbasy i wędliny",
+      "wonCategoryPrimaryPath": "0/17/1738/173815"
+    },
+    "lidlPlus": [],
+    "multipack": false,
+    "nat": "5580517",
+    "online": false,
+    "preventSelling": false,
+    "price": {
+      "basePrice": {
+        "prefix": false,
+        "text": "Cena poza promocją: 24,99/opak., 1 kg = 45,44 Limit: 2 opak. gratis na paragon."
+      },
+      "currencyCode": "PLN",
+      "currencyCodeSecond": "",
+      "currencySymbol": "zł",
+      "currencySymbolSecond": "",
+      "displayedCurrency": "zł",
+      "hasStar": false,
+      "hasVat": false,
+      "packaging": {
+        "text": "550 g"
+      },
+      "prefix": "Cena poza promocją",
+      "price": 24.99,
+      "priceTheme": "white_red",
+      "specialTaxes": [],
+      "variantsHaveDifferentPrices": false
+    },
+    "productId": 11438030,
+    "productType": "RETAIL",
+    "productOrigin": "progress_event",
+    "quickAddToCart": false,
+    "regions": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      18,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentPrice": {
+          "basePrice": {
+            "prefix": false,
+            "text": "Cena poza promocją: 24,99/opak., 1 kg = 45,44 Limit: 2 opak. gratis na paragon."
+          },
+          "currencyCode": "PLN",
+          "currencyCodeSecond": "",
+          "currencySymbol": "zł",
+          "currencySymbolSecond": "",
+          "discount": {
+            "discountHasStar": false,
+            "discountText": "1 + 1 gratis",
+            "fromNormalPriceForLidlPlus": false,
+            "fromRecommendedPrice": false,
+            "showDiscount": false,
+            "showFrom": false,
+            "showPercentage": false,
+            "showUpTo": false
+          },
+          "displayedCurrency": "zł",
+          "endDate": "2026-11-07T22:59:59Z",
+          "endDateExclusive": "2026-11-07T23:00Z",
+          "hasStar": false,
+          "hasVat": true,
+          "packaging": {
+            "text": "550 g"
+          },
+          "prefix": "Cena poza promocją",
+          "price": 24.99,
+          "priceTheme": "white_red",
+          "specialTaxes": [],
+          "startDate": "2026-11-03T12:29:06.078Z",
+          "superscript": "",
+          "variantsHaveDifferentPrices": false
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "ribbons": [],
+    "renderedTs": 1793936010,
+    "seals": [],
+    "stockAvailability": {
+      "availabilityIndicator": 0,
+      "badgeInfo": {
+        "badges": [
+          {
+            "text": "tylko w sklepach stacjonarnych 05.11. - 07.11.",
+            "type": "IN_STORE_PAST_DATE_RANGE"
+          }
+        ]
+      },
+      "badgeInfoV2": [
+        {
+          "badges": [
+            {
+              "text": "tylko w sklepach stacjonarnych 05.11. - 07.11.",
+              "type": "IN_STORE_PAST_DATE_RANGE"
+            }
+          ],
+          "validFrom": 1793833200,
+          "validUntil": 1794092399
+        }
+      ],
+      "onlineAvailable": false,
+      "minOrderableQuantity": 1,
+      "backInStockNotification": false,
+      "backInStockNotificationSoldOut": false
+    },
+    "store": true,
+    "storeStartDate": 1793833200,
+    "storeEndDate": 1794092399,
+    "title": "Pikok Premium Kiełbasa krakowska z szynki, XXL",
+    "timezoneId": "Europe/Warsaw",
+    "zones": {},
+    "relevancyScore": "pdqrKQp9glvtSUQUxg/10HQnCwzjZDgTo3s3VX+IZ6wYV2nAEq93v9k7fSQ=",
+    "keywordScore": "Og0zAxdeTYLXBpOa8JR4duIK6sTUgmh0U2yLQc0kThzoy0Ief6m6eX8X+pY=",
+    "semanticScore": "UFAOVmnw7mw9WXpbEOSmX1AEGiUl8ioRTGu7noOL2KPQY5JqkviIG2MtAHc=",
+    "keywordScoreRaw": "OsWTjg+04j8Aq+zJkYzeX0wMxHSQPDcHVkqqzQtofIuh15LAuTd7kbCgu9Y=",
+    "ratingScore": "5rg3Cdq1lOA1RWOlnXP7/Yw5Dy2j5ynIR0qSqWY9AdTDr50Y2W5Gzzz0jUM=",
+    "freshnessScore": "1pZ9We+G8CLMx5JrHQal+MdWQHdsK2fBVOR6R+ajKgImnyLucCrPffgJidk=",
+    "searchHubImpressions": "50fX2mg9BEOLwWJS/O5NlS73Wul7IUtLc8kDaxq53OG5oWpZLnWC5cVF+DY=",
+    "searchHubClicks": "7kXFEKNDdKlo6y7CG67n9/NtCjZTyu4WZt9ZsRe/QXNaq/8E2HivGJnmwuo=",
+    "searchHubCarts": "mgjQEOH83JXAAInOFVjjk6iWBi91Gll2aQtlDVUVwXO6Z4yTDfvra3N7tOs=",
+    "businessRuleFactor": "Fx/JwXhCSFcgRGTqCi66DtVYupqxXZvtkAQ9sGWZ1S624GqOMXPiNwZptFs=",
+    "position": 2,
+    "origPos": null,
+    "simi": null,
+    "list": "/h/mieso-i-drob/h10095752",
+    "listId": "10095752",
+    "listName": "mieso-i-drob",
+    "hashParams": "searchTrackingMasterId=Product.11438030&searchTrackingTitle=Pikok%2BPremium%2BKie%25C5%2582basa%2Bkrakowska%2Bz%2Bszynki%252C%2BXXL&searchTrackingPageSize=48&searchTrackingPage=1&searchTrackingEvent=click&searchTrackingId=Product.11438030&searchTrackingOrigPos=1&searchTrackingPos=2&searchTrackingOrigPageSize=48&searchTrackingChannel=PL"
+  },
+  {
+    "ageRestriction": false,
+    "hasColors": false,
+    "awards": [],
+    "brand": {
+      "name": "PIKOK PURE",
+      "url": "/q/search?q=pikok+pure",
+      "showBrand": true
+    },
+    "canonicalPath": "/p/pikok-pure-kielbasa-slaska-xxl/p11436970",
+    "canonicalUrl": "/p/pikok-pure-kielbasa-slaska-xxl/p11436970",
+    "category": "Food",
+    "cutoutimageV2": [],
+    "dealOfDay": {
+      "active": false
+    },
+    "designTheme": "default",
+    "disclaimers": [
+      {
+        "id": "code_11436970_d5b4d9ce",
+        "type": "CODE",
+        "value": "Basic"
+      },
+      {
+        "id": "code_11436970_b38d664e",
+        "type": "CODE",
+        "value": "StrikePrice_LowestPrice30days"
+      }
+    ],
+    "displayFreeDelivery": false,
+    "energyLabels": [],
+    "erpNumber": "11436970",
+    "flashSales": false,
+    "fullTitle": "PIKOK PURE Kiełbasa śląska, XXL",
+    "gs1Attributes": [],
+    "guaranteeLabels": [],
+    "havingPrice": true,
+    "havingThreesixty": false,
+    "havingVideos": false,
+    "highlightedSeals": 0,
+    "ians": [
+      "5577447"
+    ],
+    "image": "https://www.lidl.pl/assets/gcp7bb55d8b24f94987acb4748d542ada45.png",
+    "image_V1": {
+      "image": "https://www.lidl.pl/assets/gcp7bb55d8b24f94987acb4748d542ada45.png",
+      "accessibility": "Pikok Pure Kiełbasa Śląska z szynki XXL, 800 g"
+    },
+    "isLidlGiftCard": false,
+    "isUsedProduct": false,
+    "itemId": 11436970,
+    "imageList": [
+      "https://www.lidl.pl/assets/gcp7bb55d8b24f94987acb4748d542ada45.png"
+    ],
+    "imageList_V1": [
+      {
+        "image": "https://www.lidl.pl/assets/gcp7bb55d8b24f94987acb4748d542ada45.png",
+        "accessibility": "Pikok Pure Kiełbasa Śląska z szynki XXL, 800 g"
+      }
+    ],
+    "imageList_V2": [
+      {
+        "accessibility": "Pikok Pure Kiełbasa Śląska z szynki XXL, 800 g",
+        "variants": [
+          {
+            "ratio": "4:3",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcpcba233597ce94b5aabbca4488784b79d.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp7bb55d8b24f94987acb4748d542ada45.png"
+            }
+          },
+          {
+            "ratio": "3:4",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcp269fafa73fb543dc96bf1ef6fb5382ce.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp695c5f0625de424aa8fec9c9e0bb6db5.png"
+            }
+          }
+        ]
+      }
+    ],
+    "keyfacts": {
+      "analyticsCategory": "Food",
+      "description": "<ul><li>Produkt Polski</li><li>XXL</li></ul>",
+      "fullTitle": "PIKOK PURE Kiełbasa śląska, XXL",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Kiełbasa śląska, XXL",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Mięso i drób/Kiełbasy i wędliny",
+      "wonCategoryPrimaryPath": "0/17/1738/173815"
+    },
+    "lidlPlus": [],
+    "multipack": false,
+    "nat": "5577447",
+    "online": false,
+    "preventSelling": false,
+    "price": {
+      "basePrice": {
+        "prefix": false,
+        "text": "1 kg = 22,49 * cena przed obniżką/ cena poza promocją: 29,99/opak., 1 kg = 37,49 Limit: 6 opak. na paragon."
+      },
+      "currencyCode": "PLN",
+      "currencyCodeSecond": "",
+      "currencySymbol": "zł",
+      "currencySymbolSecond": "",
+      "discount": {
+        "absoluteDiscount": 12,
+        "deletedPrice": 29.99,
+        "discountHasStar": false,
+        "fromRecommendedPrice": false,
+        "hideBargainHint": false,
+        "bargainHintEnabled": false,
+        "bargainHintText": "Megaokazja",
+        "percentageDiscount": 40,
+        "showDiscount": true,
+        "showFrom": false,
+        "showPercentage": true,
+        "showUpTo": false,
+        "suffix": "*"
+      },
+      "displayedCurrency": "zł",
+      "hasStar": false,
+      "hasVat": false,
+      "oldPrice": 29.99,
+      "packaging": {
+        "text": "800 g"
+      },
+      "price": 17.99,
+      "priceTheme": "white_red",
+      "specialTaxes": [],
+      "variantsHaveDifferentPrices": false
+    },
+    "productId": 11436970,
+    "productType": "RETAIL",
+    "productOrigin": "progress_event",
+    "quickAddToCart": false,
+    "regions": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      18,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentPrice": {
+          "basePrice": {
+            "prefix": false,
+            "text": "1 kg = 22,49 * cena przed obniżką/ cena poza promocją: 29,99/opak., 1 kg = 37,49 Limit: 6 opak. na paragon."
+          },
+          "currencyCode": "PLN",
+          "currencyCodeSecond": "",
+          "currencySymbol": "zł",
+          "currencySymbolSecond": "",
+          "discount": {
+            "absoluteDiscount": 12,
+            "deletedPrice": 29.99,
+            "discountHasStar": false,
+            "discountText": "-40%",
+            "fromNormalPriceForLidlPlus": false,
+            "fromRecommendedPrice": false,
+            "hideBargainHint": false,
+            "bargainHintEnabled": false,
+            "bargainHintText": "Megaokazja",
+            "percentageDiscount": 40,
+            "showDiscount": true,
+            "showFrom": false,
+            "showPercentage": true,
+            "showUpTo": false,
+            "suffix": "*"
+          },
+          "displayedCurrency": "zł",
+          "endDate": "2026-11-07T22:59:59Z",
+          "endDateExclusive": "2026-11-07T23:00Z",
+          "hasStar": false,
+          "hasVat": true,
+          "oldPrice": 29.99,
+          "packaging": {
+            "text": "800 g"
+          },
+          "price": 17.99,
+          "priceTheme": "white_red",
+          "specialTaxes": [],
+          "startDate": "2026-11-03T12:25:11.789Z",
+          "superscript": "",
+          "variantsHaveDifferentPrices": false
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "ribbons": [],
+    "renderedTs": 1793936935,
+    "seals": [],
+    "stockAvailability": {
+      "availabilityIndicator": 0,
+      "badgeInfo": {
+        "badges": [
+          {
+            "text": "tylko w sklepach stacjonarnych 05.11. - 07.11.",
+            "type": "IN_STORE_PAST_DATE_RANGE"
+          }
+        ]
+      },
+      "badgeInfoV2": [
+        {
+          "badges": [
+            {
+              "text": "tylko w sklepach stacjonarnych 05.11. - 07.11.",
+              "type": "IN_STORE_PAST_DATE_RANGE"
+            }
+          ],
+          "validFrom": 1793833200,
+          "validUntil": 1794092399
+        }
+      ],
+      "onlineAvailable": false,
+      "minOrderableQuantity": 1,
+      "backInStockNotification": false,
+      "backInStockNotificationSoldOut": false
+    },
+    "store": true,
+    "storeStartDate": 1793833200,
+    "storeEndDate": 1794092399,
+    "title": "Kiełbasa śląska, XXL",
+    "timezoneId": "Europe/Warsaw",
+    "zones": {},
+    "relevancyScore": "y2hGod5VAR4rTHHUZhshTcyfWG22ps4SP0TRLAekkDMt1KzQpvWiAnMeZ6o=",
+    "keywordScore": "U0qdg9CH6pxwBtl5kGTzA6UXRPa9lteoRlzHU/8fwQ7O6RShB3pf6u34ZM0=",
+    "semanticScore": "nFP5wxBPhJz4VXvfLcpFH+KqrIyd/DQjRrQQMehwbpgRgPcu5pFVqPyD9yA=",
+    "keywordScoreRaw": "0U8insolCQEe2HmnC0l2mIT0amFrDHI2huMz8ISuVDksZOwUzv+xm2V+jXk=",
+    "ratingScore": "92NB/wafP4BCUS1iXNrygL2wlltSHwucN43+d5pPtMKRdXCg4em5ropLibA=",
+    "freshnessScore": "u/0wbNus+uf0odoQzmOq9mgcQqOKeUUAJIEwybBlW85EqbcOU4N7wJifRlY=",
+    "searchHubImpressions": "XQtHFLpW3HZWTCbYDQKEIO54R4f//qPRDHLnIucRiw7Ti3ZH4+g5/AJDyWg=",
+    "searchHubClicks": "XAmasPDtu74aWk223Moc0LoqSl1jm8/YR3ZpwVGCqhzMC+mw8CL+0Quw+Xo=",
+    "searchHubCarts": "LEpzDaZxOcGd5CPz6bC4iTsj/V5xWYHcH8FFCLYooLw17zuvbRjtzIT3Spk=",
+    "businessRuleFactor": "PX4PsF/GvcEAjm5cy9+2Jb2o7EkeCTA4hACMe9F9DoZngmFw1tj76L4ZxWI=",
+    "position": 5,
+    "origPos": null,
+    "simi": null,
+    "list": "/h/mieso-i-drob/h10095752",
+    "listId": "10095752",
+    "listName": "mieso-i-drob",
+    "hashParams": "searchTrackingMasterId=Product.11436970&searchTrackingTitle=Kie%25C5%2582basa%2B%25C5%259Bl%25C4%2585ska%252C%2BXXL&searchTrackingPageSize=48&searchTrackingPage=1&searchTrackingEvent=click&searchTrackingId=Product.11436970&searchTrackingOrigPos=1&searchTrackingPos=5&searchTrackingOrigPageSize=48&searchTrackingChannel=PL"
+  },
+  {
+    "ageRestriction": false,
+    "hasColors": false,
+    "awards": [],
+    "brand": {
+      "name": "-",
+      "url": "/q/search?q=-",
+      "showBrand": true
+    },
+    "canonicalPath": "/p/rogal-swietomarcinski/p11406146",
+    "canonicalUrl": "/p/rogal-swietomarcinski/p11406146",
+    "category": "Food",
+    "cutoutimageV2": [],
+    "dealOfDay": {
+      "active": false
+    },
+    "designTheme": "default",
+    "disclaimers": [
+      {
+        "id": "code_11406146_4f5f8245",
+        "type": "CODE",
+        "value": "Basic"
+      },
+      {
+        "id": "code_11406146_518215cd",
+        "type": "CODE",
+        "value": "StrikePrice_LowestPrice30days"
+      }
+    ],
+    "displayFreeDelivery": false,
+    "energyLabels": [],
+    "erpNumber": "11406146",
+    "flashSales": false,
+    "fullTitle": "- Rogal świętomarciński",
+    "gs1Attributes": [],
+    "guaranteeLabels": [],
+    "havingPrice": true,
+    "havingThreesixty": false,
+    "havingVideos": false,
+    "highlightedSeals": 0,
+    "ians": [
+      "5503895"
+    ],
+    "image": "https://www.lidl.pl/assets/gcpc5af492247c242f18b754ccbed34711e.png",
+    "image_V1": {
+      "image": "https://www.lidl.pl/assets/gcpc5af492247c242f18b754ccbed34711e.png",
+      "accessibility": "Rogal świętomarciński z lukrem i orzechami"
+    },
+    "isLidlGiftCard": false,
+    "isUsedProduct": false,
+    "itemId": 11406146,
+    "imageList": [
+      "https://www.lidl.pl/assets/gcpc5af492247c242f18b754ccbed34711e.png"
+    ],
+    "imageList_V1": [
+      {
+        "image": "https://www.lidl.pl/assets/gcpc5af492247c242f18b754ccbed34711e.png",
+        "accessibility": "Rogal świętomarciński z lukrem i orzechami"
+      }
+    ],
+    "imageList_V2": [
+      {
+        "accessibility": "Rogal świętomarciński z lukrem i orzechami",
+        "variants": [
+          {
+            "ratio": "3:4",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcp1705fa7ea26b4a56a3904c4beac89678.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcp42ddb6c0dbed487cb8f23195e006a2af.png"
+            }
+          },
+          {
+            "ratio": "4:3",
+            "sizes": {
+              "mediumUrl": "https://www.lidl.pl/assets/gcp1011dca51d3d44bdb3d3567231976238.png",
+              "smallUrl": "https://www.lidl.pl/assets/gcpc5af492247c242f18b754ccbed34711e.png"
+            }
+          }
+        ]
+      }
+    ],
+    "keyfacts": {
+      "analyticsCategory": "Food",
+      "fullTitle": "- Rogal świętomarciński",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Rogal świętomarciński",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Piekarnia/Słodkie wypieki",
+      "wonCategoryPrimaryPath": "0/17/1740/174012"
+    },
+    "lidlPlus": [],
+    "multipack": false,
+    "nat": "0009067",
+    "online": false,
+    "preventSelling": false,
+    "price": {
+      "basePrice": {
+        "prefix": false,
+        "text": "100 g = 1,75 Cena przed obniżką/ cena poza promocją: 7,49/szt., 100 g = 3,75 * cena za 1 szt. przy zakupie 3 szt. lub wielokrotności 3 szt."
+      },
+      "currencyCode": "PLN",
+      "currencyCodeSecond": "",
+      "currencySymbol": "zł",
+      "currencySymbolSecond": "",
+      "discount": {
+        "absoluteDiscount": 4,
+        "deletedPrice": 7.49,
+        "discountHasStar": false,
+        "fromRecommendedPrice": false,
+        "hideBargainHint": false,
+        "bargainHintEnabled": false,
+        "bargainHintText": "Megaokazja",
+        "percentageDiscount": 53,
+        "showDiscount": true,
+        "showFrom": false,
+        "showPercentage": true,
+        "showUpTo": false
+      },
+      "displayedCurrency": "zł",
+      "hasStar": false,
+      "hasVat": false,
+      "oldPrice": 7.49,
+      "packaging": {
+        "text": "200 g"
+      },
+      "price": 3.49,
+      "priceTheme": "white_red",
+      "specialTaxes": [],
+      "superscript": "*",
+      "variantsHaveDifferentPrices": false
+    },
+    "productId": 11406146,
+    "productType": "RETAIL",
+    "productOrigin": "progress_event",
+    "quickAddToCart": false,
+    "regions": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      18,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentPrice": {
+          "basePrice": {
+            "prefix": false,
+            "text": "100 g = 1,75 Cena przed obniżką/ cena poza promocją: 7,49/szt., 100 g = 3,75 * cena za 1 szt. przy zakupie 3 szt. lub wielokrotności 3 szt."
+          },
+          "currencyCode": "PLN",
+          "currencyCodeSecond": "",
+          "currencySymbol": "zł",
+          "currencySymbolSecond": "",
+          "discount": {
+            "absoluteDiscount": 4,
+            "deletedPrice": 7.49,
+            "discountHasStar": false,
+            "discountText": "-53% przy zakupie 3",
+            "fromNormalPriceForLidlPlus": false,
+            "fromRecommendedPrice": false,
+            "hideBargainHint": false,
+            "bargainHintEnabled": false,
+            "bargainHintText": "Megaokazja",
+            "percentageDiscount": 53,
+            "showDiscount": true,
+            "showFrom": false,
+            "showPercentage": true,
+            "showUpTo": false
+          },
+          "displayedCurrency": "zł",
+          "endDate": "2026-11-07T22:59:59Z",
+          "endDateExclusive": "2026-11-07T23:00Z",
+          "hasStar": false,
+          "hasVat": true,
+          "oldPrice": 7.49,
+          "packaging": {
+            "text": "200 g"
+          },
+          "price": 3.49,
+          "priceTheme": "white_red",
+          "specialTaxes": [],
+          "startDate": "2026-11-05T07:12:07.384Z",
+          "superscript": "*",
+          "variantsHaveDifferentPrices": false,
+          "priceLegendName": "*"
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "ribbons": [],
+    "renderedTs": 1794020155,
+    "seals": [],
+    "stockAvailability": {
+      "availabilityIndicator": 0,
+      "badgeInfo": {
+        "badges": [
+          {
+            "text": "tylko w sklepach stacjonarnych 02.11. - 07.11.",
+            "type": "IN_STORE_PAST_DATE_RANGE"
+          }
+        ]
+      },
+      "badgeInfoV2": [
+        {
+          "badges": [
+            {
+              "text": "tylko w sklepach stacjonarnych 02.11. - 07.11.",
+              "type": "IN_STORE_PAST_DATE_RANGE"
+            }
+          ],
+          "validFrom": 1793574000,
+          "validUntil": 1794092399
+        },
+        {
+          "badges": [
+            {
+              "text": "tylko w sklepach stacjonarnych od 09.11. - 10.11.",
+              "type": "IN_STORE_FROM_FUTURE_DATE_RANGE"
+            }
+          ],
+          "validFrom": 1794178800,
+          "validUntil": 1794351599
+        }
+      ],
+      "onlineAvailable": false,
+      "minOrderableQuantity": 1,
+      "backInStockNotification": false,
+      "backInStockNotificationSoldOut": false
+    },
+    "store": true,
+    "storeStartDate": 1793574000,
+    "storeEndDate": 1794092399,
+    "title": "Rogal świętomarciński",
+    "timezoneId": "Europe/Warsaw",
+    "zones": {},
+    "relevancyScore": "6c8S60hvY0mMPouyc/tW8e/anl+1TIeuECc0FVxJzYzuxMqbepOFOhi8KOM=",
+    "keywordScore": "T0SAlrAcaeftZ0HGP4L1cktPifx+8cBpr9eALGeqwr08r1s5Pilw++c8Wz0=",
+    "semanticScore": "Qr7NPWmNyqlCzTk0HNwQE/jr2W7ynsbOgMLpO1Z2WrklsEs4Z23etK/uYZU=",
+    "keywordScoreRaw": "6btbpo4x+hUC8hf052oOBxuwLO8nxd2O+Z4ULrX+OwYa/ES05PAViI2GpY4=",
+    "ratingScore": "A6mI6MldlpQH0Of6lTO6+W2S6aemAhdyOkc6IjurYHtNwCU5ZaYAebOVo3I=",
+    "freshnessScore": "MP+1jhkJk0GbFJd6z5wK3F7O60k6yYWno7U8ZbvUu63I2zkfXzUvSD+t8lw=",
+    "searchHubImpressions": "PbQRM7CnwILP+yQfJfFhXKN7fcjGrYL3HzdCrJ0rtZiJfvMvhxkHzMNzu3A=",
+    "searchHubClicks": "FHJhmxEMQna3nzxb7ZkZm0BEzLyrjX8IQ/7bz2909qcogmGp7uxs0VTBH2o=",
+    "searchHubCarts": "UOnfRHsx3+zcqGwJBqb4U5Wa7HwjUVHGw29R8rR+mCbX3H/oaPoe5sUVrS8=",
+    "businessRuleFactor": "P+9znHZDGqI7kJZ/aUqp8eM8NZRFIdMwscIZfvT5SGLS3YRXGBDEeYCauP0=",
+    "position": 1,
+    "origPos": null,
+    "simi": null,
+    "list": "/h/piekarnia/h10096086",
+    "listId": "10096086",
+    "listName": "piekarnia",
+    "hashParams": "searchTrackingMasterId=Product.11406146&searchTrackingTitle=Rogal%2B%25C5%259Bwi%25C4%2599tomarci%25C5%2584ski&searchTrackingPageSize=48&searchTrackingPage=1&searchTrackingEvent=click&searchTrackingId=Product.11406146&searchTrackingOrigPos=1&searchTrackingPos=1&searchTrackingOrigPageSize=48&searchTrackingChannel=PL"
+  }
+]

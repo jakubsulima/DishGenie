@@ -63,8 +63,35 @@ springBoot {
     mainClass = 'org.jakub.backendapi.BackendApiApplication'
 }
 
+// Docker dev compilation can temporarily delete classes before recreating them.
+// Signal DevTools only after classes AND resources have finished successfully.
+// Keep the signal outside compiler outputs so their cleanup cannot trigger it.
+def devReloadDir = providers.gradleProperty('devReloadDir')
+if (devReloadDir.isPresent()) {
+    def signalDirectory = file(devReloadDir.get())
+    tasks.register('devClasses') {
+        dependsOn tasks.named('classes')
+        doLast {
+            signalDirectory.mkdirs()
+            new File(signalDirectory, '.reloadtrigger').text = System.currentTimeMillis().toString()
+        }
+    }
+    tasks.named('bootRun') {
+        classpath += files(signalDirectory)
+        systemProperty 'spring.devtools.restart.trigger-file', '.reloadtrigger'
+    }
+}
+
 test {
     useJUnitPlatform()
+    // The smoke harness launches Vite/Playwright; its inputs also live outside Java.
+    // An explicit opt-in always means a fresh browser/API/database verification.
+    def browserPlannerSmoke = System.getenv('RUN_BROWSER_PLANNER_SMOKE') ?: '0'
+    inputs.property('runBrowserPlannerSmoke', browserPlannerSmoke)
+    if (browserPlannerSmoke == '1') outputs.upToDateWhen { false }
+    def livePriceSmoke = System.getenv('RUN_LIVE_PRICE_SMOKE') ?: '0'
+    inputs.property('runLivePriceSmoke', livePriceSmoke)
+    if (livePriceSmoke == '1') outputs.upToDateWhen { false }
 }
 
 pmd {

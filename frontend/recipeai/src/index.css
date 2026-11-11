@@ -1,3 +1,11 @@
+html {
+  scrollbar-gutter: stable;
+}
+
+@supports not (scrollbar-gutter: stable) {
+  html { overflow-y: scroll; }
+}
+
 body {
   font-family:
     ui-sans-serif,
@@ -6,4 +14,28 @@ body {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
+}
+
+.planner-scroll-list {
+  max-height: min(24rem, 55dvh);
+  overflow-y: auto;
+  overflow-anchor: none;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scroll-padding-block: 0.75rem;
+}
+
+.planner :is(button, summary, input, select, textarea, a):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.planner dialog :is(button, summary, input, select, textarea, a):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.planner-scroll-list:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
 }

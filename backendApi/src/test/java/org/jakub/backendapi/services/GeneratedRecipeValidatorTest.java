@@ -61,6 +61,22 @@ class GeneratedRecipeValidatorTest {
     }
 
     @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = {"tofu twarde", "twardy tofu, pokrojony w kostkę", "twardego tofu"})
+    void doesNotConfusePolishFirmTofuWithCurdCheese(String name) throws Exception {
+        UserPreferencesDto preferences = new UserPreferencesDto();
+        preferences.setDiets(new String[]{"VEGAN", "DAIRY_FREE"});
+        assertDoesNotThrow(() -> validator.validate(recipeWithIngredient(name), 1, preferences, List.of(), null, ShoppingPolicy.ALLOWED, 2, "pl"));
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = {"twaróg", "twarogu półtłustego", "serek twarogowy"})
+    void stillRejectsPolishCurdCheeseForVeganDiet(String name) throws Exception {
+        UserPreferencesDto preferences = new UserPreferencesDto();
+        preferences.setDiets(new String[]{"VEGAN"});
+        assertThrows(AppException.class, () -> validator.validate(recipeWithIngredient(name), 1, preferences, List.of(), null, ShoppingPolicy.ALLOWED, 2, "pl"));
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
     @org.junit.jupiter.params.provider.ValueSource(strings = {"szczypta", "łyżeczka", "do smaku", "ząbki"})
     void stillRejectsUnmeasurableUnitsObservedInPolishProviderResponses(String unit) {
         JsonNode recipe = objectMapper.readTree("""

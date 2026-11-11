@@ -2,6 +2,7 @@ package org.jakub.backendapi.entities;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 /** A bounded, versioned aggregate: at most fourteen meal slots and their snapshots. */
@@ -17,6 +18,11 @@ public class MealPlan {
     @Version
     private long version;
     @Column(nullable = false)
+    private long priceRevision;
+    @Column(nullable = false) private long cycleRevision;
+    public void markCycleChanged() { cycleRevision++; }
+    public void markPricesChanged() { priceRevision++; }
+    @Column(nullable = false)
     private Instant createdAt;
     @Column(nullable = false, columnDefinition = "TEXT")
     private String document;
@@ -27,7 +33,8 @@ public class MealPlan {
     public void setUser(User user) { this.user = user; }
     public long getVersion() { return version; }
     public Instant getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+    // Match database precision so initial and reloaded responses are identical.
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt == null ? null : createdAt.truncatedTo(ChronoUnit.MICROS); }
     public String getDocument() { return document; }
     public void setDocument(String document) { this.document = document; }
 }

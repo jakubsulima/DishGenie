@@ -67,3 +67,28 @@ describe("Meal plan pricing", () => {
     expect(screen.getByRole("button", { name: "Compare prices" })).toBeEnabled();
   });
 });
+
+test("an ongoing plan prices today's shopping without an impossible date window", async () => {
+  const ongoing = structuredClone(plan);
+  ongoing.plan.settings.startDate = localDateInput(-1);
+  ongoing.plan.settings.shopping = { shoppingDate: localDateInput(-1), maxStores: 1, loyaltyStores: [], selectedOffers: [], confirmedCouponOffers: [], allowRepeats: false };
+  const slot = { id: "past", date: localDateInput(-1), mealType: "DINNER" as const, servings: 2, locked: false, skipped: false, generationId: null, generationStatus: null, generationStartedAt: null,
+    recipe: { name: "Rice", description: "", timeToPrepare: "20 min", servings: 2, ingredients: [{ name: "rice", amount: 100, unit: "g" }], instructions: ["Cook."] } };
+  ongoing.plan.slots = [slot, { ...slot, id: "future", date: localDateInput(1) }];
+  vi.mocked(quoteMealPlan).mockResolvedValue(fixture());
+  render(<LanguageProvider initialLocale="en"><MealPlanPricing plan={ongoing} disabled={false} auto /></LanguageProvider>);
+  await waitFor(() => expect(quoteMealPlan).toHaveBeenCalledWith(ongoing, today, []));
+  expect(screen.getByLabelText("Shopping date")).toHaveValue(today);
+  expect(screen.getByLabelText("Shopping date")).toHaveAttribute("max", localDateInput(1));
+  expect(screen.getByRole("button", { name: "Compare prices" }).closest("form")!.checkValidity()).toBe(true);
+});
+
+test("a blank shopping date does not send a failing automatic quote request", async () => {
+  vi.mocked(quoteMealPlan).mockResolvedValue(fixture());
+  render(<LanguageProvider initialLocale="en"><MealPlanPricing plan={plan} disabled={false} auto /></LanguageProvider>);
+  await screen.findByText("No verified prices");
+  const previous = vi.mocked(quoteMealPlan).mock.calls.length;
+  fireEvent.change(screen.getByLabelText("Shopping date"), { target: { value: "" } });
+  await waitFor(() => expect(screen.getByRole("button", { name: "Compare prices" })).toBeDisabled());
+  expect(quoteMealPlan).toHaveBeenCalledTimes(previous);
+});

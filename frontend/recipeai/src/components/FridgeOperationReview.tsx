@@ -20,6 +20,7 @@ export interface FridgeOperationReviewChange {
 }
 
 interface FridgeOperationReviewProps {
+  readOnly?: boolean;
   changes: FridgeOperationReviewChange[];
   onChange: (change: FridgeOperationReviewChange) => void;
   successMessage?: string;
@@ -28,6 +29,7 @@ interface FridgeOperationReviewProps {
 
 const FridgeOperationReview: React.FC<FridgeOperationReviewProps> = ({
   changes,
+  readOnly = false,
   onChange,
   successMessage,
   onUndo,
@@ -35,7 +37,7 @@ const FridgeOperationReview: React.FC<FridgeOperationReviewProps> = ({
   const { t } = useLanguage();
 
   return (
-    <div className="flex flex-col gap-3" aria-label={t("Review fridge changes")}>
+    <fieldset disabled={readOnly} className="flex min-w-0 flex-col gap-3" aria-label={t("Review fridge changes")}>
       {successMessage && (
         <FridgeOperationSuccess message={successMessage} onUndo={onUndo} />
       )}
@@ -127,7 +129,7 @@ const FridgeOperationReview: React.FC<FridgeOperationReviewProps> = ({
           )}
         </article>
       ))}
-    </div>
+    </fieldset>
   );
 };
 

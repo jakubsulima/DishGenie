@@ -36,3 +36,13 @@ Odsetek unikalnych użytkowników, którzy w ciągu siedmiu dni od poprawnego
 `meal_plan_generation_completed` zaakceptowali plan i utworzyli listę zakupów
 dla tego samego `planId` i numeru wersji. Zdarzenia bez zgody nie są sztucznie
 uzupełniane.
+
+## Cykl tygodnia — 8 listopada 2026
+
+Dodatkowe zdarzenia w ramach dotychczasowej zgody: `week_cycle_started`,
+`week_cycle_ready`, `shopping_trip_opened`, `shopping_trip_completed`,
+`cooking_batch_recorded`, `post_shopping_change_previewed`,
+`post_shopping_change_applied`. Właściwości obejmują wyłącznie liczniki porcji,
+pozycji i slotów, czas, typ operacji i wynik. Nie zawierają nazw produktów,
+przepisów, diet ani treści korekt. Gotowość tygodnia jest deduplikowana w sesji
+po ID zadania; nie uzupełniamy zdarzeń sprzed zgody.

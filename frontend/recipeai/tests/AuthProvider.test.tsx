@@ -87,3 +87,10 @@ describe("AuthProvider", () => {
     expect(apiClient).toHaveBeenCalledWith("refresh", true);
   });
 });
+
+test("a failed CSRF bootstrap releases the login screen instead of leaving auth loading forever", async () => {
+  vi.mocked(ensureCsrfToken).mockRejectedValueOnce(new Error("API unavailable (502)"));
+  render(<AuthProvider><AuthProbe /></AuthProvider>);
+  expect(await screen.findByText("loaded")).toBeInTheDocument();
+  expect(screen.getByText("anonymous")).toBeInTheDocument();
+});

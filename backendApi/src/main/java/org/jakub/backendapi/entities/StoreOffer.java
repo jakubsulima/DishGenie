@@ -16,6 +16,12 @@ public class StoreOffer {
     @Column(nullable = false) private Instant verifiedAt;
     @Column(nullable = false) private boolean active;
     @Column(nullable = false, columnDefinition = "TEXT") private String document;
+    @Column(nullable = false, length = 32) private String sourceType = "MANUAL";
+    @Column(length = 100) private String ingredientKey;
+    public String getSourceType() { return sourceType; }
+    public void setSourceType(String value) { sourceType = value; }
+    public String getIngredientKey() { return ingredientKey; }
+    public void setIngredientKey(String value) { ingredientKey = value; }
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
     public long getVersion() { return version; }

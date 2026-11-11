@@ -23,6 +23,18 @@ import java.util.List;
 import java.util.Set;
 
 public class RecipeGenerationRequestDto {
+    public record PricedIngredient(String name, String unit) {}
+    private List<PricedIngredient> planningIngredients = List.of();
+    private List<PricedIngredient> requiredPlanningIngredients = List.of();
+    /** Set only by the planner after checking the store catalog and user restrictions. */
+    @JsonIgnore
+    public List<PricedIngredient> getPlanningIngredients() { return planningIngredients; }
+    @JsonIgnore
+    public void setPlanningIngredients(List<PricedIngredient> value) { planningIngredients = value == null ? List.of() : List.copyOf(value); }
+    @JsonIgnore
+    public List<PricedIngredient> getRequiredPlanningIngredients() { return requiredPlanningIngredients; }
+    @JsonIgnore
+    public void setRequiredPlanningIngredients(List<PricedIngredient> value) { requiredPlanningIngredients = value == null ? List.of() : List.copyOf(value); }
 
     private String requestText;
 

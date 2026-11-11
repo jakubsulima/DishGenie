@@ -8,12 +8,12 @@ import java.util.*;
 
 public final class MealPlanDto {
     private MealPlanDto() {}
-    public enum MealType { LUNCH, DINNER }
+    public enum MealType { BREAKFAST, LUNCH, DINNER }
     public enum Store { LIDL, BIEDRONKA }
     public enum Status { DRAFT, ACCEPTED }
     public enum Action { LOCK, UNLOCK, SKIP, RESTORE, SERVINGS }
     public enum BudgetMode { NONE, SOFT }
-    public enum PlanningMode { DEALS }
+    public enum PlanningMode { PRACTICAL, DEALS, PROMOTIONS_FIRST }
     public enum GenerationStatus { RUNNING, COMPLETED, FAILED }
 
     public record Create(
@@ -21,7 +21,7 @@ public final class MealPlanDto {
             @NotNull LocalDate startDate,
             @Min(1) @Max(7) int dayCount,
             @Min(1) @Max(100) int servings,
-            @NotEmpty @Size(max = 2) Set<@NotNull MealType> mealTypes,
+            @NotEmpty @Size(max = 3) Set<@NotNull MealType> mealTypes,
             @NotEmpty @Size(max = 2) Set<@NotNull Store> stores,
             @DecimalMin("0.01") @DecimalMax("100000.00") @Digits(integer = 6, fraction = 2) BigDecimal budget,
             @NotNull @Pattern(regexp = "pl|en") String locale,
@@ -47,11 +47,16 @@ public final class MealPlanDto {
             @NotNull RevisionIntent intent, @Size(max = 1000) String comment, @Valid RecipeDto recipe,
             @Size(max = 200) String ingredient, @Size(max = 200) String replacement,
             UUID offerId, @Min(5) @Max(240) Integer maxMinutes) {}
-    public enum RevisionIntent { MANUAL, SUBSTITUTE, DEAL, FASTER, SIMPLIFY }
+    public enum RevisionIntent { MANUAL, SUBSTITUTE, DEAL, FASTER, SIMPLIFY, TRANSLATE_PL }
     public record ApplyRevision(@Min(0) long version, @NotNull UUID previewId) {}
     public record RevisionPreview(UUID id, long planVersion, UUID slotId, RecipeDto before, RecipeDto after,
                                   Shopping shoppingBefore, Shopping shoppingAfter, Instant expiresAt,
-                                  StoreOfferDto.Quote quoteBefore, StoreOfferDto.Quote quoteAfter) {}
+                                  StoreOfferDto.Quote quoteBefore, StoreOfferDto.Quote quoteAfter,
+                                  String inventoryFingerprint, List<String> unusedProducts, List<UUID> affectedSlots) {
+        public RevisionPreview(UUID id,long planVersion,UUID slotId,RecipeDto before,RecipeDto after,Shopping shoppingBefore,Shopping shoppingAfter,Instant expiresAt,StoreOfferDto.Quote quoteBefore,StoreOfferDto.Quote quoteAfter) {
+            this(id,planVersion,slotId,before,after,shoppingBefore,shoppingAfter,expiresAt,quoteBefore,quoteAfter,null,List.of(),List.of());
+        }
+    }
 
     public record SettingsChange(@Min(0) long version, @NotNull @Valid Create settings) {}
     public record Version(@Min(0) long version) {}
@@ -72,7 +77,15 @@ public final class MealPlanDto {
     }
     public record SelectBasket(@Min(0) long version, @NotNull @Pattern(regexp = "LIDL|BIEDRONKA|COMBINED") String option,
                                @NotNull @Valid StoreOfferDto.QuoteRequest quote) {}
-    public record Document(int schemaVersion, Create settings, Status status, List<Slot> slots, Shopping shopping) {}
+    public record Document(int schemaVersion, Create settings, Status status, List<Slot> slots, Shopping shopping,
+                           WeekCycleDto.Cycle cycle) {
+        public Document(int schemaVersion, Create settings, Status status, List<Slot> slots, Shopping shopping) {
+            this(schemaVersion, settings, status, slots, shopping, null);
+        }
+        public Document withSlots(List<Slot> next, Status nextStatus, Shopping nextShopping) {
+            return new Document(schemaVersion, settings, nextStatus, next, nextShopping, cycle);
+        }
+    }
     public record View(UUID id, long version, Instant createdAt, Document plan) {}
     public record Summary(UUID id, long version, LocalDate startDate, int dayCount,
                           Status status, int plannedSlots, int totalSlots) {}

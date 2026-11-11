@@ -17,6 +17,16 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GeminiServicePromptTest {
+    @org.junit.jupiter.api.Test
+    void promotionPlanningUsesAnAuthoritativeCatalogAndSimpleRecipesWithoutAcceptingItFromClients() throws Exception {
+        var request = new org.jakub.backendapi.dto.RecipeGenerationRequestDto();
+        request.setRequestText("Praktyczny lunch"); request.setLocale("pl");
+        request.setPlanningIngredients(java.util.List.of(new org.jakub.backendapi.dto.RecipeGenerationRequestDto.PricedIngredient("jabłko", "g")));
+        var prompt = geminiService.buildStructuredRecipeGenerationPrompt(request, null, 1);
+        assertThat(prompt).contains("contain 4-8 ingredients", "pricedIngredients", "Weighted fruit must use g", "At least HALF", "Polish");
+        var input = new tools.jackson.databind.ObjectMapper().readValue("{\"planningIngredients\":[{\"name\":\"fake price\",\"unit\":\"g\"}]}", org.jakub.backendapi.dto.RecipeGenerationRequestDto.class);
+        assertThat(input.getPlanningIngredients()).isEmpty();
+    }
 
     private final GeminiService geminiService = new GeminiService(new ObjectMapper());
 

@@ -35,7 +35,7 @@ class DatabaseMigrationIT {
 
     @Container
     static final PostgreSQLContainer POSTGRES =
-            new PostgreSQLContainer("postgres:17-alpine");
+            new PostgreSQLContainer("postgres:17-alpine").withTmpFs(java.util.Map.of("/var/lib/postgresql/data", "rw"));
 
     @DynamicPropertySource
     static void databaseProperties(DynamicPropertyRegistry registry) {
@@ -66,6 +66,8 @@ class DatabaseMigrationIT {
 
         assertThat(resetColumns).isEqualTo(2);
         assertThat(rateLimitTables).isEqualTo(1);
+        assertThat(jdbcTemplate.queryForObject("SELECT count(*) FROM information_schema.tables WHERE table_name IN ('cycle_request','shopping_trip','prepared_portion_transfer')", Integer.class)).isEqualTo(3);
+        assertThat(jdbcTemplate.queryForObject("SELECT count(*) FROM pg_indexes WHERE indexname = 'shopping_trip_one_open'", Integer.class)).isEqualTo(1);
 
         Integer recipePrivacyColumns = jdbcTemplate.queryForObject(
                 "SELECT count(*) FROM information_schema.columns " +
@@ -175,4 +177,29 @@ class DatabaseMigrationIT {
         assertThat(allowed).isEqualTo(3);
         assertThat(rateLimitService.getCurrentRequestCount(bucketKey, 60_000)).isEqualTo(3);
     }
+    @Test
+    void appliedV31RemainsImmutableAndDiscardedPortionsArriveAdditively() {
+        assertThat(jdbcTemplate.queryForObject("SELECT checksum FROM flyway_schema_history WHERE version = '31'", Integer.class))
+                .isEqualTo(1291847981);
+        String schema="upgrade_v31_"+UUID.randomUUID().toString().replace("-", "");
+        var before=org.flywaydb.core.Flyway.configure().dataSource(POSTGRES.getJdbcUrl(),POSTGRES.getUsername(),POSTGRES.getPassword())
+                .schemas(schema).defaultSchema(schema).target("31").load();
+        try {
+            before.migrate();
+            var dataSource=new org.springframework.jdbc.datasource.DriverManagerDataSource(POSTGRES.getJdbcUrl()+"&currentSchema="+schema,POSTGRES.getUsername(),POSTGRES.getPassword());
+            var legacy=new JdbcTemplate(dataSource);
+            assertThat(legacy.queryForObject("SELECT count(*) FROM information_schema.columns WHERE table_schema=? AND table_name='prepared_portion_transfer' AND column_name='discarded'",Integer.class,schema)).isZero();
+            legacy.update("INSERT INTO app_user (id,email,password,role,auth_method,subscription_plan,daily_recipe_count) VALUES (1,?,'hash','USER','CREDENTIALS','FREE',0)","upgrade-"+UUID.randomUUID()+"@example.com");
+            UUID planId=UUID.randomUUID(),batchId=UUID.randomUUID(),transferId=UUID.randomUUID();
+            legacy.update("INSERT INTO meal_plan (id,user_id,version,created_at,document) VALUES (?,1,0,CURRENT_TIMESTAMP,'{}')",planId);
+            legacy.update("INSERT INTO prepared_portion_transfer (id,source_plan_id,batch_id,target_plan_id,slot_id,portions,eaten,released) VALUES (?,?,?,?,?,2,1,FALSE)",transferId,planId,batchId,planId,UUID.randomUUID());
+            org.flywaydb.core.Flyway.configure().dataSource(POSTGRES.getJdbcUrl(),POSTGRES.getUsername(),POSTGRES.getPassword()).schemas(schema).defaultSchema(schema).load().migrate();
+            assertThat(legacy.queryForObject("SELECT eaten FROM prepared_portion_transfer WHERE id=?",Integer.class,transferId)).isEqualTo(1);
+            assertThat(legacy.queryForObject("SELECT discarded FROM prepared_portion_transfer WHERE id=?",Integer.class,transferId)).isZero();
+            assertThat(legacy.queryForObject("SELECT batch_id FROM prepared_portion_transfer WHERE id=?",UUID.class,transferId)).isEqualTo(batchId);
+        } finally {
+            jdbcTemplate.execute("DROP SCHEMA IF EXISTS "+schema+" CASCADE");
+        }
+    }
+
 }

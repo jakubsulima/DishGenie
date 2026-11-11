@@ -1,6 +1,7 @@
 package org.jakub.backendapi.entities;
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 @Entity
 @Table(name = "meal_plan_generation")
@@ -25,5 +26,6 @@ public class MealPlanGeneration {
     public UUID getLeaseToken() { return leaseToken; }
     public void setLeaseToken(UUID value) { leaseToken = value; }
     public Instant getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Instant value) { createdAt = value; }
+    // Match database precision so a retried start returns the same progress.
+    public void setCreatedAt(Instant value) { createdAt = value == null ? null : value.truncatedTo(ChronoUnit.MICROS); }
 }

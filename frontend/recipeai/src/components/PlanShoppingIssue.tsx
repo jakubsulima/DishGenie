@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useLanguage } from "../context/languageContext";
 import { reportPlanShoppingIssue, type MealPlan } from "../lib/mealPlans";
-export default function PlanShoppingIssue({ plan, itemKey, slotId, disabled }: { plan: MealPlan; itemKey: string; slotId?: string; disabled: boolean }) {
+export default function PlanShoppingIssue({ plan, itemKey, slotId, disabled, onOpenMeal }: { plan: MealPlan; itemKey: string; slotId?: string; disabled: boolean; onOpenMeal?: (slotId: string) => void }) {
   const { t } = useLanguage(); const [reason, setReason] = useState<"MISSING_PRODUCT" | "PRICE_DIFFERENT">("MISSING_PRODUCT");
   const [busy, setBusy] = useState(false); const [saved, setSaved] = useState(false); const [error, setError] = useState(false);
   const request = useRef({ signature: "", id: "" });
@@ -15,7 +15,7 @@ export default function PlanShoppingIssue({ plan, itemKey, slotId, disabled }: {
     }}>{t("Save report")}</button>
     {saved && <p role="status">{t("Report saved. Your plan and global prices are unchanged.")}</p>}
     {error && <p role="alert">{t("Could not save the report. Refresh before retrying.")}</p>}
-    {slotId && <a className="block underline" href={`#meal-slot-${slotId}`}>{t("Open the meal to choose an alternative")}</a>}
+    {slotId && (onOpenMeal ? <button type="button" className="block min-h-11 text-left underline" onClick={() => onOpenMeal(slotId)}>{t("Open the meal to choose an alternative")}</button> : <a className="block underline" href={`#meal-slot-${slotId}`}>{t("Open the meal to choose an alternative")}</a>)}
     </div>
   </details>;
 }

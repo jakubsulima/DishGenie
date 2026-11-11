@@ -47,16 +47,46 @@ class WeeklyPlannerIntegrationTest {
     @Autowired IngredientAliasRepository aliases;
     @Autowired IngredientNormalizationService normalization;
     @Autowired StoreOfferService storeOffers;
+    @Autowired ShoppingListService manualShopping;
+    @Autowired FridgeIngredientRepository fridge;
+    @Autowired MealPlanItemPriceService itemPrices;
+    @Autowired StoreOfferRepository offerRepository;
     @Autowired ObjectMapper json;
     @Autowired MockMvc mvc;
     @MockitoBean GeminiService gemini;
     String email;
     User owner;
     @BeforeEach void setup() {
+        // Store offers are global, unlike the per-test user; keep each planner scenario's catalog isolated.
+        offerRepository.deleteAll();
         email = UUID.randomUUID() + "@example.com"; owner = new User(); owner.setEmail(email); owner.setRole(Role.USER); owner = users.saveAndFlush(owner);
         AtomicInteger count = new AtomicInteger();
         when(gemini.generateRecipes(any(RecipeGenerationRequestDto.class), any())).thenAnswer(call -> json.writeValueAsString(recipe("Danie " + count.incrementAndGet(), 100)));
     }
+    @Test void savedPlanHistoryOrdersEqualCreationTimesDeterministically() {
+        var first = plans.create(email, settings(1));
+        var second = plans.create(email, settings(1));
+        var timestamp = java.sql.Timestamp.from(Instant.parse("2026-11-06T12:00:00Z"));
+        jdbc.update("update meal_plan set created_at = ? where id = ?", timestamp, first.id());
+        jdbc.update("update meal_plan set created_at = ? where id = ?", timestamp, second.id());
+        var expected = java.util.stream.Stream.of(first.id(), second.id())
+                .sorted(Comparator.comparing(UUID::toString).reversed()).toList();
+        assertThat(plans.list(email)).extracting(Summary::id).containsExactlyElementsOf(expected);
+    }
+
+    @Test void savedPlanHistoryCanReachTheCurrentWeekBeyondTheFirstTwenty() throws Exception {
+        var current = plans.create(email, settings(1));
+        jdbc.update("update meal_plan set created_at = ? where id = ?",
+                java.sql.Timestamp.from(Instant.now().minusSeconds(60)), current.id());
+        for (int index = 0; index < 20; index++) plans.create(email, settings(1));
+        assertThat(plans.list(email)).hasSize(20).noneMatch(summary -> summary.id().equals(current.id()));
+        assertThat(plans.list(email, 1)).extracting(Summary::id).containsExactly(current.id());
+        mvc.perform(get("/v3/meal-plans?page=1").with(authentication(auth())))
+                .andExpect(status().isOk()).andExpect(jsonPath("$[0].id").value(current.id().toString()));
+        mvc.perform(get("/v3/meal-plans?page=-1").with(authentication(auth())))
+                .andExpect(status().isBadRequest());
+    }
+
     @Test void optionalBudgetDraftPricingPreferencesAndV2Protection() throws Exception {
         var plan = plans.create(email, settings(2));
         assertThat(plan.plan().settings().budget()).isNull();
@@ -70,6 +100,27 @@ class WeeklyPlannerIntegrationTest {
                 .andExpect(status().isOk());
         mvc.perform(get("/v3/meal-plans/" + plan.id()).with(authentication(new UsernamePasswordAuthenticationToken("someone-else", null, List.of(new SimpleGrantedAuthority("ROLE_USER"))))))
                 .andExpect(status().isNotFound());
+    }
+    @Test void newPlannerUsesPolishContentRegardlessOfTheInterfaceLocale() throws Exception {
+        var base = settings(1);
+        var input = new Create(base.requestId(), base.startDate(), base.dayCount(), base.servings(), base.mealTypes(), base.stores(),
+                base.budget(), "en", base.maxMinutes(), base.planningMode(), base.budgetMode(), base.shopping());
+        var response = mvc.perform(post("/v3/meal-plans").with(authentication(auth())).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(input))).andExpect(status().isOk()).andExpect(jsonPath("$.plan.settings.locale").value("pl"))
+                .andReturn().getResponse().getContentAsString();
+        var plan = json.readValue(response, View.class);
+        var rice = ingredient("ryż");
+        storeOffers.publish(UUID.randomUUID(), new StoreOfferDto.Publish(0, Store.LIDL, rice.getId(), "Ryż — kontrolowane dane testowe", new java.math.BigDecimal("400"), "g", new java.math.BigDecimal("3.99"),
+                1, 1, null, false, LocalDate.now(), LocalDate.now().plusDays(1), "https://www.lidl.pl/p/test-rice-language", "Kontrolowane dane testowe", Instant.now(), true, true, true));
+        var slotId = plan.plan().slots().get(0).id();
+        plan = generation.generate(email, plan.id(), slotId, new Generate(plan.version(), UUID.randomUUID()));
+        var preview = revisions.preview(email, plan.id(), slotId, new RevisionRequest(plan.version(), UUID.randomUUID(),
+                RevisionIntent.SIMPLIFY, "Uprość danie", null, null, null, null, null));
+        assertThat(plan.plan().slots().get(0).recipe().getLocale()).isEqualTo(ContentLocale.pl);
+        assertThat(preview.after().getLocale()).isEqualTo(ContentLocale.pl);
+        var requests = org.mockito.ArgumentCaptor.forClass(RecipeGenerationRequestDto.class);
+        verify(gemini, times(2)).generateRecipes(requests.capture(), any());
+        assertThat(requests.getAllValues()).extracting(RecipeGenerationRequestDto::getLocale).containsExactly("pl", "pl");
     }
     @Test void durableQueueSurvivesReentryAndStopsOnConflictingEdit() {
         var plan = plans.create(email, settings(2));
@@ -85,6 +136,27 @@ class WeeklyPlannerIntegrationTest {
         assertThat(jobs.latest(email, plan.id()).status()).isEqualTo("FAILED");
         verify(gemini, times(1)).generateRecipes(any(RecipeGenerationRequestDto.class), any());
         assertThatThrownBy(() -> jobs.latest("other", plan.id())).isInstanceOf(AppException.class);
+    }
+    @Test void settingsRemainEditableAfterTheWeekStartsWithoutChangingHistoricalShoppingDates() {
+        var plan = plans.create(email, settings(7));
+        var before = plan.plan().settings();
+        LocalDate yesterday = LocalDate.now(ZoneId.of("Europe/Warsaw")).minusDays(1);
+        var shopping = new ShoppingOptions(yesterday, 1, Set.of(), Set.of(), Set.of(), false);
+        var historical = new Create(before.requestId(), yesterday, before.dayCount(), before.servings(), before.mealTypes(),
+                before.stores(), null, before.locale(), before.maxMinutes(), PlanningMode.DEALS, BudgetMode.NONE, shopping);
+        var slots = plan.plan().slots().stream().map(s -> new Slot(s.id(), s.date().minusDays(1), s.mealType(), s.servings(),
+                s.locked(), s.skipped(), s.recipe(), s.generationId(), s.generationStatus(), s.generationStartedAt())).toList();
+        jdbc.update("update meal_plan set document = ? where id = ?", json.writeValueAsString(new Document(2, historical, Status.DRAFT, slots, null)), plan.id());
+        var updatedSettings = new Create(before.requestId(), yesterday, before.dayCount(), before.servings(), before.mealTypes(),
+                before.stores(), new java.math.BigDecimal("100.00"), before.locale(), before.maxMinutes(), PlanningMode.DEALS, BudgetMode.SOFT, shopping);
+        var updated = plans.settings(email, plan.id(), new SettingsChange(plan.version(), updatedSettings));
+        assertThat(updated.plan().settings().budget()).isEqualByComparingTo("100.00");
+        assertThat(updated.plan().settings().shopping().shoppingDate()).isEqualTo(yesterday);
+        var invalid = new Create(before.requestId(), yesterday, before.dayCount(), before.servings(), before.mealTypes(),
+                before.stores(), null, before.locale(), before.maxMinutes(), PlanningMode.DEALS, BudgetMode.NONE,
+                new ShoppingOptions(yesterday.minusDays(1), 1, Set.of(), Set.of(), Set.of(), false));
+        assertThatThrownBy(() -> plans.settings(email, updated.id(), new SettingsChange(updated.version(), invalid)))
+                .isInstanceOf(AppException.class).extracting("code").isEqualTo(org.springframework.http.HttpStatus.BAD_REQUEST);
     }
     @Test void committedResultIsRecoveredWithoutCallingAiTwice() {
         var plan = plans.create(email, settings(1)); var progress = jobs.start(email, plan.id(), new Generate(plan.version(), UUID.randomUUID()));
@@ -167,6 +239,77 @@ class WeeklyPlannerIntegrationTest {
         assertThat(result.plan().slots().get(0).recipe().getName()).isEqualTo(foreign.getName());
         assertThat(recipeRepository.findByName(own.getName()).orElseThrow().getName()).isEqualTo(own.getName());
     }
+    @Test void plannerReusesTheLibraryAndRefreshesFridgeAmountsWithoutChangingManualShoppingOrTheOriginalRecipe() {
+        var source = recipe("Zapisany ryż " + UUID.randomUUID(), 300);
+        recipes.saveRecipe(source, email);
+        var stock = new FridgeIngredient(null, "ryż", null, 100d, Unit.GRAMS, owner);
+        stock.setQuantityAccuracy(QuantityAccuracy.EXACT); stock = fridge.saveAndFlush(stock);
+        var manual = manualShopping.replaceShoppingList(email, List.of(new ShoppingListItemDto(
+                "manual", "Kawa", 2d, "pcs", true, "2026-11-10T12:00:00.123456789Z")));
+        var plan = generated(1);
+        assertThat(plan.plan().slots().get(0).recipe().getName()).isEqualTo(source.getName());
+        verifyNoInteractions(gemini);
+        plan = plans.accept(email, plan.id(), new Version(plan.version()));
+        assertThat(plan.plan().shopping().items().get(0).amount()).isEqualTo(200d);
+        var slotId = plan.plan().slots().get(0).id();
+        var correction = preview(plan, slotId, recipe("Większe danie", 500));
+        plan = revisionStore.apply(email, plan.id(), slotId, new ApplyRevision(plan.version(), correction.id()));
+        assertThat(plan.plan().shopping().items().get(0).amount()).isEqualTo(400d);
+        stock.setAmount(350d); fridge.saveAndFlush(stock);
+        plan = plans.syncShopping(email, plan.id(), new Generate(plan.version(), UUID.randomUUID()));
+        assertThat(plan.plan().shopping().items().get(0).amount()).isEqualTo(150d);
+        assertThat(fridge.findById(stock.getId()).orElseThrow().getAmount()).isEqualTo(350d);
+        assertThat(manualShopping.getShoppingList(email)).containsExactlyElementsOf(manual);
+        assertThat(recipes.getRecipeByName(source.getName(), email).getIngredients().get(0).getAmount()).isEqualTo(300d);
+    }
+    @Test void aPrivatePriceFillsAnUnpricedPlanAndIsScopedToOwnerPlanDateStoreAndQuantity() throws Exception {
+        var plan = generated(1); var id = plan.id();
+        var item = plans.previewShopping(email, id, plan.plan().slots()).items().get(0);
+        var input = new StoreOfferDto.PriceInput(plan.version(), item.key(), Store.LIDL, LocalDate.now(),
+                new java.math.BigDecimal("400"), new java.math.BigDecimal("4.25"));
+        long offerCount = offerRepository.count();
+        mvc.perform(post("/v3/meal-plans/" + id + "/prices").with(authentication(auth())).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(input))).andExpect(status().isForbidden());
+        var priced = itemPrices.save(email, id, input);
+        assertThat(priced.version()).isGreaterThan(plan.version());
+        var quote = pricing.preview(email, id, new StoreOfferDto.QuoteRequest(priced.version(), LocalDate.now(), Set.of()));
+        var ownRow = quote.baskets().stream().filter(b -> b.option().equals("LIDL")).findFirst().orElseThrow().items().get(0);
+        assertThat(ownRow.manualPrice()).isNotNull(); assertThat(ownRow.cost()).isEqualByComparingTo("4.25");
+        assertThat(ownRow.packages()).isEqualByComparingTo("1"); assertThat(ownRow.leftoverAmount()).isEqualByComparingTo("300");
+        assertThat(offerRepository.count()).isEqualTo(offerCount);
+        assertThat(itemPrices.prices(email, id, LocalDate.now().plusDays(1), Set.of(Store.LIDL))).isEmpty();
+        assertThat(itemPrices.prices(email, id, LocalDate.now(), Set.of(Store.BIEDRONKA))).isEmpty();
+        assertThatThrownBy(() -> itemPrices.prices("other", id, LocalDate.now(), Set.of(Store.LIDL))).isInstanceOf(AppException.class);
+        var otherPlan = generated(1);
+        assertThat(itemPrices.prices(email, otherPlan.id(), LocalDate.now(), Set.of(Store.LIDL))).isEmpty();
+        assertThatThrownBy(() -> itemPrices.save(email, id, input)).isInstanceOf(AppException.class);
+        var changed = plans.change(email, id, priced.plan().slots().get(0).id(), new Change(priced.version(), Action.SERVINGS, 4));
+        var changedQuote = pricing.preview(email, id, new StoreOfferDto.QuoteRequest(changed.version(), LocalDate.now(), Set.of()));
+        assertThat(changedQuote.baskets().stream().flatMap(b -> b.items().stream())).noneMatch(i -> i.manualPrice() != null);
+        var removed = itemPrices.remove(email, id, ownRow.manualPrice().id(), changed.version());
+        assertThat(removed.version()).isGreaterThan(changed.version());
+        assertThat(itemPrices.prices(email, id, LocalDate.now(), Set.of(Store.LIDL))).isEmpty();
+    }
+    @Test void ongoingPlanCanUseTodaysPrivatePriceWithoutChangingHistoryOrAcceptingThePlan() {
+        var plan = generated(1); var before = plan.plan(); var settings = before.settings();
+        LocalDate today = LocalDate.now(ZoneId.of("Europe/Warsaw")), yesterday = today.minusDays(1);
+        var historical = new Create(settings.requestId(), yesterday, settings.dayCount(), settings.servings(), settings.mealTypes(),
+                settings.stores(), settings.budget(), settings.locale(), settings.maxMinutes(), settings.planningMode(), settings.budgetMode(),
+                new ShoppingOptions(yesterday, 1, Set.of(), Set.of(), Set.of(), false));
+        var slots = before.slots().stream().map(s -> new Slot(s.id(), yesterday, s.mealType(), s.servings(), s.locked(), s.skipped(),
+                s.recipe(), s.generationId(), s.generationStatus(), s.generationStartedAt())).toList();
+        jdbc.update("update meal_plan set document = ? where id = ?", json.writeValueAsString(new Document(2, historical, before.status(), slots, null)), plan.id());
+        var item = plans.previewShopping(email, plan.id(), slots).items().get(0);
+        var priced = itemPrices.save(email, plan.id(), new StoreOfferDto.PriceInput(plan.version(), item.key(), Store.LIDL, today,
+                new java.math.BigDecimal("400"), new java.math.BigDecimal("4.25")));
+        var quote = pricing.preview(email, plan.id(), new StoreOfferDto.QuoteRequest(priced.version(), today, Set.of()));
+        assertThat(quote.baskets().get(0).pricedItems()).isEqualTo(1);
+        assertThat(quote.baskets().get(0).knownTotal()).isEqualByComparingTo("4.25");
+        assertThat(priced.plan().status()).isEqualTo(before.status());
+        assertThat(priced.plan().settings().shopping().shoppingDate()).isEqualTo(yesterday);
+        assertThat(priced.plan().slots()).isEqualTo(slots);
+        assertThat(priced.plan().shopping()).isNull();
+    }
     @Test void importIsIdempotentIncompleteBatchCannotPublishAndFailedReviewDoesNotVerify() {
         var candidate = new OfferImportDto.Candidate("source-123", "https://www.lidl.pl/p/test", "Controlled source evidence");
         var input = new OfferImportDto.Input("fixture-v1", UUID.randomUUID().toString(), Store.LIDL, Instant.now().minusSeconds(1), null, false, 2, List.of(candidate));
@@ -205,6 +348,58 @@ class WeeklyPlannerIntegrationTest {
         assertThat(revisions.preview(email, plan.id(), slot.id(), input).id()).isEqualTo(preview.id());
         assertThat(plans.get(email, plan.id()).plan().slots().get(0).recipe()).isEqualTo(slot.recipe());
         verify(gemini, times(2)).generateRecipes(any(RecipeGenerationRequestDto.class), any());
+    }
+    @Test void historicalEnglishRecipeCanBeTranslatedPreviewedAppliedAndUndoneWithoutChangingQuantities() {
+        var base = settings(1);
+        var englishSettings = new Create(base.requestId(), base.startDate(), base.dayCount(), base.servings(), base.mealTypes(), base.stores(),
+                base.budget(), "en", base.maxMinutes(), base.planningMode(), base.budgetMode(), base.shopping());
+        var english = recipe("Sichuan style rice", 100);
+        english.setLocale(ContentLocale.en); english.setDescription("Rice with Sichuan seasoning.");
+        english.setIngredients(List.of(new RecipeIngredientDto("rice", 100, "g"))); english.setInstructions(List.of("Boil rice."));
+        english.setNutrition(new RecipeNutritionDto(200d, 4d, 40d, 2d));
+        when(gemini.generateRecipes(any(RecipeGenerationRequestDto.class), any())).thenReturn(json.writeValueAsString(english));
+        var plan = plans.create(email, englishSettings); var slotId = plan.plan().slots().get(0).id();
+        plan = generation.generate(email, plan.id(), slotId, new Generate(plan.version(), UUID.randomUUID()));
+        plan = plans.revise(email, plan.id(), slotId, plan.version(), english);
+        var polish = recipe("Ryż po syczuańsku", 100); polish.setDescription("Ryż z przyprawami kuchni syczuańskiej."); polish.setTimeToPrepare("20 minut");
+        when(gemini.generateRecipes(any(RecipeGenerationRequestDto.class), any())).thenReturn(json.writeValueAsString(polish));
+        var preview = revisions.preview(email, plan.id(), slotId, new RevisionRequest(plan.version(), UUID.randomUUID(),
+                RevisionIntent.TRANSLATE_PL, null, null, null, null, null, null));
+        assertThat(plans.get(email, plan.id()).plan().slots().get(0).recipe().getName()).isEqualTo(english.getName());
+        assertThat(preview.after().getLocale()).isEqualTo(ContentLocale.pl);
+        assertThat(preview.after().getNutrition()).isEqualTo(english.getNutrition());
+        assertThat(preview.after().getIngredients().get(0).getAmount()).isEqualTo(100);
+        var applied = revisionStore.apply(email, plan.id(), slotId, new ApplyRevision(plan.version(), preview.id()));
+        assertThat(applied.plan().settings().locale()).isEqualTo("pl");
+        assertThat(applied.plan().slots().get(0).recipe().getName()).isEqualTo("Ryż po syczuańsku");
+        var undo = revisions.undo(email, plan.id(), slotId, new ApplyRevision(applied.version(), preview.id()));
+        assertThat(undo.after().getLocale()).isEqualTo(ContentLocale.en);
+        var restored = revisionStore.apply(email, plan.id(), slotId, new ApplyRevision(applied.version(), undo.id()));
+        assertThat(restored.plan().slots().get(0).recipe().getName()).isEqualTo(english.getName());
+        generation.generate(email, plan.id(), slotId, new Generate(restored.version(), UUID.randomUUID()));
+        var requests = org.mockito.ArgumentCaptor.forClass(RecipeGenerationRequestDto.class);
+        verify(gemini, times(3)).generateRecipes(requests.capture(), any());
+        assertThat(requests.getAllValues()).extracting(RecipeGenerationRequestDto::getLocale).containsExactly("en", "pl", "pl");
+        assertThat(requests.getAllValues().get(1).getRequestText()).contains("Preserve its cuisine", "numeric amounts", "every instruction");
+    }
+    @Test void translationRejectsChangedAmountsUnitsServingsPreparationTimeIngredientsAndSteps() {
+        var plan = generated(1); var slot = plan.plan().slots().get(0);
+        for (int mutation = 0; mutation < 6; mutation++) {
+            var translated = recipe("Przetłumaczony ryż", 100);
+            switch (mutation) {
+                case 0 -> translated.setIngredients(List.of(new RecipeIngredientDto("ryż", 101, "g")));
+                case 1 -> translated.setIngredients(List.of(new RecipeIngredientDto("ryż", 100, "ml")));
+                case 2 -> translated.setServings(3);
+                case 3 -> translated.setTimeToPrepare("21 min");
+                case 4 -> translated.setIngredients(List.of(new RecipeIngredientDto("ryż", 100, "g"), new RecipeIngredientDto("olej", 10, "ml")));
+                case 5 -> translated.setInstructions(List.of("Ugotuj ryż.", "Podaj."));
+            }
+            when(gemini.generateRecipes(any(RecipeGenerationRequestDto.class), any())).thenReturn(json.writeValueAsString(translated));
+            assertThatThrownBy(() -> revisions.preview(email, plan.id(), slot.id(), new RevisionRequest(plan.version(), UUID.randomUUID(),
+                    RevisionIntent.TRANSLATE_PL, null, null, null, null, null, null)))
+                    .isInstanceOf(AppException.class);
+            assertThat(plans.get(email, plan.id()).plan().slots().get(0).recipe()).isEqualTo(slot.recipe());
+        }
     }
     @Test void unrelatedLibraryRecipeCannotSkipTheSelectedBroccoliOffer() {
         recipes.saveRecipe(recipe("Tylko ryż " + UUID.randomUUID(), 100), email);

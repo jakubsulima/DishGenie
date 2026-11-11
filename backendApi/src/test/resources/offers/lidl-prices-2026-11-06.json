@@ -1,0 +1,2556 @@
+[
+  {
+    "productId": 11214563,
+    "productType": "RETAIL",
+    "canonicalUrl": "/p/ryneczek-lidla-polskie-jablka-czerwone-luzem/p11214563",
+    "fullTitle": "Ryneczek Lidla Polskie jabłka czerwone, luzem",
+    "keyfacts": {
+      "analyticsCategory": "Food",
+      "fullTitle": "Ryneczek Lidla Polskie jabłka czerwone, luzem",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Polskie jabłka czerwone, luzem",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Owoce i warzywa/Owoce",
+      "wonCategoryPrimaryPath": "0/17/1710/171010"
+    },
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentPrice": {
+          "basePrice": {
+            "prefix": false,
+            "text": "* cena przed obniżką: 1 kg = 4,49"
+          },
+          "currencyCode": "PLN",
+          "currencyCodeSecond": "",
+          "currencySymbol": "zł",
+          "currencySymbolSecond": "",
+          "discount": {
+            "absoluteDiscount": 2,
+            "deletedPrice": 4.49,
+            "discountHasStar": false,
+            "discountText": "-44%",
+            "fromNormalPriceForLidlPlus": false,
+            "fromRecommendedPrice": false,
+            "hideBargainHint": false,
+            "bargainHintEnabled": false,
+            "bargainHintText": "Megaokazja",
+            "percentageDiscount": 44,
+            "showDiscount": true,
+            "showFrom": false,
+            "showPercentage": true,
+            "showUpTo": false,
+            "suffix": "*"
+          },
+          "displayedCurrency": "zł",
+          "endDate": "2026-11-07T22:59:59Z",
+          "endDateExclusive": "2026-11-07T23:00Z",
+          "hasStar": false,
+          "hasVat": true,
+          "oldPrice": 4.49,
+          "packaging": {
+            "text": "1 kg"
+          },
+          "price": 2.49,
+          "priceTheme": "white_red",
+          "specialTaxes": [],
+          "startDate": "2026-11-03T09:24:45.209Z",
+          "superscript": "",
+          "variantsHaveDifferentPrices": false
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "storeStartDate": 1793919600,
+    "storeEndDate": 1794092399
+  },
+  {
+    "productId": 11263684,
+    "productType": "RETAIL",
+    "canonicalUrl": "/p/rzeznik-filet-z-indyka-xxl/p11263684",
+    "fullTitle": "RZEŹNIK Filet z indyka, XXL",
+    "keyfacts": {
+      "analyticsCategory": "Food",
+      "description": "<ul><li>XXL</li></ul>",
+      "fullTitle": "RZEŹNIK Filet z indyka, XXL",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Filet z indyka, XXL",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Mięso i drób/Drób",
+      "wonCategoryPrimaryPath": "0/17/1738/173810"
+    },
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentLidlPlusPrice": {
+          "price": {
+            "basePrice": {
+              "prefix": false,
+              "text": "* cena przed obniżką/ cena poza promocją: 1 kg = 33,99 Limit: 3 kg na kupon. Szczegóły promocji dostępne w aplikacji Lidl Plus."
+            },
+            "currencyCode": "PLN",
+            "currencyCodeSecond": "",
+            "currencySymbol": "zł",
+            "currencySymbolSecond": "",
+            "discount": {
+              "deletedPrice": 33.99,
+              "discountHasStar": false,
+              "discountText": "-41%",
+              "fromNormalPriceForLidlPlus": false,
+              "fromRecommendedPrice": false,
+              "hideBargainHint": false,
+              "bargainHintEnabled": false,
+              "bargainHintText": "Megaokazja",
+              "showDiscount": true,
+              "showFrom": false,
+              "showPercentage": true,
+              "showUpTo": false,
+              "suffix": "*"
+            },
+            "displayedCurrency": "zł",
+            "endDate": "2026-11-07T22:59:59Z",
+            "endDateExclusive": "2026-11-07T23:00Z",
+            "hasStar": false,
+            "hasVat": true,
+            "oldPrice": 33.99,
+            "packaging": {
+              "text": "1 kg"
+            },
+            "price": 19.99,
+            "priceTheme": "white_red",
+            "specialTaxes": [],
+            "startDate": "2026-11-03T09:22:04.195Z",
+            "superscript": "",
+            "variantsHaveDifferentPrices": false
+          },
+          "lidlPlusText": "Aktywuj kupon i zeskanuj aplikację",
+          "highlightText": "-41%"
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "storeStartDate": 1793919600,
+    "storeEndDate": 1794092399
+  },
+  {
+    "productId": 11427027,
+    "productType": "RETAIL",
+    "canonicalUrl": "/p/pilos-maslo-ekstra-83/p11427027",
+    "fullTitle": "PILOS Masło ekstra 83%",
+    "keyfacts": {
+      "analyticsCategory": "Food",
+      "description": "<ul><li>Produkt Polski</li></ul>",
+      "fullTitle": "PILOS Masło ekstra 83%",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Masło ekstra 83%",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Ser, nabiał i jaja/Masło",
+      "wonCategoryPrimaryPath": "0/17/1739/173913"
+    },
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentLidlPlusPrice": {
+          "price": {
+            "basePrice": {
+              "prefix": false,
+              "text": "100 g = 1,25 Cena przed obniżką/cena poza promocją: 4,99/opak., 100 g = 2,50 * cena za 1 opak. przy zakupie 3 opak. Limit: 3 opak. na kupon. Szczegóły promocji dostępne w aplikacji Lidl Plus."
+            },
+            "currencyCode": "PLN",
+            "currencyCodeSecond": "",
+            "currencySymbol": "zł",
+            "currencySymbolSecond": "",
+            "discount": {
+              "deletedPrice": 4.99,
+              "discountHasStar": false,
+              "discountText": "-50% przy zakupie 3",
+              "fromNormalPriceForLidlPlus": false,
+              "fromRecommendedPrice": false,
+              "hideBargainHint": false,
+              "bargainHintEnabled": false,
+              "bargainHintText": "Megaokazja",
+              "showDiscount": true,
+              "showFrom": false,
+              "showPercentage": true,
+              "showUpTo": false
+            },
+            "displayedCurrency": "zł",
+            "endDate": "2026-11-07T22:59:59Z",
+            "endDateExclusive": "2026-11-07T23:00Z",
+            "hasStar": false,
+            "hasVat": true,
+            "oldPrice": 4.99,
+            "packaging": {
+              "text": "200 g"
+            },
+            "price": 2.49,
+            "priceTheme": "white_red",
+            "specialTaxes": [],
+            "startDate": "2026-11-03T09:19:51.133Z",
+            "superscript": "*",
+            "variantsHaveDifferentPrices": false,
+            "priceLegendName": "*"
+          },
+          "lidlPlusText": "Aktywuj kupon i zeskanuj aplikację",
+          "highlightText": "-50% przy zakupie 3",
+          "priceLegendName": "*"
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "storeStartDate": 1793919600,
+    "storeEndDate": 1794092399
+  },
+  {
+    "productId": 11029894,
+    "productType": "RETAIL",
+    "canonicalUrl": "/p/mango-luzem/p11029894",
+    "fullTitle": "Mango, luzem",
+    "keyfacts": {
+      "analyticsCategory": "F+V",
+      "fullTitle": "Mango, luzem",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Mango, luzem",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Owoce i warzywa/Owoce",
+      "wonCategoryPrimaryPath": "0/17/1710/171010"
+    },
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentLidlPlusPrice": {
+          "price": {
+            "basePrice": {
+              "prefix": false,
+              "text": "* cena przed obniżką/ cena poza promocją: 1 kg = 12,99 Limit: 3 kg na kupon. Szczegóły promocji dostępne w aplikacji Lidl Plus."
+            },
+            "currencyCode": "PLN",
+            "currencyCodeSecond": "",
+            "currencySymbol": "zł",
+            "currencySymbolSecond": "",
+            "discount": {
+              "deletedPrice": 12.99,
+              "discountHasStar": false,
+              "discountText": "-30%",
+              "fromNormalPriceForLidlPlus": false,
+              "fromRecommendedPrice": false,
+              "hideBargainHint": false,
+              "bargainHintEnabled": false,
+              "bargainHintText": "Megaokazja",
+              "showDiscount": true,
+              "showFrom": false,
+              "showPercentage": true,
+              "showUpTo": false,
+              "suffix": "*"
+            },
+            "displayedCurrency": "zł",
+            "endDate": "2026-11-07T22:59:59Z",
+            "endDateExclusive": "2026-11-07T23:00Z",
+            "hasStar": false,
+            "hasVat": true,
+            "oldPrice": 12.99,
+            "packaging": {
+              "text": "1 kg"
+            },
+            "price": 8.99,
+            "priceTheme": "white_red",
+            "specialTaxes": [],
+            "startDate": "2026-11-03T14:38:09.037Z",
+            "superscript": "",
+            "variantsHaveDifferentPrices": false
+          },
+          "lidlPlusText": "Aktywuj kupon i zeskanuj aplikację",
+          "highlightText": "-30%"
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "storeStartDate": 1793833200,
+    "storeEndDate": 1794092399
+  },
+  {
+    "productId": 11029953,
+    "productType": "RETAIL",
+    "canonicalUrl": "/p/sliwki-okragle-luzem/p11029953",
+    "fullTitle": "Śliwki okrągłe, luzem",
+    "keyfacts": {
+      "analyticsCategory": "F+V",
+      "fullTitle": "Śliwki okrągłe, luzem",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Śliwki okrągłe, luzem",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Owoce i warzywa/Owoce",
+      "wonCategoryPrimaryPath": "0/17/1710/171010"
+    },
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentPrice": {
+          "basePrice": {
+            "prefix": false,
+            "text": "* cena przed obniżką: 1 kg = 12,99"
+          },
+          "currencyCode": "PLN",
+          "currencyCodeSecond": "",
+          "currencySymbol": "zł",
+          "currencySymbolSecond": "",
+          "discount": {
+            "absoluteDiscount": 7,
+            "deletedPrice": 12.99,
+            "discountHasStar": false,
+            "discountText": "-53%",
+            "fromNormalPriceForLidlPlus": false,
+            "fromRecommendedPrice": false,
+            "hideBargainHint": false,
+            "bargainHintEnabled": false,
+            "bargainHintText": "Megaokazja",
+            "percentageDiscount": 53,
+            "showDiscount": true,
+            "showFrom": false,
+            "showPercentage": true,
+            "showUpTo": false,
+            "suffix": "*"
+          },
+          "displayedCurrency": "zł",
+          "endDate": "2026-11-07T22:59:59Z",
+          "endDateExclusive": "2026-11-07T23:00Z",
+          "hasStar": false,
+          "hasVat": true,
+          "oldPrice": 12.99,
+          "packaging": {
+            "text": "1 kg"
+          },
+          "price": 5.99,
+          "priceTheme": "white_red",
+          "specialTaxes": [],
+          "startDate": "2026-11-03T14:33:42.203Z",
+          "superscript": "",
+          "variantsHaveDifferentPrices": false
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "storeStartDate": 1793833200,
+    "storeEndDate": 1794092399
+  },
+  {
+    "productId": 11030024,
+    "productType": "RETAIL",
+    "canonicalUrl": "/p/mandarynki-luzem/p11030024",
+    "fullTitle": "Mandarynki, luzem",
+    "keyfacts": {
+      "analyticsCategory": "Food",
+      "fullTitle": "Mandarynki, luzem",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Mandarynki, luzem",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Owoce i warzywa/Owoce",
+      "wonCategoryPrimaryPath": "0/17/1710/171010"
+    },
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentLidlPlusPrice": {
+          "price": {
+            "basePrice": {
+              "prefix": false,
+              "text": "* cena przed obniżką/cena poza promocją: 1 kg = 9,99 Limit: 3 kg na kupon. Szczegóły promocji dostępne w aplikacji Lidl Plus."
+            },
+            "currencyCode": "PLN",
+            "currencyCodeSecond": "",
+            "currencySymbol": "zł",
+            "currencySymbolSecond": "",
+            "discount": {
+              "deletedPrice": 9.99,
+              "discountHasStar": false,
+              "discountText": "-40%",
+              "fromNormalPriceForLidlPlus": false,
+              "fromRecommendedPrice": false,
+              "hideBargainHint": false,
+              "bargainHintEnabled": false,
+              "bargainHintText": "Megaokazja",
+              "showDiscount": true,
+              "showFrom": false,
+              "showPercentage": true,
+              "showUpTo": false,
+              "suffix": "*"
+            },
+            "displayedCurrency": "zł",
+            "endDate": "2026-11-07T22:59:59Z",
+            "endDateExclusive": "2026-11-07T23:00Z",
+            "hasStar": false,
+            "hasVat": true,
+            "oldPrice": 9.99,
+            "packaging": {
+              "text": "1 kg"
+            },
+            "price": 5.99,
+            "priceTheme": "white_red",
+            "specialTaxes": [],
+            "startDate": "2026-11-03T14:29:24.812Z",
+            "superscript": "",
+            "variantsHaveDifferentPrices": false
+          },
+          "lidlPlusText": "Aktywuj kupon i zeskanuj aplikację",
+          "highlightText": "-40%"
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "storeStartDate": 1793833200,
+    "storeEndDate": 1794092399
+  },
+  {
+    "productId": 11115779,
+    "productType": "RETAIL",
+    "canonicalUrl": "/p/granat-luzem/p11115779",
+    "fullTitle": "Granat, luzem",
+    "keyfacts": {
+      "analyticsCategory": "F+V",
+      "fullTitle": "Granat, luzem",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Granat, luzem",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Ryby i owoce morza",
+      "wonCategoryPrimaryPath": "0/17/1733"
+    },
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentLidlPlusPrice": {
+          "price": {
+            "basePrice": {
+              "prefix": false,
+              "text": "* cena przed obniżką/ cena poza promocją: 1 kg = 19,99 Limit: 3 kg na kupon. Szczegóły promocji dostępne w aplikacji Lidl Plus."
+            },
+            "currencyCode": "PLN",
+            "currencyCodeSecond": "",
+            "currencySymbol": "zł",
+            "currencySymbolSecond": "",
+            "discount": {
+              "deletedPrice": 19.99,
+              "discountHasStar": false,
+              "discountText": "-40%",
+              "fromNormalPriceForLidlPlus": false,
+              "fromRecommendedPrice": false,
+              "hideBargainHint": false,
+              "bargainHintEnabled": false,
+              "bargainHintText": "Megaokazja",
+              "showDiscount": true,
+              "showFrom": false,
+              "showPercentage": true,
+              "showUpTo": false,
+              "suffix": "*"
+            },
+            "displayedCurrency": "zł",
+            "endDate": "2026-11-07T22:59:59Z",
+            "endDateExclusive": "2026-11-07T23:00Z",
+            "hasStar": false,
+            "hasVat": true,
+            "oldPrice": 19.99,
+            "packaging": {
+              "text": "1 kg"
+            },
+            "price": 11.99,
+            "priceTheme": "white_red",
+            "specialTaxes": [],
+            "startDate": "2026-11-03T14:36:14.084Z",
+            "superscript": "",
+            "variantsHaveDifferentPrices": false
+          },
+          "lidlPlusText": "Aktywuj kupon i zeskanuj aplikację",
+          "highlightText": "-40%"
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "storeStartDate": 1793833200,
+    "storeEndDate": 1794092399
+  },
+  {
+    "productId": 11150766,
+    "productType": "RETAIL",
+    "canonicalUrl": "/p/banany-luzem/p11150766",
+    "fullTitle": "Banany, luzem",
+    "keyfacts": {
+      "analyticsCategory": "Food",
+      "fullTitle": "Banany, luzem",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Banany, luzem",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Owoce i warzywa/Owoce",
+      "wonCategoryPrimaryPath": "0/17/1710/171010"
+    },
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentLidlPlusPrice": {
+          "price": {
+            "basePrice": {
+              "prefix": false,
+              "text": "* cena przed obniżką/ cena poza promocją: 1 kg = 6,99 Limit: 2 kg na kupon. Szczegóły promocji dostępne w aplikacji Lidl Plus."
+            },
+            "currencyCode": "PLN",
+            "currencyCodeSecond": "",
+            "currencySymbol": "zł",
+            "currencySymbolSecond": "",
+            "discount": {
+              "deletedPrice": 6.99,
+              "discountHasStar": false,
+              "discountText": "-57%",
+              "fromNormalPriceForLidlPlus": false,
+              "fromRecommendedPrice": false,
+              "hideBargainHint": false,
+              "bargainHintEnabled": false,
+              "bargainHintText": "Megaokazja",
+              "showDiscount": true,
+              "showFrom": false,
+              "showPercentage": true,
+              "showUpTo": false,
+              "suffix": "*"
+            },
+            "displayedCurrency": "zł",
+            "endDate": "2026-11-07T22:59:59Z",
+            "endDateExclusive": "2026-11-07T23:00Z",
+            "hasStar": false,
+            "hasVat": true,
+            "oldPrice": 6.99,
+            "packaging": {
+              "text": "1 kg"
+            },
+            "price": 2.99,
+            "priceTheme": "white_red",
+            "specialTaxes": [],
+            "startDate": "2026-11-05T15:52:32.125Z",
+            "superscript": "",
+            "variantsHaveDifferentPrices": false
+          },
+          "lidlPlusText": "Aktywuj kupon i zeskanuj aplikację",
+          "highlightText": "-57%"
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "storeStartDate": 1793833200,
+    "storeEndDate": 1794092399
+  },
+  {
+    "productId": 11214533,
+    "productType": "RETAIL",
+    "canonicalUrl": "/p/kiwi-gold/p11214533",
+    "fullTitle": "Kiwi Gold",
+    "keyfacts": {
+      "analyticsCategory": "F+V",
+      "fullTitle": "Kiwi Gold",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Kiwi Gold",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Owoce i warzywa/Owoce",
+      "wonCategoryPrimaryPath": "0/17/1710/171010"
+    },
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentLidlPlusPrice": {
+          "price": {
+            "basePrice": {
+              "prefix": false,
+              "text": "Cena poza promocją: 3,49/szt. Cena za 1 szt. przy zakupie 2 szt.: 1,74/szt. Limit: 3 szt. gratis na kupon. Szczegóły promocji dostępne w aplikacji Lidl Plus."
+            },
+            "currencyCode": "PLN",
+            "currencyCodeSecond": "",
+            "currencySymbol": "zł",
+            "currencySymbolSecond": "",
+            "discount": {
+              "discountHasStar": false,
+              "discountText": "1 + 1 gratis",
+              "fromNormalPriceForLidlPlus": false,
+              "fromRecommendedPrice": false,
+              "showDiscount": false,
+              "showFrom": false,
+              "showPercentage": false,
+              "showUpTo": false
+            },
+            "displayedCurrency": "zł",
+            "endDate": "2026-11-07T22:59:59Z",
+            "endDateExclusive": "2026-11-07T23:00Z",
+            "hasStar": false,
+            "hasVat": true,
+            "packaging": {
+              "text": "1 szt."
+            },
+            "prefix": "Cena poza promocją",
+            "price": 3.49,
+            "priceTheme": "white_red",
+            "specialTaxes": [],
+            "startDate": "2026-11-03T14:40:41.672Z",
+            "superscript": "",
+            "variantsHaveDifferentPrices": false
+          },
+          "lidlPlusText": "Aktywuj kupon i zeskanuj aplikację",
+          "highlightText": "1 + 1 gratis"
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "storeStartDate": 1793833200,
+    "storeEndDate": 1794092399
+  },
+  {
+    "productId": 11305114,
+    "productType": "RETAIL",
+    "canonicalUrl": "/p/rzeznik-szynka-wieprzowa-xxl/p11305114",
+    "fullTitle": "RZEŹNIK Szynka wieprzowa, XXL",
+    "keyfacts": {
+      "analyticsCategory": "Food",
+      "fullTitle": "RZEŹNIK Szynka wieprzowa, XXL",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Szynka wieprzowa, XXL",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Mięso i drób/Wieprzowina",
+      "wonCategoryPrimaryPath": "0/17/1738/173812"
+    },
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentLidlPlusPrice": {
+          "price": {
+            "basePrice": {
+              "prefix": false,
+              "text": "* cena przed obniżką/ cena poza promocją: 1 kg = 15,49 Limit: 5 kg na kupon. Szczegóły promocji dostępne w aplikacji Lidl Plus."
+            },
+            "currencyCode": "PLN",
+            "currencyCodeSecond": "",
+            "currencySymbol": "zł",
+            "currencySymbolSecond": "",
+            "discount": {
+              "deletedPrice": 15.49,
+              "discountHasStar": false,
+              "discountText": "-35%",
+              "fromNormalPriceForLidlPlus": false,
+              "fromRecommendedPrice": false,
+              "hideBargainHint": false,
+              "bargainHintEnabled": false,
+              "bargainHintText": "Megaokazja",
+              "showDiscount": true,
+              "showFrom": false,
+              "showPercentage": true,
+              "showUpTo": false,
+              "suffix": "*"
+            },
+            "displayedCurrency": "zł",
+            "endDate": "2026-11-07T22:59:59Z",
+            "endDateExclusive": "2026-11-07T23:00Z",
+            "hasStar": false,
+            "hasVat": true,
+            "oldPrice": 15.49,
+            "packaging": {
+              "text": "1 kg"
+            },
+            "price": 9.99,
+            "priceTheme": "white_red",
+            "specialTaxes": [],
+            "startDate": "2026-11-03T09:28:54.045Z",
+            "superscript": "",
+            "variantsHaveDifferentPrices": false
+          },
+          "lidlPlusText": "Aktywuj kupon i zeskanuj aplikację",
+          "highlightText": "-35%"
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "storeStartDate": 1793833200,
+    "storeEndDate": 1794092399
+  },
+  {
+    "productId": 11405713,
+    "productType": "RETAIL",
+    "canonicalUrl": "/p/pilos-polski-twarog-sernikowy-6/p11405713",
+    "fullTitle": "PILOS Polski twaróg sernikowy 6%",
+    "keyfacts": {
+      "analyticsCategory": "Food",
+      "description": "<ul> <li>Produkt Polski</li> <li>Produkt dostępny tylko w niekt&oacute;rych sklepach. Sprawdź asortyment w swoim sklepie.</li> </ul>",
+      "fullTitle": "PILOS Polski twaróg sernikowy 6%",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Polski twaróg sernikowy 6%",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Ser, nabiał i jaja/Desery",
+      "wonCategoryPrimaryPath": "0/17/1739/173915"
+    },
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentLidlPlusPrice": {
+          "price": {
+            "basePrice": {
+              "prefix": false,
+              "text": "* cena przed obniżką/cena poza promocją: 1 kg = 9,79 Limit: 4 opak. na kupon. Szczegóły promocji dostępne w aplikacji Lidl Plus."
+            },
+            "currencyCode": "PLN",
+            "currencyCodeSecond": "",
+            "currencySymbol": "zł",
+            "currencySymbolSecond": "",
+            "discount": {
+              "deletedPrice": 9.79,
+              "discountHasStar": false,
+              "discountText": "-28%",
+              "fromNormalPriceForLidlPlus": false,
+              "fromRecommendedPrice": false,
+              "hideBargainHint": false,
+              "bargainHintEnabled": false,
+              "bargainHintText": "Megaokazja",
+              "showDiscount": true,
+              "showFrom": false,
+              "showPercentage": true,
+              "showUpTo": false,
+              "suffix": "*"
+            },
+            "displayedCurrency": "zł",
+            "endDate": "2026-11-07T22:59:59Z",
+            "endDateExclusive": "2026-11-07T23:00Z",
+            "hasStar": false,
+            "hasVat": true,
+            "oldPrice": 9.79,
+            "packaging": {
+              "text": "1 kg"
+            },
+            "price": 6.99,
+            "priceTheme": "white_red",
+            "specialTaxes": [],
+            "startDate": "2026-11-03T14:26:18.533Z",
+            "superscript": "",
+            "variantsHaveDifferentPrices": false
+          },
+          "lidlPlusText": "Aktywuj kupon i zeskanuj aplikację",
+          "highlightText": "-28%"
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "storeStartDate": 1793833200,
+    "storeEndDate": 1794092399
+  },
+  {
+    "productId": 11407883,
+    "productType": "RETAIL",
+    "canonicalUrl": "/p/rzeznik-kaczka-tuszka/p11407883",
+    "fullTitle": "RZEŹNIK Kaczka – tuszka",
+    "keyfacts": {
+      "analyticsCategory": "Food",
+      "fullTitle": "RZEŹNIK Kaczka – tuszka",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Kaczka – tuszka",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Mięso i drób/Drób",
+      "wonCategoryPrimaryPath": "0/17/1738/173810"
+    },
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentPrice": {
+          "basePrice": {
+            "prefix": false,
+            "text": "* cena przed obniżką/ cena poza promocją: 1 kg = 16,99 Limit: 9 kg na paragon."
+          },
+          "currencyCode": "PLN",
+          "currencyCodeSecond": "",
+          "currencySymbol": "zł",
+          "currencySymbolSecond": "",
+          "discount": {
+            "absoluteDiscount": 7,
+            "deletedPrice": 16.99,
+            "discountHasStar": false,
+            "discountText": "-41%",
+            "fromNormalPriceForLidlPlus": false,
+            "fromRecommendedPrice": false,
+            "hideBargainHint": false,
+            "bargainHintEnabled": false,
+            "bargainHintText": "Megaokazja",
+            "percentageDiscount": 41,
+            "showDiscount": true,
+            "showFrom": false,
+            "showPercentage": true,
+            "showUpTo": false,
+            "suffix": "*"
+          },
+          "displayedCurrency": "zł",
+          "endDate": "2026-11-07T22:59:59Z",
+          "endDateExclusive": "2026-11-07T23:00Z",
+          "hasStar": false,
+          "hasVat": true,
+          "oldPrice": 16.99,
+          "packaging": {
+            "text": "1 kg"
+          },
+          "price": 9.99,
+          "priceTheme": "white_red",
+          "specialTaxes": [],
+          "startDate": "2026-11-03T11:43:36.040Z",
+          "superscript": "",
+          "variantsHaveDifferentPrices": false
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "storeStartDate": 1793833200,
+    "storeEndDate": 1794092399
+  },
+  {
+    "productId": 11421274,
+    "productType": "RETAIL",
+    "canonicalUrl": "/p/mlekovita-mleko-uht-3-2-z-polskiej-mleczarni/p11421274",
+    "fullTitle": "MLEKOVITA Mleko UHT 3,2% z Polskiej Mleczarni",
+    "keyfacts": {
+      "analyticsCategory": "Food",
+      "description": "<ul><li>Produkt Polski</li></ul>",
+      "fullTitle": "MLEKOVITA Mleko UHT 3,2% z Polskiej Mleczarni",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Mleko UHT 3,2% z Polskiej Mleczarni",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Ser, nabiał i jaja/Mleko i śmietana",
+      "wonCategoryPrimaryPath": "0/17/1739/173910"
+    },
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentLidlPlusPrice": {
+          "price": {
+            "basePrice": {
+              "prefix": false,
+              "text": "Najniższa cena z 30 dni przed obniżką/ cena poza promocją: 3,99/opak. * cena za 1 opak. przy zakupie 6 opak. lub wielokrotności 6 opak. Limit: 12 opak. na kupon. Szczegóły promocji dostępne w aplikacji Lidl Plus."
+            },
+            "currencyCode": "PLN",
+            "currencyCodeSecond": "",
+            "currencySymbol": "zł",
+            "currencySymbolSecond": "",
+            "discount": {
+              "deletedPrice": 3.99,
+              "discountHasStar": false,
+              "discountText": "-50% przy zakupie 6",
+              "fromNormalPriceForLidlPlus": false,
+              "fromRecommendedPrice": false,
+              "hideBargainHint": false,
+              "bargainHintEnabled": false,
+              "bargainHintText": "Megaokazja",
+              "showDiscount": true,
+              "showFrom": false,
+              "showPercentage": true,
+              "showUpTo": false
+            },
+            "displayedCurrency": "zł",
+            "endDate": "2026-11-07T22:59:59Z",
+            "endDateExclusive": "2026-11-07T23:00Z",
+            "hasStar": false,
+            "hasVat": true,
+            "oldPrice": 3.99,
+            "packaging": {
+              "text": "1 L"
+            },
+            "price": 1.99,
+            "priceTheme": "white_red",
+            "specialTaxes": [],
+            "startDate": "2026-10-30T13:22:51.146Z",
+            "superscript": "*",
+            "variantsHaveDifferentPrices": false,
+            "priceLegendName": "*"
+          },
+          "lidlPlusText": "Aktywuj kupon i zeskanuj aplikację",
+          "highlightText": "-50% przy zakupie 6",
+          "priceLegendName": "*"
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "storeStartDate": 1793574000,
+    "storeEndDate": 1794092399
+  },
+  {
+    "productId": 11432037,
+    "productType": "RETAIL",
+    "canonicalUrl": "/p/pilos-ser-edam-w-plastrach-xxl/p11432037",
+    "fullTitle": "PILOS Ser edam w plastrach, XXL",
+    "keyfacts": {
+      "analyticsCategory": "Food",
+      "description": "<ul><li>Produkt Polski</li></ul>",
+      "fullTitle": "PILOS Ser edam w plastrach, XXL",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Ser edam w plastrach, XXL",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Ser, nabiał i jaja/Ser",
+      "wonCategoryPrimaryPath": "0/17/1739/173912"
+    },
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentPrice": {
+          "basePrice": {
+            "prefix": false,
+            "text": "* cena przed obniżką/ cena poza promocją: 29,89/opak. Limit: 3 opak. na paragon."
+          },
+          "currencyCode": "PLN",
+          "currencyCodeSecond": "",
+          "currencySymbol": "zł",
+          "currencySymbolSecond": "",
+          "discount": {
+            "absoluteDiscount": 11.9,
+            "deletedPrice": 29.89,
+            "discountHasStar": false,
+            "discountText": "-39%",
+            "fromNormalPriceForLidlPlus": false,
+            "fromRecommendedPrice": false,
+            "hideBargainHint": false,
+            "bargainHintEnabled": false,
+            "bargainHintText": "Megaokazja",
+            "percentageDiscount": 39,
+            "showDiscount": true,
+            "showFrom": false,
+            "showPercentage": true,
+            "showUpTo": false,
+            "suffix": "*"
+          },
+          "displayedCurrency": "zł",
+          "endDate": "2026-11-07T22:59:59Z",
+          "endDateExclusive": "2026-11-07T23:00Z",
+          "hasStar": false,
+          "hasVat": true,
+          "oldPrice": 29.89,
+          "packaging": {
+            "text": "1 kg"
+          },
+          "price": 17.99,
+          "priceTheme": "white_red",
+          "specialTaxes": [],
+          "startDate": "2026-11-03T12:32:11.874Z",
+          "superscript": "",
+          "variantsHaveDifferentPrices": false
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "storeStartDate": 1793833200,
+    "storeEndDate": 1794092399
+  },
+  {
+    "productId": 11408148,
+    "productType": "RETAIL",
+    "canonicalUrl": "/p/kania-majonez-klasyczny-z-zoltkami-jaj-od-kur-z-wolnego-wybiegu/p11408148",
+    "fullTitle": "KANIA Majonez klasyczny z żółtkami jaj od kur z wolnego wybiegu",
+    "keyfacts": {
+      "analyticsCategory": "Food",
+      "fullTitle": "KANIA Majonez klasyczny z żółtkami jaj od kur z wolnego wybiegu",
+      "moreDetails": "Więcej szczegółów",
+      "title": "Majonez klasyczny z żółtkami jaj od kur z wolnego wybiegu",
+      "wonCategoryPrimary": "Światy potrzeb/Żywność i żywność w pobliżu/Oleje, przyprawy i sosy/Sosy i przyprawy",
+      "wonCategoryPrimaryPath": "0/17/1742/174212"
+    },
+    "regionsV2": {
+      "5": {
+        "regionName": "PL Region 5",
+        "isDefault": true,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "6": {
+        "regionName": "PL Region 6",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "7": {
+        "regionName": "PL Region 7",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "8": {
+        "regionName": "PL Region 8",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "9": {
+        "regionName": "PL Region 9",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "10": {
+        "regionName": "PL Region 10",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "11": {
+        "regionName": "PL Region 11",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "12": {
+        "regionName": "PL Region 12",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "13": {
+        "regionName": "PL Region 13",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "14": {
+        "regionName": "PL Region 14",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "15": {
+        "regionName": "PL Region 15",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "16": {
+        "regionName": "PL Region 16",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      },
+      "18": {
+        "regionName": "PL Region 18",
+        "isDefault": false,
+        "regionPriceId": "1",
+        "status": "ONLINE",
+        "hasVat": false,
+        "priceHasZeroVat": false
+      }
+    },
+    "regionsPrices": {
+      "1": {
+        "currentLidlPlusPrice": {
+          "price": {
+            "basePrice": {
+              "prefix": false,
+              "text": "Cena poza promocją: 4,99/opak., 1 L = 12,48 Limit: 2 opak. gratis na kupon. Szczegóły promocji dostępne w aplikacji Lidl Plus."
+            },
+            "currencyCode": "PLN",
+            "currencyCodeSecond": "",
+            "currencySymbol": "zł",
+            "currencySymbolSecond": "",
+            "discount": {
+              "discountHasStar": false,
+              "discountText": "1 + 1 gratis",
+              "fromNormalPriceForLidlPlus": false,
+              "fromRecommendedPrice": false,
+              "showDiscount": false,
+              "showFrom": false,
+              "showPercentage": false,
+              "showUpTo": false
+            },
+            "displayedCurrency": "zł",
+            "endDate": "2026-11-07T22:59:59Z",
+            "endDateExclusive": "2026-11-07T23:00Z",
+            "hasStar": false,
+            "hasVat": true,
+            "packaging": {
+              "text": "400 ml"
+            },
+            "prefix": "Cena poza promocją",
+            "price": 4.99,
+            "priceTheme": "white_red",
+            "specialTaxes": [],
+            "startDate": "2026-11-03T14:28:15.052Z",
+            "superscript": "",
+            "variantsHaveDifferentPrices": false
+          },
+          "lidlPlusText": "Aktywuj kupon i zeskanuj aplikację",
+          "highlightText": "1 + 1 gratis"
+        },
+        "futureLidlPlusPrices": []
+      }
+    },
+    "storeStartDate": 1793833200,
+    "storeEndDate": 1794092399
+  }
+]

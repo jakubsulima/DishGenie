@@ -166,10 +166,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     let isMounted = true;
 
     const initializeSession = async () => {
-      await ensureCsrfToken();
-      await refreshSession();
-      if (isMounted) {
-        setLoading(false);
+      try {
+        await ensureCsrfToken();
+        await refreshSession();
+      } catch {
+        // A temporary API outage must not trap guests behind the loading shell.
+        // Submitting the login form will retry the normal CSRF bootstrap.
+      } finally {
+        if (isMounted) setLoading(false);
       }
     };
 

@@ -2,7 +2,7 @@ import PlanShoppingIssue from "./PlanShoppingIssue";
 import { useEffect, useState } from "react";
 import { useLanguage } from "../context/languageContext";
 import type { MealPlan } from "../lib/mealPlans";
-export default function PlanShoppingGroups({ plan, disabled, onCheck }: { plan: MealPlan; disabled: boolean; onCheck: (key: string, checked: boolean) => void }) {
+export default function PlanShoppingGroups({ plan, disabled, onCheck, onOpenMeal }: { plan: MealPlan; disabled: boolean; onCheck: (key: string, checked: boolean) => void; onOpenMeal?: (slotId: string) => void }) {
   const { t } = useLanguage(); const shopping = plan.plan.shopping;
   const quote = shopping?.quote;
   const [expired, setExpired] = useState(false);
@@ -18,7 +18,7 @@ export default function PlanShoppingGroups({ plan, disabled, onCheck }: { plan: 
   const groups = new Map<string, typeof shopping.items>();
   for (const item of shopping.items) {
     const priced = basket?.items.find(i => i.key === item.key);
-    const store = priced?.offer?.details.store ?? (shopping.basketOption === "COMBINED" ? "Choose store" : shopping.basketOption ?? "Choose basket above");
+    const store = priced?.manualPrice?.store ?? priced?.offer?.details.store ?? (shopping.basketOption === "COMBINED" ? "Choose store" : shopping.basketOption ?? "Choose a basket below");
     const category = priced?.offer?.details.category ?? "OTHER";
     const key = `${store}|${category}`;
     groups.set(key, [...groups.get(key) ?? [], item]);
@@ -35,7 +35,8 @@ export default function PlanShoppingGroups({ plan, disabled, onCheck }: { plan: 
             {item.usedFromFridge > 0 && <p className="text-sm">{t("From fridge")}: {item.usedFromFridge} {item.unit}</p>}
             {item.needsReview && <p className="text-sm text-amber-900">{t("Check the amount and unit at home before shopping.")}</p>}
             {priced?.offer && <><p className="text-sm">{t("Buy")}: {priced.purchasedAmount} {item.unit} · {t("Left after these meals")}: {priced.leftoverAmount} {item.unit}</p><p className="text-sm">{priced.offer.details.conditions}</p><p className="text-sm">{priced.offer.details.validFrom} – {priced.offer.details.validTo}</p><a className="text-sm underline" href={priced.offer.details.sourceUrl} target="_blank" rel="noopener noreferrer">{t("Offer source")}</a></>}
-            {item.amount !== 0 && <PlanShoppingIssue plan={plan} itemKey={item.key} slotId={item.slotIds[0]} disabled={disabled} />}
+            {priced?.manualPrice && <><p className="text-sm">{t("Your price, private to this plan")}</p><p className="text-sm">{t("Buy")}: {priced.purchasedAmount} {item.unit} · {t("Left after these meals")}: {priced.leftoverAmount} {item.unit}</p></>}
+            {item.amount !== 0 && <PlanShoppingIssue onOpenMeal={onOpenMeal} plan={plan} itemKey={item.key} slotId={item.slotIds[0]} disabled={disabled} />}
           </div>
         </li>;
       })}</ul>

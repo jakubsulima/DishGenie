@@ -3,6 +3,7 @@ package org.jakub.backendapi.entities;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table(name = "shopping_list_item")
@@ -90,7 +91,8 @@ public class ShoppingListItem {
     }
 
     public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
+        // Match database precision before returning newly saved items.
+        this.createdAt = createdAt == null ? null : createdAt.truncatedTo(ChronoUnit.MICROS);
     }
 
     public User getUser() {

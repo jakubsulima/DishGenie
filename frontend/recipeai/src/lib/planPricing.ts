@@ -7,8 +7,13 @@ export interface StoreOfferDetails {
   minimumPackages: number; packageMultiple: number; maximumPackages: number | null; loyaltyRequired: boolean;
   validFrom: string; validTo: string; sourceUrl: string; conditions: string; verifiedAt: string;
 }
-interface PricedItem {
-  key: string; name: string; offer: { id: string; version: number; details: StoreOfferDetails } | null;
+export interface ManualPlanPrice {
+  id: string; key: string; store: PlanStore; shoppingDate: string; packageAmount: number; unit: string;
+  packagePrice: number; confirmedAt: string;
+}
+export interface PricedItem {
+  key: string; name: string; offer: CatalogOffer | null;
+  requiredAmount?: number | null; unit?: string | null; manualPrice?: ManualPlanPrice | null;
   packages: number | null; purchasedAmount: number | null; leftoverAmount: number | null; cost: number | null;
   missingReason: "NO_ELIGIBLE_OFFER" | "CHECK_QUANTITY" | null;
 }
@@ -20,9 +25,17 @@ export interface PricedBasket {
 export interface PlanQuote {
   planId: string; planVersion: number; shoppingDate: string; calculatedAt: string; expiresAt: string;
   budget: number | null; baskets: PricedBasket[];
+  sources?: { store: PlanStore; status: string; offers: number; fetchedAt: string | null }[];
 }
 export const quoteMealPlan = (plan: MealPlan, shoppingDate: string, loyaltyStores: PlanStore[]) =>
-  apiClient<PlanQuote>(`v3/meal-plans/${plan.id}/quote-preview`, true, { version: plan.version, shoppingDate, loyaltyStores, confirmedCouponOffers: plan.plan.settings.shopping?.confirmedCouponOffers ?? [] });
+  apiClient<PlanQuote>(`v${plan.plan.schemaVersion >= 4 ? 4 : 3}/meal-plans/${plan.id}/quote-preview`, true,
+    { version: plan.version, shoppingDate, loyaltyStores, confirmedCouponOffers: plan.plan.settings.shopping?.confirmedCouponOffers ?? [] }, { timeoutMs: 60_000 });
+export const refreshStorePrices = () => apiClient("v2/offers/reload-prices", true, {}, { timeoutMs: 60_000 });
+export const savePlanPrice = (plan: MealPlan, input: { key: string; store: PlanStore; shoppingDate: string; packageAmount: number; packagePrice: number }) =>
+  apiClient<MealPlan>(`v${plan.plan.schemaVersion >= 4 ? 4 : 3}/meal-plans/${plan.id}/prices`, true, { version: plan.version, ...input });
+export const removePlanPrice = (plan: MealPlan, id: string) =>
+  apiClient<MealPlan>(`v${plan.plan.schemaVersion >= 4 ? 4 : 3}/meal-plans/${plan.id}/prices/${id}/remove`, true, { version: plan.version });
 
-export interface CatalogOffer { id: string; version: number; details: StoreOfferDetails }
-export const getOffers = (stores: PlanStore[], shoppingDate: string) => apiClient<{ offers: CatalogOffer[]; sourceStatus: string }>(`v2/offers?stores=${stores.join(",")}&shoppingDate=${shoppingDate}`);
+export interface CatalogOffer { id: string; version: number; details: StoreOfferDetails; sourceType?: string; ingredientKey?: string | null }
+export const getOffers = (stores: PlanStore[], shoppingDate: string) =>
+  apiClient<{ offers: CatalogOffer[]; sourceStatus: string }>(`v2/offers?stores=${stores.join(",")}&shoppingDate=${shoppingDate}`, false, null, { timeoutMs: 60_000 });
