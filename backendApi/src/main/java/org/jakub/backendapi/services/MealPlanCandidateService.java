@@ -32,14 +32,19 @@ public class MealPlanCandidateService {
         this.names = names; this.ingredients = ingredients; this.recipes = recipes; this.mapper = mapper; this.validation = validation; this.plans = plans; this.offers = offers; this.pricing = pricing;
     }
     public List<Offer> deals(String email, Create settings) {
+        if (!offers.availableTo(email)) return List.of();
         if (settings.planningMode() != PlanningMode.PRACTICAL) catalog.ensureFresh(settings.stores());
         LocalDate date = settings.shopping().shoppingDate() == null ? settings.startDate() : settings.shopping().shoppingDate();
-        var eligible = offers.eligible(settings.stores(), date, Instant.now()).stream()
+        var eligible = offers.eligibleForUser(email, settings.stores(), date, Instant.now()).stream()
                 .filter(o -> !o.details().loyaltyRequired() || settings.shopping().loyaltyStores().contains(o.details().store()))
                 .filter(o -> !Boolean.TRUE.equals(o.details().couponRequired()) || settings.shopping().confirmedCouponOffers().contains(o.id()))
                 .filter(o -> validation.allowedIngredient(email, o.details().productName(), settings.locale()))
                 .toList();
         return rank(eligible, settings.shopping().selectedOffers());
+    }
+    public void requireOffers(String email) { offers.requireAvailableTo(email); }
+    public void checkPlanningAccess(String email, PlanningMode mode) {
+        if (mode != PlanningMode.PRACTICAL) requireOffers(email);
     }
     /** A store-declared reference price can rank a reduction; it never becomes a current shopping price. */
     public List<Offer> rank(List<Offer> available, Set<UUID> selected) {
@@ -107,6 +112,7 @@ public class MealPlanCandidateService {
             item.put("packageAmount", o.details().packageAmount()); item.put("unit", o.details().unit());
             item.put("packagePrice", o.details().packagePrice()); item.put("minimumPackages", o.details().minimumPackages());
             item.put("packageMultiple", o.details().packageMultiple());
+            item.put("bundlePrice", o.details().bundlePrice()); item.put("bundleSize", o.details().bundleSize());
             item.put("conditions", o.details().conditions()); return item;
         }).toList();
     }

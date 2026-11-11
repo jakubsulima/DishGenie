@@ -45,9 +45,9 @@ for (const width of [390, 1440]) {
     expect(expandedBounds!.y).toBe(originalBounds!.y);
     await expect(page.getByLabel("Shopping date", { exact: true })).toHaveValue(today);
     await page.getByRole("button", { name: "Where do prices come from?" }).click();
-    await expect(page.getByRole("link", { name: "Food and drinks" })).toHaveAttribute("href", "https://www.lidl.pl/c/zywnosc-i-napoje/s10068374");
+    await expect(page.getByRole("link", { name: "Lidl leaflets" })).toHaveAttribute("href", "https://www.lidl.pl/c/nasze-gazetki/s10008614");
     await expect(page.getByRole("link", { name: "Bakery", exact: true })).toHaveCount(0);
-    await expect(page.getByText(/Ready-made sweet pastries, sweets and snacks are excluded/)).toBeVisible();
+    await expect(page.getByText(/We read the complete official Lidl leaflet and use reviewed meal ingredients/)).toBeVisible();
     await page.getByRole("button", { name: "Where do prices come from?" }).click();
     await page.getByText("Shopping details and conditions", { exact: true }).click();
     const priceList = page.getByRole("list").filter({ hasText: "Ingredient 1" });

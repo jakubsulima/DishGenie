@@ -40,7 +40,7 @@ export default function OfferImportAdmin() {
   const run = async (operation: () => Promise<unknown>) => { if (busy) return; setBusy(true); setError(""); try { await operation(); await load(); } catch { setError(t("Import or review failed. Check the data and reload before retrying.")); } finally { setBusy(false); } };
   return <section className="mb-8 rounded-2xl border border-primary/15 p-4">
     <h2 className="text-xl font-bold">{t("Offer imports and review")}</h2>
-    <p className="my-2 text-sm">{t("No automatic source is approved. Import candidates, verify source fields, and publish each record separately.")}</p>
+    <p className="my-2 text-sm">{t("For these manual imports, verify source fields and publish each reviewed record separately.")}</p>
     <button className="rounded border px-3 py-2" disabled={busy} onClick={() => { setOpened(true); void run(async () => {}); }}>{t("Load imports and offers")}</button>
     {opened && <>
       <button className="ml-3 rounded border px-3 py-2" disabled={busy} onClick={() => void run(() => apiClient("admin/offer-imports/capture-lidl-review", true, {}))}>{t("Capture Lidl sample for review")}</button>

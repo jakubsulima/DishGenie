@@ -8,7 +8,7 @@ import java.util.*;
 
 public final class StoreOfferDto {
     private StoreOfferDto() {}
-    /** Only verified, nationwide, fixed-size packages are supported in this pilot. */
+    /** Verified nationwide packages, exact bundles and declared loose-weight price bases. */
     public record Publish(@Min(0) long version, @NotNull Store store,
             @NotNull Long ingredientId, @NotBlank @Size(max = 200) String productName,
             @NotNull @DecimalMin("0.001") @DecimalMax("1000000") @Digits(integer = 7, fraction = 3) BigDecimal packageAmount,
@@ -49,7 +49,12 @@ public final class StoreOfferDto {
             this(version, shoppingDate, loyaltyStores, Set.of());
         }
     }
-    public record Catalog(LocalDate shoppingDate, List<Offer> offers, String sourceStatus) {}
+    public record LeafletSummary(String title, String sourceUrl, String pdfSha256, LocalDate startDate, int pages, int candidates,
+            int reviewedCandidates, int products, int priceVariants, Map<String, Integer> excludedReasons,
+            double importSeconds, String paidApiCostUsd, boolean cacheHit) {}
+    public record Catalog(LocalDate shoppingDate, List<Offer> offers, String sourceStatus, LeafletSummary importSummary) {
+        public Catalog(LocalDate shoppingDate, List<Offer> offers, String sourceStatus) { this(shoppingDate, offers, sourceStatus, null); }
+    }
     public enum BudgetStatus { WITHIN_BUDGET, OVER_BUDGET, INCOMPLETE, NO_BUDGET }
     public enum MissingReason { NO_ELIGIBLE_OFFER, CHECK_QUANTITY }
     public record PriceInput(@Min(0) long version, @NotBlank @Size(max = 64) String key, @NotNull Store store,

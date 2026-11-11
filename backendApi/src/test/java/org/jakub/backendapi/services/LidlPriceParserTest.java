@@ -11,6 +11,22 @@ class LidlPriceParserTest {
     private final ObjectMapper json = new ObjectMapper();
     private final LidlPriceParser parser = new LidlPriceParser();
     private final Instant now = Instant.parse("2026-11-06T10:00:00Z");
+    @Test void currentAssortmentIncludesVegetablesAndDairyInsteadOfOnlyFruitAndSausage() throws Exception {
+        try (var stream = getClass().getResourceAsStream("/offers/lidl-prices-2026-11-11.json")) {
+            List<LidlPriceParser.Price> prices = new ArrayList<>();
+            for (var product : json.readTree(stream)) prices.addAll(parser.parse(product, Instant.parse("2026-11-11T12:00:00Z")));
+            assertThat(prices).extracting(p -> p.ingredient().key())
+                    .contains("cucumber", "hokkaido-squash", "pointed-cabbage", "butter", "gouda", "nectarine");
+            assertThat(prices.stream().map(LidlPriceParser.Price::productId).distinct()).hasSize(12);
+            assertThat(prices).noneMatch(p -> p.title().toLowerCase(Locale.ROOT).contains("karma"));
+            assertThat(prices).filteredOn(p -> p.ingredient().key().equals("butter") && p.coupon()).singleElement().satisfies(p -> {
+                assertThat(p.amount()).isEqualByComparingTo("200");
+                assertThat(p.minimum()).isEqualTo(3);
+                assertThat(p.maximum()).isEqualTo(3);
+                assertThat(p.price()).isEqualByComparingTo("2.49");
+            });
+        }
+    }
     @Test void currentCatalogueTitlesKeepPricesUnitsDatesAndBundleConditions() throws Exception {
         try (var stream = getClass().getResourceAsStream("/offers/lidl-prices-2026-11-08.json")) {
             Map<String, List<LidlPriceParser.Price>> prices = new HashMap<>();

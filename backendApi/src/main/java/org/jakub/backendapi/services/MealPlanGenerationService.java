@@ -53,6 +53,7 @@ public class MealPlanGenerationService {
         boolean reserved = false;
         try {
             Create settings = work.view().plan().settings();
+            candidates.checkPlanningAccess(email, settings.planningMode());
             boolean strictPrices = settings.planningMode() == PlanningMode.PROMOTIONS_FIRST && work.view().plan().schemaVersion() < 4;
             int slotMinutes = work.view().plan().cycle() == null ? settings.maxMinutes() : work.view().plan().cycle().exceptions().stream()
                 .filter(e -> e.date().equals(work.slot().date()) && e.mealType() == work.slot().mealType() && e.maxMinutes() != null)

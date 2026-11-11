@@ -1,6 +1,160 @@
 # Tydzień z okazji — stan implementacji
 
-Stan lokalny: 8 listopada 2026. Dokument uzupełnia nadrzędny [plan](PLAN_TYGODNIA_Z_AKTUALNYCH_OKAZJI.md). Nie oznacza wdrożenia produkcyjnego ani kompletności katalogu cen.
+Stan lokalny: 11 listopada 2026. Dokument uzupełnia nadrzędny [plan](PLAN_TYGODNIA_Z_AKTUALNYCH_OKAZJI.md). Nie oznacza wdrożenia produkcyjnego ani kompletności katalogu cen.
+
+## Zbyt mały asortyment — 11 listopada 2026
+
+### Dostęp do promocji sterowany przez administratora
+
+Panel administratora zawiera `Promocje z gazetek → Udostępniaj promocje użytkownikom`.
+Ustawienie jest globalne, wersjonowane i zapisane w bazie przez migrację V33.
+Domyślnie pozostaje włączone, zgodnie z wcześniejszym dostępem. Wyłączenie
+pozostawia pełen dostęp administratorom i nie wymaga restartu aplikacji.
+
+Backend blokuje zwykłym użytkownikom katalog i odświeżanie cen (403), planowanie
+z promocji oraz ponowne układanie tygodnia z ofert. Wybór składników, wycena,
+rewizje i tworzenie zakupów filtrują też wcześniej zapisane oferty według
+bieżącego ustawienia i roli właściciela. Worker sprawdza dostęp przed generowaniem.
+Praktyczne planowanie, prywatne ceny i fakty z zakończonych zakupów pozostają
+dostępne. Nie usuwa się katalogu ani zapisanych planów przy zmianie przełącznika.
+
+Interfejs ukrywa pobieranie, wybór ofert i tryb promocji. Przy wyłączonym dostępie
+zapisane preferencje promocji nie włączają go ponownie; formularz używa trybu
+praktycznego. Dostęp odświeża się przy powrocie do karty i zmianie ustawienia.
+Zmiany wymagają administratora, CSRF i aktualnej wersji ustawienia. Testy
+integracyjne obejmują blokadę API, zachowanie dostępu admina, ceny z cache,
+prywatną wycenę, ponowne włączenie i odczyt stanu przez nową instancję serwisu.
+Weryfikacja końcowa: 253 testy backendu (4 warunkowo pominięte), 150 testów
+frontendu i 38 scenariuszy przeglądarkowych zakończonych powodzeniem. Migracja
+V33 została sprawdzona na PostgreSQL; TypeScript, ESLint, Knip, PMD, kontrola
+duplikacji i obrazy/build również przeszły.
+Test dostępu obejmuje również rzeczywiste ciasteczka JWT i principal `UserDto`,
+tak jak podczas normalnego logowania administratora.
+
+### Pełna gazetka podłączona do aplikacji
+
+Przycisk `Pobierz promocje` korzysta teraz z pełnego oficjalnego PDF-u przez
+`LidlLeafletImportService`, a nie wąskiego feedu JSON. W obrazie backendu są
+Python i zależności importera. Pełny przegląd 313 rekordów z 97 stron jest
+powiązany z SHA-256 źródła i współrzędnymi cen. Do planera trafia 50 pozycji
+składnikowych i 85 wariantów cen: promocje i jawne ceny poza promocją.
+197 rekordów pominięto (m.in. powtórzenia i pozycje poza zakresem), 66 zachowano
+jako nieobsługiwane z konkretną przyczyną. Nie zadeklarowano kompletnego odczytu
+reklam bez liczbowej ceny ani produktów widocznych wyłącznie na zdjęciu.
+
+Poprawiono przypisanie cen kaki, dorsza i bułki żytniej. Przegląd koryguje także
+daty masła, kapusty i skyru, ilość chleba z musztardą oraz odróżnia pakowaną
+krakowską 100 g od sprzedaży wagowej. Zestawy 1+1 zachowują dokładną cenę (np.
+4,99 zł za dwie sztuki), limit i osobny kupon. Surowe odczyty pozostają w raporcie.
+Tożsamości mielonego kurczaka, karkówki, burgerów cielęcych i krewetek gotowanych
+z głową są osobne; nie zastępują dowolnego mięsa lub krewetek w przepisie.
+
+Ten sam katalog zasila wybór dań i wycenę. Powtórny import jest idempotentny,
+a awaria albo zmiana PDF-u zachowuje ważne poprzednie ceny i zgłasza problem.
+Adres sprawdzonej gazetki 12.11 jest konfigurowany; kolejne wydanie wymaga nowej
+kontroli. Widok pokazuje podsumowanie, pominięcia, koszt API i jedno wystąpienie
+produktu zamiast duplikowania kart dla każdej ceny. Nowy tydzień domyślnie
+zaczyna się od daty tej gazetki (najwcześniej dziś).
+
+Test rzeczywistego pobrania przez przeglądarkę przeszedł przy 360, 390 i 1440 px:
+odczyt źródła, publikacja cen, 50 produktów, ponowne pobranie bez duplikatów,
+brak przewijania poziomego i przejście do planera z właściwą datą.
+Rzeczywisty zimny import z aplikacji trwał 6,08 s, płatne API 0 USD.
+Pełny backend: 249 testów, 4 pominięte, 0 błędów; frontend 146 testów, 0 błędów;
+parser Python 12 testów. Regresja przeglądarkowa: 36 poprawnych, 18 opcjonalnych
+pominiętych; osobno wszystkie 3 scenariusze rzeczywistego importu przez końcowy
+obraz Docker przeszły. Usunięto SIGILL w `cryptography` 50.0.2 na ARM64 Linux
+przez przypięcie sprawdzonego 46.0.7 dla tej platformy. Budowanie obrazu sprawdza
+również import modułu PDF. TypeScript, ESLint, Knip i build frontendu przeszły.
+Szczegóły uruchomienia i zakresu: `scripts/offers/README.md`.
+
+Poniższy pilot i poprawka feedu JSON opisują wcześniejszy etap tego samego dnia.
+
+### Pilot pełnej gazetki — wykonany 11 listopada
+
+Dodano `scripts/offers/import_lidl_leaflet.py` i instrukcję uruchomienia w
+`scripts/offers/README.md`. Pilot pobiera pełną oficjalną gazetkę 12.11,
+odczytuje natywny tekst PDF wraz z położeniem cen i produktów, zapisuje materiał
+do kontroli oraz porównuje wybrane rekordy z adnotacjami obrazów źródłowych.
+Nie publikuje ofert, nie modyfikuje bazy aplikacji i nie uruchamia płatnego AI.
+
+Źródło: `gazetka-12-11-czw-kw46`, 97 stron, PDF 31 247 882 bajty,
+SHA-256 `7d3f8c3749d977c09111462714f45cdf9989786d87f36405721c66fa8bd7442b`.
+
+| Pomiar | Wynik |
+| --- | --- |
+| Odczytane strony | 97/97 |
+| Wykryte duże etykiety cen | 323 |
+| Rekordy-kandydaci z przypisaną nazwą | 313; to nie liczba poprawnych produktów |
+| Ręczna kontrola obrazów | 42 wybrane wystąpienia, po 12 pól |
+| Odczyty zgodne z kontrolą | 41 wystąpień, 37 różnych pozycji według nazwy i ilości |
+| Niezgodne w kontrolowanej próbie | 1: efektywna cena 1+1 przypisana do sąsiedniej nazwy; oznaczona do przeglądu i wykluczona z potwierdzonego eksportu |
+| Końcowy odczyt PDF bez cache | 4,14 s; CPU 4,14 s |
+| Pobranie i import w końcowym przebiegu | 5,79 s; 2 żądania źródła; 31,43 MB transferu; obrazy dowodów były już wyrenderowane |
+| Wcześniejszy pełny przebieg z pierwszym renderowaniem | 8,25 s |
+| Powtórzenie z cache | 0,071 s łącznie; bez sieci i bez ponownego parsowania stron |
+| Pamięć szczytowa końcowego przebiegu | około 143 MB |
+| OCR i płatne wywołania modeli | 0 |
+| Zmierzony koszt płatnego API | 0 USD |
+
+Potwierdzone pozycje obejmują m.in. pakowane mięso mielone i burgery, nabiał,
+warzywa, owoce, groch, orzechy i pieczywo. Rodzina wariantów jest liczona jako
+jedna pozycja, a nie kilka SKU. Kategorie automatyczne są heurystyczne i mogą
+wymagać korekty. Adnotacje obejmują nazwę, cenę, ilość i jej znaczenie, jednostkę,
+daty, minimum, wielokrotność, aplikację, kupon i limit. Źródłowa data końca mleka
+25.11 nie została skrócona do ogólnego okresu gazetki 14.11.
+
+Próba do kontroli nie jest losowa; część stron wykorzystano przy rozwijaniu
+parsera. Wynik 41/42 nie jest estymatą jakości całej gazetki, niezależnym
+benchmarkiem ani pomiarem pełnego pokrycia. Niepotwierdzone rekordy pozostają
+niepotwierdzone. Ceny wagowe o nieznanej masie opakowania, promocje 1+1, regionalne
+oferty i brakujące daty końca nie otrzymują zmyślonych wartości.
+
+Koszt 0 USD obejmuje brak płatnego API, nie pracę wdrożeniową, ręczną kontrolę,
+hosting ani energię. To pojedynczy pomiar na lokalnym komputerze. Cache jest
+buforem dokumentu i wersji parsera; nie zaimplementowano jeszcze OCR zmienionych
+stron. Kolejne źródło o innym układzie lub skanowany PDF wymaga osobnej walidacji.
+
+Wyniki lokalne są w `reports/lidl-leaflet-online-pilot/`: `review.html`,
+`offers.json`, `verified-offers.json`, `benchmark-cold.json` i `benchmark-warm.json`.
+Testy offline parsera i dotychczasowego czytnika: 10/10 poprawnych. Nie wykonano
+wdrożenia produkcyjnego ani automatycznego zasilenia planera tymi danymi.
+
+Odtworzono zgłoszenie na aktualnym publicznym JSON-ie Lidla: ogólna kategoria
+zwróciła 39 produktów, w tym 24 pozycje dla zwierząt, jeden napój i 14 produktów
+spożywczych do posiłków. Dotychczasowy słownik akceptował ceny tylko sześciu
+różnych produktów; dziewięć wariantów cen w interfejsie zawyżało widoczną liczbę.
+Oddzielne strony warzyw/owoców, mięsa i nabiału zawierały te same produkty.
+Problem nie wynikał z zatrzymania na pierwszej stronie wyników.
+
+Rozszerzono rozpoznawanie o ogórek długi zielony, dynię hokkaido, kapustę
+stożkową, nektarynki, masło 82% Mleczna krowa oraz goudę w plastrach Mlekovita.
+Tożsamości hokkaido, dyni piżmowej i kapusty stożkowej pozostają oddzielne.
+Wersja źródła 6 wymusza odświeżenie wcześniejszego katalogu. Licznik w widoku
+pobierania ofert liczy różne produkty, a nie warianty cen. Widok opisuje częściowy
+zakres i prowadzi do pełnych oficjalnych gazetek.
+
+Test rzeczywistego importu do izolowanej bazy H2 zapisał **18 wariantów cen dla
+12 różnych produktów**, z kategorii FRUIT, VEGETABLES, DAIRY i MEAT_FISH.
+Kontrolowana wycena rzeczywistej oferty również przeszła. Regresja parsera używa
+zredukowanego fixture'u publicznych danych z 11 listopada, obejmującego także
+odrzucaną karmę i mięso o nieznanej masie opakowania.
+
+Nie jest to pełny import gazetki. Oficjalna [gazetka 12.11](https://www.lidl.pl/l/pl/gazetki/gazetka-12-11-czw-kw46/ar/0)
+ma 97 stron, a jej publiczny model zawiera obrazy i teksty stron; uporządkowane
+rekordy produktów w tym modelu dotyczą siedmiu odnośników do artykułów
+niespożywczych. Do szerszego zasilania jadłospisu potrzebny pozostaje osobny,
+zweryfikowany importer ofert z gazetki lub pełniejszy feed. Dwie oferty kurczaka
+z bieżącego katalogu mają cenę za kg, ale nieznaną masę opakowania, więc nie
+otrzymują fikcyjnego stałego opakowania. Nie zmieniono planów ani zapasów
+użytkownika. Zmiany nie zostały wdrożone na produkcję.
+
+Weryfikacja poprawki: pełny backend 245 testów (241 poprawnych, 4 warunkowo
+pominięte), 144 testy frontendu, TypeScript, ESLint i Knip przeszły. Osobno
+przeszły rzeczywisty import cen oraz mobilny scenariusz 390 px: pobranie ofert,
+plan 5 dni × 3 posiłki, zakupy i odświeżenie, na izolowanej bazie z kontrolowanym
+AI. Przeglądarka produkcyjna nadal pokazywała poprzedni katalog dziewięciu
+wariantów cen; nie wykonano wdrożenia ani zmian danych konta.
 
 ## Składniki do posiłków — 8 listopada
 

@@ -19,7 +19,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest(properties = {"spring.datasource.url=jdbc:h2:mem:price-catalog-it", "security.jwt.token.secret-key=price-catalog-test-secret-key-at-least-32-characters",
-        "posthog.enabled=false", "spring.jpa.show-sql=false", "app.planner.jobs-enabled=false", "app.offers.lidl-price-import-enabled=true", "app.offers.initial-delay-ms=86400000"})
+        "posthog.enabled=false", "spring.jpa.show-sql=false", "app.planner.jobs-enabled=false", "app.offers.lidl-price-import-enabled=true", "app.offers.lidl-leaflet-import-enabled=false", "app.offers.initial-delay-ms=86400000"})
 class PriceCatalogIntegrationTest {
     @Autowired LidlPriceCatalogService catalog;
     @Autowired StoreOfferService offers;
@@ -35,7 +35,7 @@ class PriceCatalogIntegrationTest {
     @BeforeEach void setup() throws Exception {
         runs.deleteAll(); offerRepository.deleteAll();
         List<JsonNode> products = new ArrayList<>();
-        for (String fixture : List.of("/offers/lidl-prices-2026-11-06.json", "/offers/lidl-categories-2026-11-07.json")) {
+        for (String fixture : List.of("/offers/lidl-prices-2026-11-06.json", "/offers/lidl-categories-2026-11-07.json", "/offers/lidl-prices-2026-11-11.json")) {
             try (var stream = getClass().getResourceAsStream(fixture)) {
                 for (JsonNode item : json.readTree(stream)) {
                     ObjectNode product = (ObjectNode) item;
@@ -86,7 +86,8 @@ class PriceCatalogIntegrationTest {
         catalog.refresh(false); verify(source, times(1)).fetchPricePage(0);
         var available = offers.eligible(Set.of(Store.LIDL), LocalDate.now(), Instant.now());
         assertThat(available).allMatch(o -> o.sourceType().equals("LIDL_PUBLIC"));
-        assertThat(available.stream().map(StoreOfferDto.Offer::ingredientKey)).contains("smoked-pork-loin", "krakowska-sausage", "silesian-sausage")
+        assertThat(available.stream().map(StoreOfferDto.Offer::ingredientKey)).contains("smoked-pork-loin", "krakowska-sausage", "silesian-sausage",
+                        "cucumber", "hokkaido-squash", "pointed-cabbage", "butter", "gouda", "nectarine")
                 .doesNotContain("st-martin-croissant");
         var milkCoupon = available.stream().filter(o -> "milk".equals(o.ingredientKey()) && o.details().loyaltyRequired()).findFirst().orElseThrow();
         var user = new User(); user.setEmail(UUID.randomUUID() + "@example.com"); user.setRole(Role.USER); users.saveAndFlush(user);
@@ -115,7 +116,7 @@ class PriceCatalogIntegrationTest {
         assertThat(result.status()).isEqualTo("LIVE_FETCH_INCOMPLETE"); assertThat(result.published()).isZero();
         assertThat(offerRepository.count()).isEqualTo(before);
         assertThat(offers.eligible(Set.of(Store.LIDL), LocalDate.now(), Instant.now())).isNotEmpty();
-        assertThat(controller.catalog(Set.of(Store.LIDL), LocalDate.now()).sourceStatus()).isEqualTo("LIVE_FETCH_INCOMPLETE");
+        assertThat(controller.catalog(new org.springframework.security.authentication.TestingAuthenticationToken("test@example.com", ""), Set.of(Store.LIDL), LocalDate.now()).sourceStatus()).isEqualTo("LIVE_FETCH_INCOMPLETE");
     }
     @Test void expandedSourceVersionRefreshesEvenWhenTheOldCatalogWasJustFetched() {
         var first = catalog.refresh(true);

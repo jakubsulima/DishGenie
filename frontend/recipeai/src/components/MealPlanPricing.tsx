@@ -97,7 +97,11 @@ export default function MealPlanPricing({ plan, disabled, auto = false, compact 
     {!compact && expired && <p role="status" className="mt-4 text-amber-900">{t("This quote has expired. Compare prices again before shopping.")}</p>}
     {validQuote && <>
       {validQuote.sources && validQuote.sources.length > 0 && <div className="mt-4 space-y-1 text-sm text-primary/70">{validQuote.sources.map(source => <p key={source.store}>
-        {label(source.store)}: {t(source.status === "LIVE_PARTIAL" ? "Prices fetched from the official store website; partial coverage."
+        {label(source.store)}: {t(source.status === "FEATURE_DISABLED" ? "Store promotions are currently available to administrators only."
+          : source.status === "LIVE_LEAFLET_REVIEWED" ? "Prices imported from the complete Lidl leaflet; only reviewed meal ingredients are used."
+          : source.status === "LIVE_LEAFLET_FETCH_FAILED" || source.status === "LIVE_LEAFLET_REVIEW_REQUIRED" ? "The leaflet could not be refreshed or needs review. Available saved prices are shown."
+          : source.status === "LIVE_LEAFLET_EXPIRED" ? "The reviewed leaflet has expired. You can add your own prices."
+          : source.status === "LIVE_PARTIAL" ? "Prices fetched from the official store website; partial coverage."
           : source.status === "LIVE_FETCH_INCOMPLETE" ? "Some store pages could not be refreshed. Available saved prices are shown."
           : source.status === "SOURCE_NOT_CONNECTED" || source.status === "LIVE_NOT_FETCHED" ? "No connected store prices. You can add your own prices."
           : source.status === "LIVE_NO_SUPPORTED_PRICES" ? "No supported current prices were found. You can add your own prices."

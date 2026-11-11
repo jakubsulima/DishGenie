@@ -28,7 +28,10 @@ RUN --mount=type=cache,target=/home/gradle/.gradle \
 FROM eclipse-temurin:17-jre-noble
 WORKDIR /app
 
-RUN apt-get update && apt-get upgrade -y && \
+COPY src/main/resources/offers/requirements.txt /tmp/leaflet-requirements.txt
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends python3 python3-venv && \
+    python3 -m venv /opt/leaflet && /opt/leaflet/bin/pip install --no-cache-dir -r /tmp/leaflet-requirements.txt && \
+    /opt/leaflet/bin/python -c "import pdfplumber" && \
     rm -rf /var/lib/apt/lists/* && \
     groupadd --system appgroup && useradd --system --gid appgroup --create-home appuser
 
@@ -36,6 +39,7 @@ RUN apt-get update && apt-get upgrade -y && \
 COPY --from=builder --chown=appuser:appgroup /app/build/libs/*.jar app.jar
 
 USER appuser
+ENV LIDL_LEAFLET_PYTHON=/opt/leaflet/bin/python
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

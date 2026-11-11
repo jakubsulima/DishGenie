@@ -53,6 +53,7 @@ class DatabaseMigrationIT {
 
     @Test
     void allFlywayMigrationsMatchThePostgresEntityModel() {
+        assertThat(jdbcTemplate.queryForObject("SELECT enabled_for_users FROM offer_feature_setting WHERE id=1", Boolean.class)).isTrue();
         Integer resetColumns = jdbcTemplate.queryForObject(
                 "SELECT count(*) FROM information_schema.columns " +
                         "WHERE table_name = 'app_user' " +

@@ -19,8 +19,9 @@ public class StoreOfferService {
     private final StoreOfferRepository offers;
     private final IngredientRepository ingredients;
     private final ObjectMapper json;
-    public StoreOfferService(StoreOfferRepository offers, IngredientRepository ingredients, ObjectMapper json) {
-        this.offers = offers; this.ingredients = ingredients; this.json = json;
+    private final OfferFeatureService feature;
+    public StoreOfferService(StoreOfferRepository offers, IngredientRepository ingredients, ObjectMapper json, OfferFeatureService feature) {
+        this.offers = offers; this.ingredients = ingredients; this.json = json; this.feature = feature;
     }
     @Transactional
     public Offer publish(UUID id, Publish input) {
@@ -60,6 +61,12 @@ public class StoreOfferService {
     }
     @Transactional(readOnly = true)
     public List<Offer> recent() { return offers.findTop100ByOrderByVerifiedAtDesc().stream().map(this::view).toList(); }
+    @Transactional(readOnly = true)
+    public List<Offer> eligibleForUser(String email, Set<Store> stores, LocalDate day, Instant now) {
+        return availableTo(email) ? eligible(stores, day, now) : List.of();
+    }
+    public boolean availableTo(String email) { return feature.available(email); }
+    public void requireAvailableTo(String email) { feature.requireAvailable(email); }
     @Transactional(readOnly = true)
     public List<Offer> eligible(Set<Store> stores, LocalDate day, Instant now) {
         return offers.findByActiveTrueAndStoreInAndValidFromLessThanEqualAndValidToGreaterThanEqualAndVerifiedAtGreaterThanEqual(

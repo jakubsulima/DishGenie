@@ -12,6 +12,7 @@ import PlannerDialog from "../components/PlannerDialog";
 import PlannerMenu from "../components/PlannerMenu";
 import PlannerDisclosure from "../components/PlannerDisclosure";
 import MealPlanOffers from "../components/MealPlanOffers";
+import { useOffersAccess } from "../context/offersAccessContext";
 import { acceptMealPlan, changePlanSlot, checkPlanShopping, generatePlanSlot,
   getMealPlan, isSlotGenerating, listMealPlans, preferredMealPlan, refreshPlanShopping,
   updatePlanSettings, startWeekGeneration, replanFromOffers, getWeekGeneration, cancelWeekGeneration, type GenerationProgress,
@@ -19,6 +20,7 @@ import { acceptMealPlan, changePlanSlot, checkPlanShopping, generatePlanSlot,
 import { captureEvent } from "../lib/posthog";
 
 export default function MealPlanner() {
+  const offersAvailable = useOffersAccess();
   const { t, locale } = useLanguage();
   const { user } = useUser();
   const translations = useRef(t); translations.current = t;
@@ -322,9 +324,9 @@ export default function MealPlanner() {
           <button className={primary} disabled={disabled || planned === 0} onClick={accept}>{t("Accept plan and create shopping list")}</button>
         </section>}
         {shoppingVisited && planned > 0 && <MealPlanPricing key={plan.id} plan={plan} disabled={disabled} auto compact onSelected={applySaved} />}
-        <PlannerDisclosure className="mt-5 border-t border-primary/15 pt-3" title={t("Offers and replanning")} onOpen={() => setOffersOpen(true)}>
+        {offersAvailable && <PlannerDisclosure className="mt-5 border-t border-primary/15 pt-3" title={t("Offers and replanning")} onOpen={() => setOffersOpen(true)}>
           {offersOpen && <MealPlanOffers plan={plan} disabled={disabled} onReplan={buildFromOffers} />}
-        </PlannerDisclosure>
+        </PlannerDisclosure>}
       </div>
       </>}
       <PlannerDialog open={editingSettings} title={t("Planner settings")} onClose={() => setEditingSettings(false)}>

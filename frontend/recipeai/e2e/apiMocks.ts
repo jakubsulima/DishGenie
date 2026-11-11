@@ -213,6 +213,7 @@ const getEndpoint = (route: Route) => {
 };
 
 const fulfillCsrfEndpoint = async (route: Route, endpoint: string) => {
+  if (endpoint === "v2/offers/access") { await fulfillJson(route, { available: true }); return true; }
   if (endpoint !== "csrf") {
     return false;
   }

@@ -36,6 +36,7 @@ public class MealPlanJobService {
         return start(email, id, input, true, true);
     }
     private Progress start(String email, UUID id, Generate input, boolean replan, boolean fromOffers) {
+        if (fromOffers) candidates.requireOffers(email);
         var plan = repository.findOwnedForUpdate(id, email).orElseThrow(() -> error(HttpStatus.NOT_FOUND));
         var previous = jobs.findById(input.requestId());
         if (previous.isPresent()) {
@@ -45,6 +46,7 @@ public class MealPlanJobService {
         }
         if (plan.getVersion() != input.version() || jobs.existsByPlanIdAndStatusIn(id, List.of("QUEUED", "RUNNING"))) throw error(HttpStatus.CONFLICT);
         var snapshot = plans.get(email, id);
+        candidates.checkPlanningAccess(email, snapshot.plan().settings().planningMode());
         if (snapshot.plan().slots().stream().anyMatch(s -> s.generationStatus() == GenerationStatus.RUNNING && s.generationStartedAt().isAfter(Instant.now().minusSeconds(300)))) throw error(HttpStatus.CONFLICT);
         if (fromOffers) {
             var s = snapshot.plan().settings();
