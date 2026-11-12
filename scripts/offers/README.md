@@ -5,6 +5,8 @@
 Administrator może wyłączyć dostęp zwykłych użytkowników w panelu:
 **Promocje z gazetek → Udostępniaj promocje użytkownikom**. Ustawienie jest
 zapamiętywane w bazie; administratorzy zachowują dostęp do importera i promocji.
+Od poprawki z 12 listopada dostęp zwykłych kont jest domyślnie wyłączony;
+migracja V34 zamyka również wcześniejszy publiczny dostęp na czas testów admina.
 Backend blokuje też użycie zapisanych cen automatycznych przez zwykłe konta.
 Podstawowy planer oraz prywatne ceny ręczne pozostają dostępne.
 

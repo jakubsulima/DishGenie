@@ -1,6 +1,24 @@
 # Tydzień z okazji — stan implementacji
 
-Stan lokalny: 11 listopada 2026. Dokument uzupełnia nadrzędny [plan](PLAN_TYGODNIA_Z_AKTUALNYCH_OKAZJI.md). Nie oznacza wdrożenia produkcyjnego ani kompletności katalogu cen.
+Stan lokalny: 12 listopada 2026. Dokument uzupełnia nadrzędny [plan](PLAN_TYGODNIA_Z_AKTUALNYCH_OKAZJI.md). Nie oznacza wdrożenia produkcyjnego ani kompletności katalogu cen.
+
+## Promocje domyślnie tylko dla administratorów — 12 listopada
+
+Brak ustawienia i nowa encja oznaczają teraz dostęp zwykłych kont wyłączony.
+Migracja V34 zmienia domyślną wartość kolumny na FALSE i wyłącza również
+dotychczas włączony dostęp w bazach, które zastosowały już V33. Przy zmianie
+zwiększa wersję ustawienia; administrator nadal może później świadomie otworzyć
+dostęp przełącznikiem. Administrator zachowuje importer i oferty niezależnie
+od stanu przełącznika. Scenariusze promocyjne w testach jawnie włączają funkcję;
+testy dostępu sprawdzają rzeczywisty domyślny stan z ciasteczkami JWT.
+
+Przełącznik nie trafił do automatycznego wdrożenia po merge'u #88: uruchomienie
+CI `43087009927` zatrzymało się na DL3008 w Dockerfile backendu. Budowanie obu
+obrazów oraz wywołanie Dokploy zostały pominięte. Przypięto sprawdzone pakiety
+`python3` i `python3-venv` do `3.12.3-0ubuntu2.1`. Weryfikacja używa dokładnie
+Hadolint 2.12.0, tak jak przypięta akcja CI. Zmiana opisu w panelu admina
+uwzględnia nowy domyślny stan i powoduje również ponowne zbudowanie frontendu,
+którego obraz nie został opublikowany podczas poprzedniego nieudanego przebiegu.
 
 ## Zbyt mały asortyment — 11 listopada 2026
 

@@ -22,14 +22,14 @@ public class OfferFeatureService {
     }
     @Transactional(readOnly = true)
     public boolean available(String email) {
-        return settings.findById(1).map(OfferFeatureSetting::isEnabledForUsers).orElse(true) || isAdmin(email);
+        return settings.findById(1).map(OfferFeatureSetting::isEnabledForUsers).orElse(false) || isAdmin(email);
     }
     public void requireAvailable(String email) {
         if (!available(email)) throw new AppException("Store promotions are currently available to administrators only.", HttpStatus.FORBIDDEN);
     }
     @Transactional(readOnly = true)
     public Setting get() {
-        return settings.findById(1).map(this::view).orElse(new Setting(0, true, null, null));
+        return settings.findById(1).map(this::view).orElse(new Setting(0, false, null, null));
     }
     @Transactional
     public Setting update(String email, Update input) {

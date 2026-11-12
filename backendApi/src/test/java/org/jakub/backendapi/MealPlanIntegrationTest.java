@@ -28,6 +28,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@org.springframework.context.annotation.Import(org.jakub.backendapi.OffersEnabledTestConfiguration.class)
 @SpringBootTest(properties = {
         "security.jwt.token.secret-key=meal-plan-integration-test-secret-key-at-least-32",
         "posthog.enabled=false", "spring.jpa.show-sql=false"

@@ -27,9 +27,10 @@ RUN --mount=type=cache,target=/home/gradle/.gradle \
 # Stage 2: Create the final runtime image
 FROM eclipse-temurin:17-jre-noble
 WORKDIR /app
+ARG PYTHON_PACKAGE_VERSION=3.12.3-0ubuntu2.1
 
 COPY src/main/resources/offers/requirements.txt /tmp/leaflet-requirements.txt
-RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends python3 python3-venv && \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends python3="${PYTHON_PACKAGE_VERSION}" python3-venv="${PYTHON_PACKAGE_VERSION}" && \
     python3 -m venv /opt/leaflet && /opt/leaflet/bin/pip install --no-cache-dir -r /tmp/leaflet-requirements.txt && \
     /opt/leaflet/bin/python -c "import pdfplumber" && \
     rm -rf /var/lib/apt/lists/* && \
