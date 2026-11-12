@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+@org.springframework.context.annotation.Import(org.jakub.backendapi.OffersEnabledTestConfiguration.class)
 @SpringBootTest(properties = {"spring.datasource.url=jdbc:h2:mem:price-catalog-it", "security.jwt.token.secret-key=price-catalog-test-secret-key-at-least-32-characters",
         "posthog.enabled=false", "spring.jpa.show-sql=false", "app.planner.jobs-enabled=false", "app.offers.lidl-price-import-enabled=true", "app.offers.lidl-leaflet-import-enabled=false", "app.offers.initial-delay-ms=86400000"})
 class PriceCatalogIntegrationTest {

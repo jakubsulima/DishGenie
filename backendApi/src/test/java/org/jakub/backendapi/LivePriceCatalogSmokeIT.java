@@ -15,6 +15,7 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.*;
 
 @EnabledIfEnvironmentVariable(named = "RUN_LIVE_PRICE_SMOKE", matches = "1")
+@org.springframework.context.annotation.Import(org.jakub.backendapi.OffersEnabledTestConfiguration.class)
 @SpringBootTest(properties = {"spring.datasource.url=jdbc:h2:mem:live-price-smoke", "security.jwt.token.secret-key=live-price-smoke-secret-key-at-least-32-characters",
         "posthog.enabled=false", "spring.jpa.show-sql=false", "app.planner.jobs-enabled=false", "app.offers.lidl-price-import-enabled=true", "app.offers.lidl-leaflet-import-enabled=false", "app.offers.initial-delay-ms=86400000"})
 class LivePriceCatalogSmokeIT {

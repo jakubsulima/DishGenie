@@ -52,8 +52,19 @@ class DatabaseMigrationIT {
     private RateLimitService rateLimitService;
 
     @Test
+    void adminOnlyMigrationDisablesThePreviouslyPublicRolloutAndChangesItsVersion() {
+        jdbcTemplate.update("UPDATE offer_feature_setting SET enabled_for_users=TRUE, version=10, updated_by='admin@example.test' WHERE id=1");
+        var migration = new org.springframework.jdbc.datasource.init.ResourceDatabasePopulator(
+                new org.springframework.core.io.ClassPathResource("db/migration/V34__Default_offers_to_admin_only.sql"));
+        migration.execute(java.util.Objects.requireNonNull(jdbcTemplate.getDataSource()));
+        assertThat(jdbcTemplate.queryForObject("SELECT enabled_for_users FROM offer_feature_setting WHERE id=1", Boolean.class)).isFalse();
+        assertThat(jdbcTemplate.queryForObject("SELECT version FROM offer_feature_setting WHERE id=1", Long.class)).isEqualTo(11L);
+        assertThat(jdbcTemplate.queryForObject("SELECT updated_by FROM offer_feature_setting WHERE id=1", String.class)).isNull();
+    }
+
+    @Test
     void allFlywayMigrationsMatchThePostgresEntityModel() {
-        assertThat(jdbcTemplate.queryForObject("SELECT enabled_for_users FROM offer_feature_setting WHERE id=1", Boolean.class)).isTrue();
+        assertThat(jdbcTemplate.queryForObject("SELECT enabled_for_users FROM offer_feature_setting WHERE id=1", Boolean.class)).isFalse();
         Integer resetColumns = jdbcTemplate.queryForObject(
                 "SELECT count(*) FROM information_schema.columns " +
                         "WHERE table_name = 'app_user' " +

@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 @EnabledIfEnvironmentVariable(named = "RUN_BROWSER_PLANNER_SMOKE", matches = "1")
+@org.springframework.context.annotation.Import(org.jakub.backendapi.OffersEnabledTestConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
         "spring.datasource.url=jdbc:h2:mem:browser-planner", "allowed.origins=http://127.0.0.1:5174", "server.port=18889", "server.servlet.context-path=/api", "security.jwt.token.secret-key=browser-test-isolated-h2-secret-key-at-least-32", "posthog.enabled=false", "spring.jpa.show-sql=false"})
 class BrowserPlannerSmokeIT {

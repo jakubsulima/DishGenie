@@ -28,6 +28,7 @@ export default function AdminOffersAccess() {
   };
   return <section className="mb-8 space-y-3 rounded-xl border border-primary/20 p-4" aria-label={pl ? 'Dostęp do promocji' : 'Promotion access'}>
     <h2 className="text-xl font-semibold">{pl ? 'Promocje z gazetek' : 'Leaflet promotions'}</h2>
+    <p className="text-sm">{pl ? 'Domyślnie promocje są dostępne tylko dla administratorów. Włącz przełącznik, gdy zechcesz udostępnić je zwykłym użytkownikom.' : 'Promotions are available to administrators only by default. Enable the switch when you want to make them available to regular users.'}</p>
     <label className="flex min-h-11 items-center gap-3"><input type="checkbox" role="switch" disabled={busy || !setting} checked={setting?.enabledForUsers ?? false} onChange={e => void change(e.target.checked)} />{pl ? 'Udostępniaj promocje użytkownikom' : 'Enable promotions for users'}</label>
     <p className="text-sm text-primary/75">{pl ? 'Po wyłączeniu tylko administratorzy mogą pobierać promocje i korzystać z nich w planerze. Zwykły planer i ceny wpisane ręcznie nadal działają. Ustawienie obowiązuje wszystkich użytkowników i jest zapamiętywane po restarcie.' : 'When disabled, only administrators can fetch promotions and use them in the planner. Practical planning and manually entered prices remain available. This setting applies to all users and survives restarts.'}</p>
     {saved && <p role="status">{pl ? 'Zapisano dostęp do promocji.' : 'Promotion access saved.'}</p>}

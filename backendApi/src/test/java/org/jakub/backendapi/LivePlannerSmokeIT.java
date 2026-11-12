@@ -13,6 +13,7 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.*;
 /** Opt-in network check, deliberately separate from controlled CI tests. Uses one recipe request. */
 @EnabledIfEnvironmentVariable(named = "RUN_LIVE_PLANNER_SMOKE", matches = "1")
+@org.springframework.context.annotation.Import(org.jakub.backendapi.OffersEnabledTestConfiguration.class)
 @SpringBootTest(properties = {"security.jwt.token.secret-key=live-smoke-isolated-h2-secret-key-at-least-32", "posthog.enabled=false", "spring.jpa.show-sql=false", "app.planner.jobs-enabled=false"})
 class LivePlannerSmokeIT {
     @Autowired UserRepository users;

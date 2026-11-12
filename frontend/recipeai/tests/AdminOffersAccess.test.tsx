@@ -16,6 +16,7 @@ test('admin switch saves the current version and explains continued admin access
  expect(putClient).toHaveBeenCalledWith('admin/features/store-offers', { version: 3, enabledForUsers: false });
  expect(toggle).not.toBeChecked();
  expect(screen.getByText(/tylko administratorzy mogą pobierać promocje/)).toBeVisible();
+ expect(screen.getByText(/Domyślnie promocje są dostępne tylko dla administratorów/)).toBeVisible();
 });
 test('failed save reloads the persisted value instead of showing a successful toggle', async () => {
  vi.mocked(putClient).mockRejectedValue(new Error('conflict'));

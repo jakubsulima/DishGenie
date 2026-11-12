@@ -50,6 +50,16 @@ class OfferFeatureAccessIntegrationTest {
         return users.saveAndFlush(user).getEmail();
     }
     void disable() { feature.update(admin, new OfferFeatureService.Update(feature.get().version(), false)); }
+    @Test void missingSettingDefaultsToAdminOnlyForRealSessions() throws Exception {
+        settings.deleteAll();
+        assertThat(new OfferFeatureSetting().isEnabledForUsers()).isFalse();
+        assertThat(feature.get().enabledForUsers()).isFalse();
+        var adminCookie = new jakarta.servlet.http.Cookie("access_token", tokens.createToken(admin));
+        var userCookie = new jakarta.servlet.http.Cookie("access_token", tokens.createToken(member));
+        mvc.perform(get("/admin/features/store-offers").cookie(adminCookie)).andExpect(status().isOk()).andExpect(jsonPath("$.enabledForUsers").value(false));
+        mvc.perform(get("/v2/offers/access").cookie(userCookie)).andExpect(status().isOk()).andExpect(jsonPath("$.available").value(false));
+        mvc.perform(get("/v2/offers/access").cookie(adminCookie)).andExpect(status().isOk()).andExpect(jsonPath("$.available").value(true));
+    }
     Create create(PlanningMode mode) {
         return new Create(UUID.randomUUID(), today, 1, 2, Set.of(MealType.DINNER), Set.of(Store.LIDL), null, "pl", 45,
                 mode, BudgetMode.NONE, new ShoppingOptions(today, 1, Set.of(), Set.of(), Set.of(), false));

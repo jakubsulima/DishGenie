@@ -25,6 +25,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+@org.springframework.context.annotation.Import(org.jakub.backendapi.OffersEnabledTestConfiguration.class)
 @SpringBootTest(properties = {"security.jwt.token.secret-key=weekly-plan-test-secret-key-at-least-32-characters", "posthog.enabled=false", "spring.jpa.show-sql=false", "app.planner.jobs-enabled=false"})
 @AutoConfigureMockMvc
 class WeeklyPlannerIntegrationTest {

@@ -8,7 +8,7 @@ import java.time.Instant;
 public class OfferFeatureSetting {
     @Id private Integer id = 1;
     @Version private long version;
-    @Column(nullable = false) private boolean enabledForUsers = true;
+    @Column(nullable = false) private boolean enabledForUsers = false;
     @Column(nullable = false) private Instant updatedAt = Instant.now();
     @Column(length = 320) private String updatedBy;
     public Integer getId() { return id; }

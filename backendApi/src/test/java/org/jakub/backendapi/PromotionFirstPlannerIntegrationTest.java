@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+@org.springframework.context.annotation.Import(org.jakub.backendapi.OffersEnabledTestConfiguration.class)
 @SpringBootTest(properties = {"spring.datasource.url=jdbc:h2:mem:promotion-first-it", "security.jwt.token.secret-key=promotion-first-integration-test-secret-32-characters",
         "posthog.enabled=false", "spring.jpa.show-sql=false", "app.planner.jobs-enabled=false"})
 class PromotionFirstPlannerIntegrationTest {

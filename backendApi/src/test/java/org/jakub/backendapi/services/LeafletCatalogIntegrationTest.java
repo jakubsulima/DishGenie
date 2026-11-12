@@ -17,6 +17,7 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@org.springframework.context.annotation.Import(org.jakub.backendapi.OffersEnabledTestConfiguration.class)
 @SpringBootTest(properties = {"spring.datasource.url=jdbc:h2:mem:leaflet-catalog-it",
         "security.jwt.token.secret-key=leaflet-catalog-test-secret-key-at-least-32-characters",
         "posthog.enabled=false", "spring.jpa.show-sql=false", "app.planner.jobs-enabled=false",
