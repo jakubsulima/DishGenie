@@ -310,7 +310,8 @@ jobs:
 
   frontend-e2e:
     name: Frontend E2E
-    runs-on: ubuntu-latest
+    # Playwright 1.60 supports Ubuntu 24.04; Ubuntu 26.04 support starts in 1.61.
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     needs: changes
     if: needs.changes.outputs.frontend == 'true'
