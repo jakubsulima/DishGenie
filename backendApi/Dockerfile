@@ -1,5 +1,5 @@
 # Stage 1: Build the application with Gradle
-FROM eclipse-temurin:17-jdk-noble AS builder
+FROM eclipse-temurin:17.0.21.1_2-jdk-noble@sha256:db8bece667eded68935d95726450a5810930754ef91e2b9141647bf30249f33e AS builder
 
 WORKDIR /app
 ENV GRADLE_USER_HOME=/home/gradle/.gradle
@@ -25,7 +25,7 @@ RUN --mount=type=cache,target=/home/gradle/.gradle \
     ./gradlew bootJar --no-daemon -x test -Dorg.gradle.vfs.watch=false --stacktrace --info
 
 # Stage 2: Create the final runtime image
-FROM eclipse-temurin:17-jre-noble
+FROM eclipse-temurin:17.0.21.1_2-jre-noble@sha256:a9fc3bded7efe95fe0c06f3f5d7e5beea947925f729b71b61e39e0b9ddd4d7e3
 WORKDIR /app
 ARG PYTHON_PACKAGE_VERSION=3.12.3-0ubuntu2.1
 
