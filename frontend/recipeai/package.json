@@ -55,7 +55,7 @@
     "knip": "^5.88.1",
     "tailwindcss": "^4.3.0",
     "typescript": "~5.7.2",
-    "typescript-eslint": "^8.24.1",
+    "typescript-eslint": "^8.73.0",
     "vite": "^6.4.4"
   }
 }
