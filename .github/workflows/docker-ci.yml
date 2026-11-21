@@ -15,6 +15,10 @@ permissions:
   contents: read
   pull-requests: read
 
+env:
+  # Adoptium's SemVer representation of Temurin 17.0.21.1+2 for setup-java.
+  TEMURIN_JAVA_VERSION: "17.0.21+100000002"
+
 jobs:
   changes:
     name: Detect Changed Areas
@@ -399,7 +403,7 @@ jobs:
         uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: ${{ env.TEMURIN_JAVA_VERSION }}
           cache: gradle
 
       - name: Compile backend
@@ -421,7 +425,7 @@ jobs:
         uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: ${{ env.TEMURIN_JAVA_VERSION }}
           cache: gradle
 
       - name: Run backend tests
@@ -443,7 +447,7 @@ jobs:
         uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: ${{ env.TEMURIN_JAVA_VERSION }}
           cache: gradle
 
       - name: Run PMD unused-code rules
@@ -473,7 +477,7 @@ jobs:
         uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: ${{ env.TEMURIN_JAVA_VERSION }}
           cache: gradle
 
       - name: Run Testcontainers-style integration tests when present
@@ -570,7 +574,7 @@ jobs:
         uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: ${{ env.TEMURIN_JAVA_VERSION }}
           cache: gradle
 
       - name: Build backend for CodeQL
